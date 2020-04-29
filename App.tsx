@@ -1,38 +1,50 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import React from 'react';
-import ColorPalette from './screens/ColorPalette';
-import Home from './screens/Home';
-import AddPaletteModal from './screens/AddPaletteModal';
-import AddNewPaletteModal from './screens/AddPaletteModal';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+import { View, Text, Button, StatusBar } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import AppScreen from './screens/App';
+import { AppContextProvider } from './context/AppContext';
+
+import { createClient, Provider } from 'urql';
+import ChangeLocationScreen from './screens/ChangeLocation';
+
+const client = createClient({
+  url: 'https://o2hlpsp9ac.execute-api.us-east-1.amazonaws.com/prod/api',
+});
 
 const RootStack = createStackNavigator();
-const MainStack = createStackNavigator();
 
-const MainStackScreen = () => (
-  <MainStack.Navigator>
-    <MainStack.Screen name="Home" component={Home} />
-    <MainStack.Screen
-      name="ColorPalette"
-      component={ColorPalette}
-      options={({ route }) => ({ title: route.params.paletteName })}
-    />
-  </MainStack.Navigator>
-);
+const MyTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: '#e2e8f0',
+    card: '#2d3748',
+    text: 'white',
+  },
+};
 
 const App = () => {
   return (
-    <NavigationContainer>
-      <RootStack.Navigator mode="modal">
-        <RootStack.Screen
-          name="Main"
-          component={MainStackScreen}
-          options={{ headerShown: false }}
-        />
-        <RootStack.Screen name="AddNewPalette" component={AddNewPaletteModal} />
-      </RootStack.Navigator>
-    </NavigationContainer>
+    <Provider value={client}>
+      <AppContextProvider>
+        <NavigationContainer theme={MyTheme}>
+          <StatusBar barStyle="light-content" />
+          <RootStack.Navigator
+            mode="modal"
+            screenOptions={{ headerShown: false }}
+          >
+            <RootStack.Screen name="App" component={AppScreen} />
+            <RootStack.Screen
+              name="ChangeLocation"
+              component={ChangeLocationScreen}
+            />
+          </RootStack.Navigator>
+        </NavigationContainer>
+      </AppContextProvider>
+    </Provider>
   );
 };
 
