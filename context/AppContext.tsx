@@ -9,9 +9,9 @@ import React, {
   useCallback,
 } from 'react';
 import {
-  useLocationsQuery,
   LocationDetailFragment,
-} from '../components/graphql-generated';
+  useLocationsQuery,
+} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 
 interface AppContext {
   locations: LocationDetailFragment[];

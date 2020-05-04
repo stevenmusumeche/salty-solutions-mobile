@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { blue } from '../colors';
 import WindCard from '../components/WindCard';
 import BigBlue from '../components/BigBlue';
+import { VictoryBar, VictoryChart, VictoryLine } from 'victory-native';
 
 const NowStack = createStackNavigator();
 

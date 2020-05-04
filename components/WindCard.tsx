@@ -1,34 +1,32 @@
 import { startOfDay, subHours } from 'date-fns';
-import React, { useContext } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { blue, gray } from '../colors';
+import React, { useContext, useState, useEffect } from 'react';
+import { Text, View, StyleSheet, useWindowDimensions } from 'react-native';
+import { blue } from '../colors';
 import Card from '../components/Card';
-import FullScreenLoader from '../components/FullScreenLoader';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
-import { useWindData } from '../hooks/use-wind-data';
 import BigBlue from './BigBlue';
 import LoaderBlock from './LoaderBlock';
-
-interface Props {}
+import { hooks } from '@stevenmusumeche/salty-solutions-shared';
+import { VictoryChart, VictoryBar, VictoryLine } from 'victory-native';
 
 const WindCard: React.FC = () => {
   useLocationSwitcher();
   useHeaderTitle('Current Conditions');
+  const windowWidth = useWindowDimensions().width;
+
+  console.log(windowWidth);
 
   const headerText = 'Wind (mph)';
 
   const { activeLocation } = useContext(AppContext);
   const date = startOfDay(new Date());
-  const {
-    curValue,
-    curDetail,
-    curDirectionValue,
-    fetching,
-    error,
-    refresh,
-  } = useWindData(activeLocation.id, subHours(date, 48), date);
+  const { curValue, curDirectionValue, fetching } = hooks.useCurrentWindData(
+    activeLocation.id,
+    subHours(date, 48),
+    date,
+  );
 
   if (fetching) {
     return (
@@ -41,11 +39,26 @@ const WindCard: React.FC = () => {
   return (
     <Card headerText={headerText}>
       <BigBlue>{curValue}</BigBlue>
-      <View>
-        <Text>graph here</Text>
-      </View>
       <View style={styles.directionWrapper}>
         <Text style={styles.directionText}>{curDirectionValue}</Text>
+      </View>
+      <View style={{ width: '100%' }}>
+        <VictoryChart
+          padding={30}
+          domain={{ x: [0, 4] }}
+          width={windowWidth / 2 - 30}
+          height={170}
+          style={{ parent: { borderColor: 'green', borderWidth: 1 } }}
+        >
+          <VictoryBar
+            style={{ data: { fill: 'red' } }}
+            data={[
+              { x: 1, y: 2 },
+              { x: 2, y: 4 },
+              { x: 3, y: 6 },
+            ]}
+          />
+        </VictoryChart>
       </View>
     </Card>
   );
@@ -62,5 +75,11 @@ const styles = StyleSheet.create({
   directionText: {
     color: blue[800],
     fontSize: 18,
+  },
+  graph: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f5fcff',
   },
 });
