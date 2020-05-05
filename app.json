@@ -18,11 +18,11 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "musumeche.steven.salty.solutions",
+      "bundleIdentifier": "com.musumeche.salty.solutions",
       "buildNumber": "1.0.0"
     },
     "android": {
-      "package": "musumeche.steven.salty.solutions",
+      "package": "com.musumeche.salty.solutions",
       "versionCode": 1
     }
   }
