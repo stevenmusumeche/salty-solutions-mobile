@@ -2,12 +2,14 @@ import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Text as SvgText } from 'react-native-svg';
 import { blue } from '../colors';
 import Card from '../components/Card';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
 import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
+import { VictoryScatter } from 'victory-native';
 
 const WindCard: React.FC = () => {
   const headerText = 'Wind (mph)';
@@ -40,7 +42,11 @@ const WindCard: React.FC = () => {
       <View style={styles.directionWrapper}>
         <Text style={styles.directionText}>{curDirectionValue}</Text>
       </View>
-      {curDetail && <Graph data={curDetail} />}
+      {curDetail && (
+        <Graph data={curDetail}>
+          <VictoryScatter dataComponent={<ArrowPoint />} />
+        </Graph>
+      )}
     </Card>
   );
 };
@@ -64,3 +70,36 @@ const styles = StyleSheet.create({
     backgroundColor: '#f5fcff',
   },
 });
+
+interface ArrowPointProps {
+  x: number;
+  y: number;
+  datum: any;
+  index: number;
+}
+
+const ArrowPoint: React.FC<ArrowPointProps | any> = ({
+  x,
+  y,
+  datum,
+  index,
+}) => {
+  const adjustedX = x - 5;
+  const adjustedY = y + 3;
+  const transformAngle = Math.abs(datum.directionDegrees + 180);
+
+  if (index % 3 !== 0) {
+    return null;
+  }
+
+  return (
+    <SvgText
+      x={adjustedX}
+      y={adjustedY}
+      fontSize={12}
+      transform={`rotate(${transformAngle},${adjustedX},${adjustedY})`}
+    >
+      ↑
+    </SvgText>
+  );
+};

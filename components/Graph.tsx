@@ -57,7 +57,7 @@ const Graph: React.FC<Props> = ({ data, children }) => {
           <VictoryLine
             interpolation="natural"
             style={{
-              data: { stroke: '#C68E37' },
+              data: { stroke: '#C68E37', strokeWidth: 1 },
               parent: { border: '1px solid #ccc' },
             }}
           />

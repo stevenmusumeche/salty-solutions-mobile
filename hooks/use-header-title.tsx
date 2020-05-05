@@ -12,7 +12,7 @@ export const useHeaderTitle = (title: string) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: title + ' for ' + activeLocation.name,
-      headerTitleStyle: { width: width - 70 },
+      headerTitleStyle: { width: width - 70, textAlign: 'center' },
     });
   }, [activeLocation, navigation, title, width]);
 };
