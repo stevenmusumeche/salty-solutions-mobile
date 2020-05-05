@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import { View, Text } from 'react-native';
-import NowScreen from './Now';
+import NowScreen from './NowScreen';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { useHeaderTitle } from '../hooks/use-header-title';
+import { AppContext } from '../context/AppContext';
 
 const AppTabs = createBottomTabNavigator();
 const StubStack = createStackNavigator();
@@ -29,6 +30,11 @@ const StubScreen = () => {
 };
 
 const AppScreen = () => {
+  const { activeLocation } = useContext(AppContext);
+
+  // todo: loader
+  if (!activeLocation) return null;
+
   return (
     <AppTabs.Navigator
       tabBarOptions={{

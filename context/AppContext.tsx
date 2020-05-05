@@ -26,7 +26,7 @@ export const AppContext = createContext({} as AppContext);
 export const AppContextProvider: React.FC = ({ children }) => {
   const [locations, setLocations] = useState<LocationDetailFragment[]>([]);
   const [activeLocation, setActiveLocation] = useState<LocationDetailFragment>(
-    {} as LocationDetailFragment,
+    null as any,
   );
 
   const setLocation = useCallback((location: LocationDetailFragment) => {

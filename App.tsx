@@ -1,14 +1,11 @@
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
-import React from 'react';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text, Button, StatusBar } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import AppScreen from './screens/App';
-import { AppContextProvider } from './context/AppContext';
-
+import React from 'react';
+import { StatusBar } from 'react-native';
 import { createClient, Provider } from 'urql';
-import ChangeLocationScreen from './screens/ChangeLocation';
+import { AppContextProvider } from './context/AppContext';
+import AppScreen from './screens/App';
+import ChangeLocationScreen from './screens/ChangeLocationScreen';
 
 const client = createClient({
   url: 'https://o2hlpsp9ac.execute-api.us-east-1.amazonaws.com/prod/api',

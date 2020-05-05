@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 import { Button, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LocationDetailFragment } from '../components/graphql-generated';
 import { AppContext } from '../context/AppContext';
+import { LocationDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 
 interface Props {
   navigation: StackNavigationProp<any, 'ChangeLocation'>;
