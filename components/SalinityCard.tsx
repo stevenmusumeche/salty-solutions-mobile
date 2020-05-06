@@ -2,7 +2,7 @@ import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext, useEffect, useState } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';

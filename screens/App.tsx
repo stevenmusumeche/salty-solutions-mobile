@@ -1,13 +1,14 @@
 import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
+import { View, Text } from 'react-native';
 import NowScreen from './NowScreen';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { AppContext } from '../context/AppContext';
 import ForecastScreen from './ForecastScreen';
+import { AppLoading } from 'expo';
 
 const AppTabs = createBottomTabNavigator();
 const StubStack = createStackNavigator();
@@ -34,11 +35,7 @@ const AppScreen = () => {
   const { activeLocation } = useContext(AppContext);
 
   if (!activeLocation) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+    return <AppLoading />;
   }
 
   return (
@@ -110,11 +107,3 @@ const AppScreen = () => {
 };
 
 export default AppScreen;
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
