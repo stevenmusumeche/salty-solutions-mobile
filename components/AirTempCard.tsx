@@ -2,7 +2,7 @@ import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext } from 'react';
 import { Text } from 'react-native';
-import Card from '../components/Card';
+import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
 import Graph from './Graph';
@@ -21,9 +21,9 @@ const AirTempCard: React.FC = () => {
 
   if (fetching) {
     return (
-      <Card headerText={headerText}>
+      <ConditionCard headerText={headerText}>
         <LoaderBlock />
-      </Card>
+      </ConditionCard>
     );
   }
 
@@ -32,10 +32,10 @@ const AirTempCard: React.FC = () => {
   }
 
   return (
-    <Card headerText={headerText}>
+    <ConditionCard headerText={headerText}>
       <BigBlue>{curValue}</BigBlue>
       {curDetail && <Graph data={curDetail} />}
-    </Card>
+    </ConditionCard>
   );
 };
 

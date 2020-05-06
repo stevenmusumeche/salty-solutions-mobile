@@ -1,12 +1,13 @@
 import React, { useContext } from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import NowScreen from './NowScreen';
 import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { AppContext } from '../context/AppContext';
+import ForecastScreen from './ForecastScreen';
 
 const AppTabs = createBottomTabNavigator();
 const StubStack = createStackNavigator();
@@ -32,8 +33,13 @@ const StubScreen = () => {
 const AppScreen = () => {
   const { activeLocation } = useContext(AppContext);
 
-  // todo: loader
-  if (!activeLocation) return null;
+  if (!activeLocation) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <AppTabs.Navigator
@@ -66,7 +72,7 @@ const AppScreen = () => {
       />
       <AppTabs.Screen
         name="Forecast"
-        component={StubScreen}
+        component={ForecastScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -104,3 +110,11 @@ const AppScreen = () => {
 };
 
 export default AppScreen;
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});

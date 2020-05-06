@@ -2,7 +2,7 @@ import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext, useState, useEffect } from 'react';
 import { Text, StyleSheet, View } from 'react-native';
-import Card from '../components/Card';
+import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
 import Graph from './Graph';
@@ -39,9 +39,9 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites }) => {
 
   if (fetching) {
     return (
-      <Card headerText={headerText}>
+      <ConditionCard headerText={headerText}>
         <LoaderBlock />
-      </Card>
+      </ConditionCard>
     );
   }
 
@@ -50,7 +50,7 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites }) => {
   }
 
   return (
-    <Card headerText={headerText}>
+    <ConditionCard headerText={headerText}>
       <BigBlue>{curValue}</BigBlue>
       {curDetail && <Graph data={curDetail} />}
       <View style={styles.usgsWrapper}>
@@ -60,7 +60,7 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites }) => {
           selectedId={selectedUsgsSiteId}
         />
       </View>
-    </Card>
+    </ConditionCard>
   );
 };
 

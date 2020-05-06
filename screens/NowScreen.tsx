@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { UsgsParam } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import React, { useContext } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import AirTempCard from '../components/AirTempCard';
 import CardGrid from '../components/CardGrid';
 import SalinityCard from '../components/SalinityCard';
@@ -19,13 +19,7 @@ const Now: React.FC = () => {
 
   const { activeLocation } = useContext(AppContext);
 
-  if (!activeLocation) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+  // todo: pull to refresh
 
   return (
     <View style={styles.container}>
@@ -61,10 +55,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     margin: 10,
-  },
-  loadingContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

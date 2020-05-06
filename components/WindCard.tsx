@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Text as SvgText } from 'react-native-svg';
 import { blue } from '../colors';
-import Card from '../components/Card';
+import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
 import Graph from './Graph';
@@ -26,9 +26,9 @@ const WindCard: React.FC = () => {
 
   if (fetching) {
     return (
-      <Card headerText={headerText}>
+      <ConditionCard headerText={headerText}>
         <LoaderBlock />
-      </Card>
+      </ConditionCard>
     );
   }
 
@@ -37,7 +37,7 @@ const WindCard: React.FC = () => {
   }
 
   return (
-    <Card headerText={headerText}>
+    <ConditionCard headerText={headerText}>
       <BigBlue>{curValue}</BigBlue>
       <View style={styles.directionWrapper}>
         <Text style={styles.directionText}>{curDirectionValue}</Text>
@@ -47,7 +47,7 @@ const WindCard: React.FC = () => {
           <VictoryScatter dataComponent={<ArrowPoint />} />
         </Graph>
       )}
-    </Card>
+    </ConditionCard>
   );
 };
 

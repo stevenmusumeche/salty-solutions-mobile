@@ -1,24 +1,11 @@
-import {
-  createStackNavigator,
-  StackNavigationProp,
-} from '@react-navigation/stack';
-import React, { useContext, useState, useEffect } from 'react';
-import FullScreenLoader from '../components/FullScreenLoader';
-import { AppContext } from '../context/AppContext';
-import { useHeaderTitle } from '../hooks/use-header-title';
-import { useLocationSwitcher } from '../hooks/use-location-switcher';
-import { config } from './app-config';
-import { View, Text, StyleSheet } from 'react-native';
-import { useCurrentConditionsDataQuery } from '../components/graphql-generated';
-import { startOfDay, subHours } from 'date-fns';
-import { useWindData } from '../hooks/use-wind-data';
-import CardGrid from '../components/CardGrid';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 interface Props {
   headerText: string;
 }
 
-const Card: React.FC<Props> = ({ headerText, children }) => {
+const ConditionCard: React.FC<Props> = ({ headerText, children }) => {
   return (
     <View style={styles.container}>
       <View style={styles.cardWrapper}>
@@ -31,7 +18,7 @@ const Card: React.FC<Props> = ({ headerText, children }) => {
   );
 };
 
-export default Card;
+export default ConditionCard;
 
 const styles = StyleSheet.create({
   container: {
