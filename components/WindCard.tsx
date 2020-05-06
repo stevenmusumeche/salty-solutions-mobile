@@ -10,6 +10,7 @@ import BigBlue from './BigBlue';
 import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
 import { VictoryScatter } from 'victory-native';
+import { ErrorIcon } from './FullScreenError';
 
 const WindCard: React.FC = () => {
   const headerText = 'Wind (mph)';
@@ -33,7 +34,13 @@ const WindCard: React.FC = () => {
   }
 
   if (error) {
-    return <Text>Error</Text>;
+    return (
+      <ConditionCard headerText={headerText}>
+        <View style={styles.errorWrapper}>
+          <ErrorIcon />
+        </View>
+      </ConditionCard>
+    );
   }
 
   return (
@@ -68,6 +75,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#f5fcff',
+  },
+  errorWrapper: {
+    justifyContent: 'center',
+    flex: 1,
   },
 });
 

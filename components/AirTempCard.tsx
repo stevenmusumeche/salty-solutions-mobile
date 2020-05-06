@@ -1,12 +1,13 @@
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext } from 'react';
-import { Text } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
 import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
+import { ErrorIcon } from './FullScreenError';
 
 const AirTempCard: React.FC = () => {
   const headerText = 'Air Temperature (F)';
@@ -28,7 +29,13 @@ const AirTempCard: React.FC = () => {
   }
 
   if (error) {
-    return <Text>Error</Text>;
+    return (
+      <ConditionCard headerText={headerText}>
+        <View style={styles.errorWrapper}>
+          <ErrorIcon />
+        </View>
+      </ConditionCard>
+    );
   }
 
   return (
@@ -40,3 +47,10 @@ const AirTempCard: React.FC = () => {
 };
 
 export default AirTempCard;
+
+const styles = StyleSheet.create({
+  errorWrapper: {
+    justifyContent: 'center',
+    flex: 1,
+  },
+});

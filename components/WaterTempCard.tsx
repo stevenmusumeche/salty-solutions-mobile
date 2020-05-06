@@ -1,7 +1,7 @@
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext, useState, useEffect } from 'react';
-import { Text, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
@@ -9,6 +9,7 @@ import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
 import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import UsgsSiteSelect from './UsgsSiteSelect';
+import { ErrorIcon } from './FullScreenError';
 
 interface Props {
   usgsSites: UsgsSiteDetailFragment[];
@@ -46,7 +47,13 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites }) => {
   }
 
   if (error) {
-    return <Text>Error</Text>;
+    return (
+      <ConditionCard headerText={headerText}>
+        <View style={styles.errorWrapper}>
+          <ErrorIcon />
+        </View>
+      </ConditionCard>
+    );
   }
 
   return (
@@ -69,5 +76,9 @@ export default WaterTempCard;
 const styles = StyleSheet.create({
   usgsWrapper: {
     marginTop: 10,
+  },
+  errorWrapper: {
+    justifyContent: 'center',
+    flex: 1,
   },
 });

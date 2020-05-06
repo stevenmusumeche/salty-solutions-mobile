@@ -24,5 +24,5 @@ const styles = StyleSheet.create({
 export default FullScreenError;
 
 export const ErrorIcon: React.FC<any> = (props) => (
-  <FontAwesome name="warning" size={60} color="#b31b1b" {...props} />
+  <FontAwesome name="warning" size={60} color="#C68E37" {...props} />
 );
