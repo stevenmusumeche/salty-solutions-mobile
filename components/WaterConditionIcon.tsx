@@ -11,9 +11,7 @@ interface Props {
 }
 
 const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
-  let image = (
-    <Unknown width={100} height={50} transform={[{ scale: '1.3' }]} />
-  );
+  let image = <Unknown width={100} height={50} transform={[{ scale: 1.3 }]} />;
   let margin = 5;
 
   const [, second] = text.split('-');
@@ -25,7 +23,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
         <Smooth
           width={100}
           height={40}
-          transform={[{ scale: '1.2' }]}
+          transform={[{ scale: 1.2 }]}
           style={{ marginTop: 5 }}
         />
       );
@@ -38,7 +36,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
         <LightChop
           width="300"
           height="120"
-          transform={[{ scale: '.4' }]}
+          transform={[{ scale: 0.4 }]}
           style={{ marginTop: -30 }}
         />
       );
@@ -51,7 +49,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
         <Choppy
           width="150"
           height="120"
-          transform={[{ scale: '1.3' }]}
+          transform={[{ scale: 1.3 }]}
           style={{ marginTop: -15 }}
         />
       );
@@ -63,7 +61,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
         <Rough
           width="300"
           height="138"
-          transform={[{ scale: '.45' }]}
+          transform={[{ scale: 0.45 }]}
           style={{ marginTop: -45 }}
         />
       );
@@ -75,7 +73,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
           <Smooth
             width={100}
             height={40}
-            transform={[{ scale: '1.2' }]}
+            transform={[{ scale: 1.2 }]}
             style={{ marginTop: 5 }}
           />
         );
@@ -85,7 +83,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
           <LightChop
             width="300"
             height="120"
-            transform={[{ scale: '.4' }]}
+            transform={[{ scale: 0.4 }]}
             style={{ marginTop: -30 }}
           />
         );
@@ -96,7 +94,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
           <LightChop
             width="300"
             height="120"
-            transform={[{ scale: '.4' }]}
+            transform={[{ scale: 0.4 }]}
             style={{ marginTop: -30 }}
           />
         );
@@ -110,7 +108,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
           <Rough
             width="300"
             height="138"
-            transform={[{ scale: '.45' }]}
+            transform={[{ scale: 0.45 }]}
             style={{ marginTop: -45 }}
           />
         );
@@ -121,7 +119,7 @@ const WaterConditionIcon: React.FC<Props> = ({ text = '' }) => {
           <Rough
             width="300"
             height="138"
-            transform={[{ scale: '.45' }]}
+            transform={[{ scale: 0.45 }]}
             style={{ marginTop: -45 }}
           />
         );
