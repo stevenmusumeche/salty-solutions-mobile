@@ -4,7 +4,7 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import { createClient, Provider } from 'urql';
 import { AppContextProvider } from './context/AppContext';
-import AppScreen from './screens/App';
+import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';
 
 const client = createClient({

@@ -9,6 +9,7 @@ import { useHeaderTitle } from '../hooks/use-header-title';
 import { AppContext } from '../context/AppContext';
 import ForecastScreen from './ForecastScreen';
 import { AppLoading } from 'expo';
+import TideScreen from './TideScreen';
 
 const AppTabs = createBottomTabNavigator();
 const StubStack = createStackNavigator();
@@ -56,7 +57,7 @@ const AppScreen = () => {
       />
       <AppTabs.Screen
         name="Tides"
-        component={StubScreen}
+        component={TideScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
