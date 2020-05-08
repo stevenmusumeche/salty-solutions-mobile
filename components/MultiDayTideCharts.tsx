@@ -1,26 +1,4 @@
 import {
-  differenceInDays,
-  addHours,
-  startOfDay,
-  format,
-  endOfDay,
-  isAfter,
-  subDays,
-  isBefore,
-  addDays,
-  isSameDay,
-  getHours,
-} from 'date-fns';
-import React from 'react';
-import { StyleSheet, useWindowDimensions, View, Text } from 'react-native';
-import {
-  VictoryAxis,
-  VictoryChart,
-  VictoryGroup,
-  VictoryLine,
-  VictoryArea,
-} from 'victory-native';
-import {
   SunDetailFieldsFragment,
   TideDetailFieldsFragment,
   WaterHeightFieldsFragment,
@@ -29,6 +7,26 @@ import {
   buildDatasets,
   Y_PADDING,
 } from '@stevenmusumeche/salty-solutions-shared/dist/tide-helpers';
+import {
+  addDays,
+  addHours,
+  endOfDay,
+  format,
+  getHours,
+  isAfter,
+  isBefore,
+  isSameDay,
+  startOfDay,
+  subDays,
+} from 'date-fns';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import {
+  VictoryArea,
+  VictoryAxis,
+  VictoryChart,
+  VictoryLine,
+} from 'victory-native';
 import { renderBackgroundColor } from './MainTideChart';
 
 interface Props {
@@ -112,7 +110,7 @@ const MultiDayTideCharts: React.FC<Props> = ({
   return (
     <View style={styles.container}>
       <VictoryChart
-        height={150}
+        height={130}
         style={{
           parent: { touchAction: 'auto' },
         }}

@@ -1,34 +1,39 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import {
-  useCombinedForecastQuery,
-  UsgsParam,
   useTideQuery,
+  UsgsParam,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import React, { useContext, useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, View, Text } from 'react-native';
-import ForecastCard from '../components/ForecastCard';
-import FullScreenError from '../components/FullScreenError';
-import LoaderBlock from '../components/LoaderBlock';
+import { buildDatasets } from '@stevenmusumeche/salty-solutions-shared/dist/tide-helpers';
+import {
+  addDays,
+  addHours,
+  format,
+  isSameDay,
+  startOfDay,
+  subDays,
+} from 'date-fns';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import HighLowTable from '../components/HighLowTable';
+import MainTideChart from '../components/MainTideChart';
+import MultiDayTideCharts from '../components/MultiDayTideCharts';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
-import {
-  startOfDay,
-  format,
-  subDays,
-  addDays,
-  isSameDay,
-  addHours,
-} from 'date-fns';
-import { buildDatasets } from '@stevenmusumeche/salty-solutions-shared/dist/tide-helpers';
-import MainTideChart from '../components/MainTideChart';
-import MultiDayTideCharts from '../components/MultiDayTideCharts';
 
 const ForecastStack = createStackNavigator();
 
 const ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
 
 const Tide: React.FC = () => {
+  const [refreshing, setRefreshing] = React.useState(false);
+
   const [date, setDate] = useState(() => startOfDay(new Date()));
   useLocationSwitcher();
   useHeaderTitle('Tides');
@@ -51,7 +56,7 @@ const Tide: React.FC = () => {
     setSelectedUsgsSiteId(usgsSites[0].id);
   }, [activeLocation, tideStations, usgsSites]);
 
-  const [tideResult] = useTideQuery({
+  const [tideResult, refresh] = useTideQuery({
     variables: {
       locationId: activeLocation.id,
       tideStationId: selectedTideStationId!,
@@ -62,9 +67,24 @@ const Tide: React.FC = () => {
     pause: selectedTideStationId === undefined,
   });
 
-  if (tideResult.fetching) {
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    refresh({ requestPolicy: 'network-only' });
+  }, [refresh]);
+
+  useEffect(() => {
+    if (refreshing === true) {
+      setRefreshing(false);
+    }
+  }, [refreshing, tideResult.fetching]);
+
+  if (tideResult.fetching && !refreshing) {
     // todo:
-    return <Text>Fetching</Text>;
+    return (
+      <Wrapper refreshing={refreshing} onRefresh={onRefresh}>
+        <Text>Fetching</Text>
+      </Wrapper>
+    );
   } else if (
     !tideResult.data ||
     !tideResult.data.tidePreditionStation ||
@@ -113,25 +133,50 @@ const Tide: React.FC = () => {
   }
 
   return (
+    <Wrapper refreshing={refreshing} onRefresh={onRefresh}>
+      <Text>Date: {date.toISOString()}</Text>
+      <Text>Tide station: {selectedTideStationId}</Text>
+      <Text>Observation site: {selectedUsgsSiteId}</Text>
+      <MainTideChart
+        sunData={sunData}
+        tideData={curDayTides}
+        waterHeightData={curDayWaterHeight}
+        date={date}
+      />
+      <MultiDayTideCharts
+        sunData={tideResult.data.location.sun}
+        tideData={tideResult.data.tidePreditionStation.tides}
+        waterHeightData={tideResult.data.usgsSite.waterHeight}
+        activeDate={date}
+        setActiveDate={setDate}
+        numDays={3}
+      />
+      <HighLowTable
+        hiLowData={hiLowData}
+        sunData={sunData}
+        moonData={moonData}
+      />
+    </Wrapper>
+  );
+};
+
+interface WrapperProps {
+  refreshing: boolean;
+  onRefresh: () => void;
+}
+const Wrapper: React.FC<WrapperProps> = ({
+  children,
+  refreshing,
+  onRefresh,
+}) => {
+  return (
     <View style={styles.container}>
-      <ScrollView>
-        <Text>Date: {date.toISOString()}</Text>
-        <Text>Tide station: {selectedTideStationId}</Text>
-        <Text>Observation site: {selectedUsgsSiteId}</Text>
-        <MainTideChart
-          sunData={sunData}
-          tideData={curDayTides}
-          waterHeightData={curDayWaterHeight}
-          date={date}
-        />
-        <MultiDayTideCharts
-          sunData={tideResult.data.location.sun}
-          tideData={tideResult.data.tidePreditionStation.tides}
-          waterHeightData={tideResult.data.usgsSite.waterHeight}
-          activeDate={date}
-          setActiveDate={setDate}
-          numDays={3}
-        />
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {children}
       </ScrollView>
     </View>
   );
