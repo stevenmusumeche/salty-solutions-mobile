@@ -18,7 +18,12 @@ const FullScreenError: React.FC<Props> = ({
 );
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 20,
+  },
 });
 
 export default FullScreenError;

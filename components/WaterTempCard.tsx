@@ -13,9 +13,10 @@ import { ErrorIcon } from './FullScreenError';
 
 interface Props {
   usgsSites: UsgsSiteDetailFragment[];
+  requestRefresh: boolean;
 }
 
-const WaterTempCard: React.FC<Props> = ({ usgsSites }) => {
+const WaterTempCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
   const headerText = 'Water Temperature (F)';
 
   const { activeLocation } = useContext(AppContext);
@@ -27,6 +28,7 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites }) => {
     curDetail,
     fetching,
     error,
+    refresh,
   } = hooks.useWaterTemperatureData(
     activeLocation.id,
     selectedUsgsSiteId,
@@ -37,6 +39,12 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites }) => {
   useEffect(() => {
     setSelectedUsgsSiteId(usgsSites[0].id);
   }, [usgsSites]);
+
+  useEffect(() => {
+    if (requestRefresh) {
+      refresh({ requestPolicy: 'network-only' });
+    }
+  }, [requestRefresh, refresh]);
 
   if (fetching) {
     return (

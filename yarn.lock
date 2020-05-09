@@ -1507,9 +1507,9 @@
     any-observable "^0.3.0"
 
 "@stevenmusumeche/salty-solutions-shared@^1.0":
-  version "1.0.19"
-  resolved "https://npm.pkg.github.com/download/@stevenmusumeche/salty-solutions-shared/1.0.19/075df5095a9c3115c3b512cc43984e29cc3a9c2ac917c1a15748c7f32b3e3bfe#ce32636fc5101d8c4b0060d07231803e83ef26d0"
-  integrity sha512-E7SoQvTI4zzoIkDfoIBTw6PAxn+lbngHMecpn/RIQ5o6Lsv2LmeKruVK5b6wR1Nu+9D1us39VRYQ9bcJji63Tg==
+  version "1.0.20"
+  resolved "https://npm.pkg.github.com/download/@stevenmusumeche/salty-solutions-shared/1.0.20/c9edf795b180a6969da25186d84d75b0773642f4325854afcbf854c6fac79dae#5ae9d626d114d2bd02975fb1de5199b93289236c"
+  integrity sha512-FQWYp7Gj8Np9OxOXWLwtdI0q4L/EEKYHmhHO8Gljkqxhwfp2EUjlis9NZKqBSMct8+O/Vs9iMpTo3HVyWum57g==
 
 "@types/color-name@^1.1.1":
   version "1.1.1"

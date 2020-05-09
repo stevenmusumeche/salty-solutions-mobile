@@ -13,16 +13,23 @@ import { ErrorIcon } from './FullScreenError';
 
 interface Props {
   usgsSites: UsgsSiteDetailFragment[];
+  requestRefresh: boolean;
 }
 
-const SalinityCard: React.FC<Props> = ({ usgsSites }) => {
+const SalinityCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
   const headerText = 'Salinity';
 
   const { activeLocation } = useContext(AppContext);
   const [selectedUsgsSiteId, setSelectedUsgsSiteId] = useState(usgsSites[0].id);
 
   const date = startOfDay(new Date());
-  const { curValue, curDetail, fetching, error } = hooks.useSalinityData(
+  const {
+    curValue,
+    curDetail,
+    fetching,
+    error,
+    refresh,
+  } = hooks.useSalinityData(
     activeLocation.id,
     selectedUsgsSiteId,
     subHours(date, 48),
@@ -32,6 +39,12 @@ const SalinityCard: React.FC<Props> = ({ usgsSites }) => {
   useEffect(() => {
     setSelectedUsgsSiteId(usgsSites[0].id);
   }, [usgsSites]);
+
+  useEffect(() => {
+    if (requestRefresh) {
+      refresh({ requestPolicy: 'network-only' });
+    }
+  }, [requestRefresh, refresh]);
 
   if (fetching) {
     return (

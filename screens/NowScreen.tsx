@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { UsgsParam } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import React, { useContext } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useContext, useState } from 'react';
+import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
 import AirTempCard from '../components/AirTempCard';
 import CardGrid from '../components/CardGrid';
 import SalinityCard from '../components/SalinityCard';
@@ -18,24 +18,34 @@ const Now: React.FC = () => {
   useHeaderTitle('Current Conditions');
 
   const { activeLocation } = useContext(AppContext);
+  const [requestRefresh, setRequestRefresh] = useState(false);
 
-  // todo: pull to refresh
+  const makeRefreshRequest = () => {
+    setRequestRefresh(true);
+    Promise.resolve().then(() => setRequestRefresh(false));
+  };
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={false} onRefresh={makeRefreshRequest} />
+        }
+      >
         <CardGrid>
-          <WindCard />
-          <AirTempCard />
+          <WindCard requestRefresh={requestRefresh} />
+          <AirTempCard requestRefresh={requestRefresh} />
           <WaterTempCard
             usgsSites={activeLocation.usgsSites.filter((site) =>
               site.availableParams.includes(UsgsParam.WaterTemp),
             )}
+            requestRefresh={requestRefresh}
           />
           <SalinityCard
             usgsSites={activeLocation.usgsSites.filter((site) =>
               site.availableParams.includes(UsgsParam.Salinity),
             )}
+            requestRefresh={requestRefresh}
           />
         </CardGrid>
       </ScrollView>

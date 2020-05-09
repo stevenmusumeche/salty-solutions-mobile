@@ -1,7 +1,7 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { useCombinedForecastQuery } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import React, { useContext } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import React, { useContext, useCallback, useEffect } from 'react';
+import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
 import ForecastCard from '../components/ForecastCard';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
@@ -15,9 +15,9 @@ const Forecast: React.FC = () => {
   useLocationSwitcher();
   useHeaderTitle('Forecast');
 
+  const [refreshing, setRefreshing] = React.useState(false);
   const { activeLocation } = useContext(AppContext);
-
-  const [forecast] = useCombinedForecastQuery({
+  const [forecast, refresh] = useCombinedForecastQuery({
     variables: { locationId: activeLocation.id },
     pause: !activeLocation,
   });
@@ -26,28 +26,48 @@ const Forecast: React.FC = () => {
     forecast.data.location &&
     forecast.data.location.combinedForecast;
 
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    refresh({ requestPolicy: 'network-only' });
+  }, [refresh]);
+
+  useEffect(() => {
+    if (refreshing && !forecast.fetching) {
+      setRefreshing(false);
+    }
+  }, [refreshing, forecast.fetching]);
+
+  let stuffToRender;
   if (forecast.fetching) {
-    return (
-      <View style={styles.container}>
+    stuffToRender = (
+      <>
         <ForecastLoaderCard />
         <ForecastLoaderCard />
         <ForecastLoaderCard />
         <ForecastLoaderCard />
         <ForecastLoaderCard />
         <ForecastLoaderCard />
-      </View>
+      </>
     );
   } else if (forecast.error && !data) {
-    return <FullScreenError />;
+    stuffToRender = <FullScreenError />;
+  } else {
+    stuffToRender =
+      data &&
+      data.map((datum) => (
+        <ForecastCard key={datum.timePeriod} datum={datum} />
+      ));
   }
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {data &&
-          data.map((datum) => (
-            <ForecastCard key={datum.timePeriod} datum={datum} />
-          ))}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
+        {stuffToRender}
       </ScrollView>
     </View>
   );
@@ -55,6 +75,7 @@ const Forecast: React.FC = () => {
 
 const ForecastLoaderCard = () => (
   <View style={styles.loadingContainer}>
+    {/* eslint-disable react-native/no-inline-styles */}
     <View style={styles.loadingWrapper}>
       <LoaderBlock styles={{ width: '50%', height: 25, marginBottom: 15 }} />
       <View
@@ -77,6 +98,7 @@ const ForecastLoaderCard = () => (
 
       <LoaderBlock styles={{ width: '100%', height: 50 }} />
     </View>
+    {/* eslint-enable react-native/no-inline-styles */}
   </View>
 );
 
