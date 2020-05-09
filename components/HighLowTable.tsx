@@ -50,7 +50,7 @@ const HighLowTable: React.FC<Props> = ({ hiLowData, sunData, moonData }) => {
       {moonData && moonData.phase && (
         <Pill label="Moon" color="#2c5282">
           {/* todo moon icon */}
-          {moonData.phase}
+          <Text style={{ fontSize: 10 }}>{moonData.phase}</Text>
         </Pill>
       )}
     </View>

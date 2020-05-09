@@ -20,7 +20,7 @@ import {
   subDays,
 } from 'date-fns';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   VictoryArea,
   VictoryAxis,
@@ -109,6 +109,16 @@ const MultiDayTideCharts: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
+      <View style={styles.clickableOverlay}>
+        <TouchableOpacity
+          style={styles.clickable}
+          onPress={() => setActiveDate(addDays(activeDate, -1))}
+        />
+        <TouchableOpacity
+          style={styles.clickable}
+          onPress={() => setActiveDate(addDays(activeDate, 1))}
+        />
+      </View>
       <VictoryChart
         height={130}
         style={{
@@ -181,6 +191,7 @@ const MultiDayTideCharts: React.FC<Props> = ({
 
         {/* actual tide line */}
         <VictoryLine
+          name="tideData"
           data={tideData}
           scale={{ x: 'time', y: 'linear' }}
           interpolation={'natural'}
@@ -217,4 +228,17 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     marginBottom: -10,
   },
+  clickableOverlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginLeft: 25,
+    marginRight: 15,
+    zIndex: 1,
+  },
+  clickable: { width: '33%' },
 });
