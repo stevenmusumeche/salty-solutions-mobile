@@ -43,7 +43,7 @@ const Forecast: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         {data &&
           data.map((datum) => (
             <ForecastCard key={datum.timePeriod} datum={datum} />

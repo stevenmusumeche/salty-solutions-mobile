@@ -48,7 +48,7 @@ const HighLowTable: React.FC<Props> = ({ hiLowData, sunData, moonData }) => {
       )}
 
       {moonData && moonData.phase && (
-        <Pill label="Moon Phase" color="#2c5282">
+        <Pill label="Moon" color="#2c5282">
           {/* todo moon icon */}
           {moonData.phase}
         </Pill>
@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
+    marginBottom: 20,
   },
   date: {
     textTransform: 'lowercase',
