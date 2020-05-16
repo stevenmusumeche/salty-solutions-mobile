@@ -1507,9 +1507,9 @@
     any-observable "^0.3.0"
 
 "@stevenmusumeche/salty-solutions-shared@^1.0":
-  version "1.0.20"
-  resolved "https://npm.pkg.github.com/download/@stevenmusumeche/salty-solutions-shared/1.0.20/c9edf795b180a6969da25186d84d75b0773642f4325854afcbf854c6fac79dae#5ae9d626d114d2bd02975fb1de5199b93289236c"
-  integrity sha512-FQWYp7Gj8Np9OxOXWLwtdI0q4L/EEKYHmhHO8Gljkqxhwfp2EUjlis9NZKqBSMct8+O/Vs9iMpTo3HVyWum57g==
+  version "1.0.23"
+  resolved "https://npm.pkg.github.com/download/@stevenmusumeche/salty-solutions-shared/1.0.23/3ef74d7281ed26b9a9ef9c99680843ebdbe2f0758319e64d8ed5d8a599a47da0#039a3ff20eebeb4a1ba06c3d5bbdf0ae7f5da168"
+  integrity sha512-BqAUV3RGxBACUUsN1juv9NsZ+DeP34r1M7jwYtgWE0my8B2xpNic0D6iCLoHzYsuc8TCHZtLZuMUAuvqsdFqMw==
 
 "@types/color-name@^1.1.1":
   version "1.1.1"
@@ -6603,6 +6603,18 @@ react-native-gesture-handler@~1.6.0:
     hoist-non-react-statics "^2.3.1"
     invariant "^2.2.4"
     prop-types "^15.7.2"
+
+react-native-image-pan-zoom@^2.1.9:
+  version "2.1.11"
+  resolved "https://registry.yarnpkg.com/react-native-image-pan-zoom/-/react-native-image-pan-zoom-2.1.11.tgz#61bcb69219d95e76a9797d23e4a2e8e0bd654ae9"
+  integrity sha512-ZCisGUFpPchHXsjT7ZI0anlSLPgcTmjRKXqpVnPu3RDWFXfKjuL4zpY57DX4Y8YgGZCpbf9fApN7KjVYody2Mw==
+
+react-native-image-zoom-viewer@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-native-image-zoom-viewer/-/react-native-image-zoom-viewer-3.0.0.tgz#cf292fb97cbf06c880a643458be9b8871d911c49"
+  integrity sha512-/jm1EX/71NcT9ZVK18YfNDpUZiP46HJsyq1GBSG/BWgpGBFAZ3kXRnXzCCcZJGlx4NkfUJnpoonelfRStk42xw==
+  dependencies:
+    react-native-image-pan-zoom "^2.1.9"
 
 react-native-iphone-x-helper@^1.2.1:
   version "1.2.1"

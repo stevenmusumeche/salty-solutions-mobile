@@ -10,6 +10,7 @@ import { AppContext } from '../context/AppContext';
 import ForecastScreen from './ForecastScreen';
 import { AppLoading } from 'expo';
 import TideScreen from './TideScreen';
+import SatelliteScreen from './SatelliteScreen';
 
 const AppTabs = createBottomTabNavigator();
 const StubStack = createStackNavigator();
@@ -82,17 +83,8 @@ const AppScreen = () => {
         }}
       />
       <AppTabs.Screen
-        name="Maps"
-        component={StubScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="radar" size={size} color={color} />
-          ),
-        }}
-      />
-      <AppTabs.Screen
         name="Satellite"
-        component={StubScreen}
+        component={SatelliteScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
@@ -103,6 +95,15 @@ const AppScreen = () => {
           ),
         }}
       />
+      {/* <AppTabs.Screen
+        name="Salinity Map"
+        component={StubScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="radar" size={size} color={color} />
+          ),
+        }}
+      /> */}
     </AppTabs.Navigator>
   );
 };
