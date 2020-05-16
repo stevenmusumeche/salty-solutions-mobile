@@ -1,12 +1,18 @@
-import { AntDesign, MaterialIcons } from '@expo/vector-icons';
-import { createStackNavigator } from '@react-navigation/stack';
-import { useModisMapQuery } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { AntDesign } from '@expo/vector-icons';
+import { RouteProp } from '@react-navigation/native';
+import {
+  createStackNavigator,
+  StackNavigationProp,
+} from '@react-navigation/stack';
+import {
+  ModisMap,
+  useModisMapQuery,
+} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { format } from 'date-fns';
 import { differenceInDays } from 'date-fns/esm';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
   Image,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
@@ -14,26 +20,44 @@ import {
   View,
 } from 'react-native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import ImageViewer from 'react-native-image-zoom-viewer';
+import { WebView } from 'react-native-webview';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 
-const NowStack = createStackNavigator();
+type StackParams = {
+  'Satellite Image Detail': {
+    image: Pick<ModisMap, 'date' | 'large'>;
+  };
+  'Satellite Imagery': undefined;
+};
 
-const Satellite: React.FC = () => {
+const NowStack = createStackNavigator<StackParams>();
+
+type SatelliteNavigationProp = StackNavigationProp<
+  StackParams,
+  'Satellite Imagery'
+>;
+
+type Props = {
+  navigation: SatelliteNavigationProp;
+};
+
+const Satellite: React.FC<Props> = ({ navigation }) => {
   useLocationSwitcher();
   useHeaderTitle('Satellite Imagery');
   const scrollRef = useRef<any>(null);
   const { width } = useWindowDimensions();
-  const [showModal, setShowModal] = useState(false);
-
   const { activeLocation } = useContext(AppContext);
   const [modisMap] = useModisMapQuery({
     variables: { locationId: activeLocation.id },
   });
   const [curIndex, setCurIndex] = useState(0);
+
+  const handleSmallMapPress = () => {
+    navigation.push('Satellite Image Detail', { image: curImage });
+  };
 
   useEffect(() => {
     setTimeout(() => {
@@ -81,6 +105,7 @@ const Satellite: React.FC = () => {
           );
           setCurIndex(newIndex);
         }}
+        style={{ flexGrow: 0 }}
       >
         {maps.map((map, i) => {
           const smallImageDisplayWidth = width - 40;
@@ -118,7 +143,7 @@ const Satellite: React.FC = () => {
                   />
                 </View>
               </View>
-              <TouchableHighlight onPress={() => setShowModal(true)}>
+              <TouchableHighlight onPress={handleSmallMapPress}>
                 <Image
                   source={{
                     uri: map.small.url,
@@ -137,44 +162,33 @@ const Satellite: React.FC = () => {
         Swipe left and right to view different days, and press any image to open
         a zoomable view.
       </Text>
-
-      <Modal
-        visible={showModal}
-        transparent={true}
-        onRequestClose={() => setShowModal(false)}
-      >
-        <ImageViewer
-          maxScale={20}
-          // @ts-ignore
-          renderIndicator={() => null}
-          renderHeader={() => (
-            <View style={styles.modalHeader}>
-              <MaterialIcons
-                name="close"
-                size={24}
-                color="white"
-                onPress={() => setShowModal(false)}
-              />
-            </View>
-          )}
-          imageUrls={[
-            {
-              url: curImage.large.url,
-              width: curImage.large.width,
-              height: curImage.large.height,
-            },
-          ]}
-          enableSwipeDown={true}
-          onCancel={() => setShowModal(false)}
-        />
-      </Modal>
     </View>
   );
+};
+
+interface ImageScreenProps {
+  route: RouteProp<StackParams, 'Satellite Image Detail'>;
+}
+
+const ImageDetailScreen: React.FC<ImageScreenProps> = ({ route }) => {
+  return <WebView source={{ uri: route.params.image.large.url }} />;
 };
 
 const SatelliteScreen = () => (
   <NowStack.Navigator>
     <NowStack.Screen name="Satellite Imagery" component={Satellite} />
+    <NowStack.Screen
+      name="Satellite Image Detail"
+      component={ImageDetailScreen}
+      options={({ route }) => {
+        const title = format(new Date(route.params.image.date), 'EEEE, LLLL d');
+        return {
+          title,
+          headerTitleStyle: { color: 'white' },
+          headerTintColor: '#fec857',
+        };
+      }}
+    />
   </NowStack.Navigator>
 );
 
