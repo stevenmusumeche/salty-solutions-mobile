@@ -13,8 +13,8 @@ interface Props {
 const ChangeLocationScreen: React.FC<Props> = ({ navigation }) => {
   const { locations, activeLocation, actions } = useContext(AppContext);
 
-  const handleLocationSelection = (location: LocationDetailFragment) => {
-    actions.setLocation(location);
+  const handleLocationSelection = async (location: LocationDetailFragment) => {
+    await actions.setLocation(location);
     navigation.goBack();
   };
 

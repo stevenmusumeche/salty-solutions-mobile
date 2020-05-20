@@ -12,6 +12,7 @@ import {
   LocationDetailFragment,
   useLocationsQuery,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { AsyncStorage } from 'react-native';
 
 interface AppContext {
   locations: LocationDetailFragment[];
@@ -28,9 +29,11 @@ export const AppContextProvider: React.FC = ({ children }) => {
   const [activeLocation, setActiveLocation] = useState<LocationDetailFragment>(
     null as any,
   );
+  const savedLocationKey = '@SaltySolutions:locationId';
 
-  const setLocation = useCallback((location: LocationDetailFragment) => {
+  const setLocation = useCallback(async (location: LocationDetailFragment) => {
     setActiveLocation(location);
+    await AsyncStorage.setItem(savedLocationKey, location.id).catch(() => {});
   }, []);
 
   const providerValue: AppContext = useMemo(
@@ -51,8 +54,23 @@ export const AppContextProvider: React.FC = ({ children }) => {
       return;
     }
 
-    setLocations(data.locations);
-    setActiveLocation(data.locations[0]);
+    const setDefaultLocation = async () => {
+      let defaultLocation;
+      const savedLocationId = await AsyncStorage.getItem(
+        savedLocationKey,
+      ).catch();
+      const match = data.locations.find(({ id }) => id === savedLocationId);
+      if (match) {
+        defaultLocation = match;
+      } else {
+        defaultLocation = data.locations[0];
+      }
+
+      setLocations(data.locations);
+      setActiveLocation(defaultLocation);
+    };
+
+    setDefaultLocation();
   }, [data]);
 
   return (

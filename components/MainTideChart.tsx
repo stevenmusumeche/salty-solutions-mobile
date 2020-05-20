@@ -35,7 +35,6 @@ const MainTideChart: React.FC<Props> = ({
     dusk,
     daylight,
     tideData,
-    hiLowData,
     waterHeightData,
     tideBoundaries,
   } = buildDatasets(sunData, rawTideData, rawWaterHeightData);

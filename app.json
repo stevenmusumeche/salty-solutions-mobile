@@ -4,7 +4,7 @@
     "slug": "salty-solutions",
     "privacy": "unlisted",
     "platforms": ["ios", "android"],
-    "version": "1.0.8",
+    "version": "1.0.12",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,14 +19,14 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.musumeche.salty.solutions",
-      "buildNumber": "1.0.8",
+      "buildNumber": "1.0.12",
       "config": {
         "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.musumeche.salty.solutions",
-      "versionCode": 1
+      "versionCode": 2
     }
   }
 }

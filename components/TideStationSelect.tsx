@@ -1,12 +1,8 @@
-import React from 'react';
-import RNPickerSelect from 'react-native-picker-select';
-import { StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import {
-  UsgsSiteDetailFragment,
-  TideStationDetailFragment,
-} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import deepMerge from 'deepmerge';
+import { TideStationDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import RNPickerSelect from 'react-native-picker-select';
 
 const TideStationSelect: React.FC<{
   tideStations: TideStationDetailFragment[];

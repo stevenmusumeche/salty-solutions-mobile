@@ -21,10 +21,7 @@ const Forecast: React.FC = () => {
     variables: { locationId: activeLocation.id },
     pause: !activeLocation,
   });
-  const data =
-    forecast.data &&
-    forecast.data.location &&
-    forecast.data.location.combinedForecast;
+  const data = forecast?.data?.location?.combinedForecast;
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);

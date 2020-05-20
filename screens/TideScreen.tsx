@@ -101,14 +101,10 @@ const Tide: React.FC = () => {
   if (tideResult.fetching) {
     stuffToRender = <Loading />;
   } else if (
-    !tideResult.data ||
-    !tideResult.data.tidePreditionStation ||
-    !tideResult.data.tidePreditionStation.tides ||
-    !tideResult.data.location ||
-    !tideResult.data.location.sun ||
+    !tideResult?.data?.tidePreditionStation?.tides ||
+    !tideResult.data.location?.sun ||
     !tideResult.data.location.moon ||
-    !tideResult.data.usgsSite ||
-    !tideResult.data.usgsSite.waterHeight
+    !tideResult.data.usgsSite?.waterHeight
   ) {
     stuffToRender = (
       <View style={styles.errorContainer}>

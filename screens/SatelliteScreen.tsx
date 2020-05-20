@@ -12,14 +12,15 @@ import { format } from 'date-fns';
 import { differenceInDays } from 'date-fns/esm';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   useWindowDimensions,
   View,
 } from 'react-native';
-import { TouchableHighlight } from 'react-native-gesture-handler';
 import { WebView } from 'react-native-webview';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext } from '../context/AppContext';
@@ -73,15 +74,18 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
   if (modisMap.fetching || !modisMap.data || !modisMap.data.location) {
     return (
       <View style={styles.container}>
-        <LoaderBlock styles={{ ...styles.loaderBlock, height: 90 }} />
+        <LoaderBlock styles={{ ...styles.loaderBlock, height: 70 }} />
         <LoaderBlock styles={{ ...styles.loaderBlock, height: 50 }} />
         <LoaderBlock styles={{ ...styles.loaderBlock, height: 400 }} />
+        <LoaderBlock styles={{ ...styles.loaderBlock, height: 70 }} />
       </View>
     );
   }
 
   const maps = [...modisMap.data.location.modisMaps].reverse();
   const curImage = maps[curIndex];
+  const curDate = new Date(curImage.date);
+  const dayDiff = differenceInDays(new Date(), curDate);
 
   return (
     <View style={styles.container}>
@@ -89,10 +93,36 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
         MODIS is an extensive program with two satellites (Aqua and Terra) that
         pass over the United States and take a giant photo each day. Most
         importantly for fishermen,{' '}
-        <Text style={{ fontWeight: 'bold' }}>
+        <Text style={styles.bold}>
           you can use the imagery to find clean water.
         </Text>
       </Text>
+
+      <View style={styles.tileHeader}>
+        <View>
+          <AntDesign
+            name="left"
+            size={24}
+            color={curIndex > 0 ? 'black' : 'transparent'}
+          />
+        </View>
+        <View>
+          <Text style={styles.tileText}>{format(curDate, 'EEEE, LLLL d')}</Text>
+          <Text style={styles.tileDiffText}>
+            {dayDiff === 0
+              ? 'Today '
+              : `${dayDiff} day${dayDiff > 1 ? 's' : ''} ago `}
+            ({curImage.satellite.toLowerCase()} satellite)
+          </Text>
+        </View>
+        <View>
+          <AntDesign
+            name="right"
+            size={24}
+            color={curIndex < maps.length - 1 ? 'black' : 'transparent'}
+          />
+        </View>
+      </View>
 
       <ScrollView
         ref={scrollRef}
@@ -105,45 +135,16 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
           );
           setCurIndex(newIndex);
         }}
-        style={{ flexGrow: 0 }}
+        style={styles.swiperView}
       >
         {maps.map((map, i) => {
           const smallImageDisplayWidth = width - 40;
           const smallImageDisplayHeight =
             (map.small.height * smallImageDisplayWidth) / map.small.width;
-          const date = new Date(map.date);
-          const dayDiff = differenceInDays(new Date(), date);
 
           return (
             <View key={i}>
-              <View style={styles.tileHeader}>
-                <View>
-                  <AntDesign
-                    name="left"
-                    size={24}
-                    color={i > 0 ? 'black' : 'transparent'}
-                  />
-                </View>
-                <View>
-                  <Text style={styles.tileText}>
-                    {format(date, 'EEEE, LLLL d')}
-                  </Text>
-                  <Text style={styles.tileDiffText}>
-                    {dayDiff === 0
-                      ? 'Today '
-                      : `${dayDiff} day${dayDiff > 1 ? 's' : ''} ago `}
-                    ({map.satellite.toLowerCase()} satellite)
-                  </Text>
-                </View>
-                <View>
-                  <AntDesign
-                    name="right"
-                    size={24}
-                    color={i < maps.length - 1 ? 'black' : 'transparent'}
-                  />
-                </View>
-              </View>
-              <TouchableHighlight onPress={handleSmallMapPress}>
+              <TouchableWithoutFeedback onPress={handleSmallMapPress}>
                 <Image
                   source={{
                     uri: map.small.url,
@@ -151,7 +152,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
                     height: smallImageDisplayHeight,
                   }}
                 />
-              </TouchableHighlight>
+              </TouchableWithoutFeedback>
             </View>
           );
         })}
@@ -171,7 +172,17 @@ interface ImageScreenProps {
 }
 
 const ImageDetailScreen: React.FC<ImageScreenProps> = ({ route }) => {
-  return <WebView source={{ uri: route.params.image.large.url }} />;
+  return (
+    <WebView
+      source={{ uri: route.params.image.large.url }}
+      startInLoadingState={true}
+      renderLoading={() => (
+        <View style={styles.webviewLoading}>
+          <ActivityIndicator size="large" />
+        </View>
+      )}
+    />
+  );
 };
 
 const SatelliteScreen = () => (
@@ -217,15 +228,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     textTransform: 'capitalize',
   },
-  modalHeader: {
-    color: 'white',
-    position: 'absolute',
-    zIndex: 1,
-    top: 60,
-    right: 10,
-    width: '100%',
-    alignItems: 'flex-end',
-  },
   loaderBlock: {
     backgroundColor: '#cbd5e0',
     width: '100%',
@@ -233,7 +235,18 @@ const styles = StyleSheet.create({
   },
   zoomText: {
     textAlign: 'center',
-    marginVertical: 10,
+    marginTop: 10,
+    marginBottom: 20,
     color: '#606F7B',
   },
+  webviewLoading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
+  },
+  swiperView: { flexGrow: 0 },
+  bold: { fontWeight: 'bold' },
 });
