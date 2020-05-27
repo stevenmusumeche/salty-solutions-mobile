@@ -1,37 +1,15 @@
-import React, { useContext } from 'react';
+import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStackNavigator } from '@react-navigation/stack';
-import { View, Text } from 'react-native';
-import NowScreen from './NowScreen';
-import { MaterialIcons, MaterialCommunityIcons } from '@expo/vector-icons';
-import { useLocationSwitcher } from '../hooks/use-location-switcher';
-import { useHeaderTitle } from '../hooks/use-header-title';
+import { AppLoading } from 'expo';
+import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import ForecastScreen from './ForecastScreen';
-import { AppLoading } from 'expo';
-import TideScreen from './TideScreen';
+import NowScreen from './NowScreen';
+import SalinityScreen from './SalinityScreen';
 import SatelliteScreen from './SatelliteScreen';
+import TideScreen from './TideScreen';
 
 const AppTabs = createBottomTabNavigator();
-const StubStack = createStackNavigator();
-
-const Stub = () => {
-  useLocationSwitcher();
-  useHeaderTitle('Stub');
-  return (
-    <View>
-      <Text>Stub</Text>
-    </View>
-  );
-};
-
-const StubScreen = () => {
-  return (
-    <StubStack.Navigator>
-      <StubStack.Screen name="Stub" component={Stub} />
-    </StubStack.Navigator>
-  );
-};
 
 const AppScreen = () => {
   const { activeLocation } = useContext(AppContext);
@@ -95,15 +73,15 @@ const AppScreen = () => {
           ),
         }}
       />
-      {/* <AppTabs.Screen
-        name="Salinity Map"
-        component={StubScreen}
+      <AppTabs.Screen
+        name="Salinity"
+        component={SalinityScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <MaterialCommunityIcons name="radar" size={size} color={color} />
+            <MaterialCommunityIcons name="molecule" size={size} color={color} />
           ),
         }}
-      /> */}
+      />
     </AppTabs.Navigator>
   );
 };
