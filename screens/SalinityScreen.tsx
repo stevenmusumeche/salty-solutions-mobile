@@ -1,4 +1,7 @@
-import { createStackNavigator } from '@react-navigation/stack';
+import {
+  createStackNavigator,
+  StackNavigationProp,
+} from '@react-navigation/stack';
 import { useSalinityMapQuery } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import React, { useCallback, useContext, useEffect } from 'react';
 import {
@@ -8,18 +11,33 @@ import {
   Text,
   useWindowDimensions,
   View,
+  TouchableWithoutFeedback,
 } from 'react-native';
-import FitImage from 'react-native-fit-image';
 import WebView from 'react-native-webview';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
+import RemoteImage from '../components/RemoteImage';
+import { RouteProp } from '@react-navigation/native';
 
-const ForecastStack = createStackNavigator();
+type StackParams = {
+  'Zoomable Salinity Map': {
+    image: string;
+  };
+  Salinity: undefined;
+};
 
-const Salinity: React.FC = () => {
+const ForecastStack = createStackNavigator<StackParams>();
+
+type SalinityNavigationProp = StackNavigationProp<StackParams, 'Salinity'>;
+
+type Props = {
+  navigation: SalinityNavigationProp;
+};
+
+const Salinity: React.FC<Props> = ({ navigation }) => {
   useLocationSwitcher();
   useHeaderTitle('Salinity Map');
   const { width } = useWindowDimensions();
@@ -59,28 +77,17 @@ const Salinity: React.FC = () => {
     stuffToRender = <FullScreenError />;
   } else {
     const mapUrl = salinityMap.data?.location?.salinityMap ?? '';
-    const isPdf = /saveourlake/.test(mapUrl);
-
-    let mapToRender;
-    if (isPdf) {
-      // actual size is 792 × 612
-      const pdfWidth = width - 40;
-      const pdfHeight = 612 * (pdfWidth / 792);
-      mapToRender = (
-        <WebView
-          source={{ uri: mapUrl }}
-          startInLoadingState={true}
-          style={{ width: pdfWidth, height: pdfHeight, backgroundColor: 'red' }}
-        />
-      );
-    } else {
-      mapToRender = <FitImage source={{ uri: mapUrl }} />;
-    }
-
     stuffToRender = (
       <View>
-        {mapToRender}
-        {/* todo: make touching to zoom work */}
+        <TouchableWithoutFeedback
+          onPress={() =>
+            navigation.push('Zoomable Salinity Map', { image: mapUrl })
+          }
+        >
+          <View>
+            <RemoteImage imageUrl={mapUrl} desiredWidth={width - 40} />
+          </View>
+        </TouchableWithoutFeedback>
         <Text style={styles.zoomText}>Press image to open zoomable view.</Text>
       </View>
     );
@@ -100,9 +107,36 @@ const Salinity: React.FC = () => {
   );
 };
 
+interface ImageScreenProps {
+  route: RouteProp<StackParams, 'Zoomable Salinity Map'>;
+}
+
+const ImageDetailScreen: React.FC<ImageScreenProps> = ({ route }) => {
+  console.log(route.params.image);
+
+  return (
+    <WebView
+      source={{
+        html: `<body><img style="width:100%;" src="${route.params.image}" /></body>`,
+      }}
+      startInLoadingState={true}
+    />
+  );
+};
+
 const SalinityScreen = () => (
   <ForecastStack.Navigator>
     <ForecastStack.Screen name="Salinity" component={Salinity} />
+    <ForecastStack.Screen
+      name="Zoomable Salinity Map"
+      component={ImageDetailScreen}
+      options={() => {
+        return {
+          headerTitleStyle: { color: 'white' },
+          headerTintColor: '#fec857',
+        };
+      }}
+    />
   </ForecastStack.Navigator>
 );
 
@@ -141,5 +175,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
     marginBottom: 20,
     color: '#606F7B',
+  },
+  webviewLoading: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+    height: '100%',
+    width: '100%',
   },
 });

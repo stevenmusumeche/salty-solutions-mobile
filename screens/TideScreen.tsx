@@ -44,7 +44,7 @@ import { useLocationSwitcher } from '../hooks/use-location-switcher';
 
 const ForecastStack = createStackNavigator();
 
-const ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
+export const ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
 
 const Tide: React.FC = () => {
   const [refreshing, setRefreshing] = React.useState(false);

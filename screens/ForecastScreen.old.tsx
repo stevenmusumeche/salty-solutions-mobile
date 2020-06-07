@@ -1,26 +1,13 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import {
-  useCombinedForecastQuery,
-  useCombinedForecastV2Query,
-} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { useCombinedForecastQuery } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import React, { useContext, useCallback, useEffect } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  RefreshControl,
-  Text,
-} from 'react-native';
+import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
 import ForecastCard from '../components/ForecastCard';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
-import { format, startOfDay, addDays, endOfDay } from 'date-fns';
-import { ISO_FORMAT } from './TideScreen';
-
-const NUM_DAYS = 9;
 
 const ForecastStack = createStackNavigator();
 
@@ -30,23 +17,11 @@ const Forecast: React.FC = () => {
 
   const [refreshing, setRefreshing] = React.useState(false);
   const { activeLocation } = useContext(AppContext);
-
-  const [forecast, refresh] = useCombinedForecastV2Query({
-    variables: {
-      locationId: activeLocation.id,
-      startDate: format(startOfDay(new Date()), ISO_FORMAT),
-      endDate: format(addDays(endOfDay(new Date()), NUM_DAYS), ISO_FORMAT),
-    },
+  const [forecast, refresh] = useCombinedForecastQuery({
+    variables: { locationId: activeLocation.id },
+    pause: !activeLocation,
   });
-  let data =
-    forecast.data?.location?.combinedForecastV2?.slice(0, NUM_DAYS) || [];
-
-  let sunData = forecast.data?.location?.sun || [];
-  let tideData = forecast.data?.location?.tidePreditionStations[0]?.tides || [];
-  let tideStationName =
-    forecast.data?.location?.tidePreditionStations[0].name || '';
-
-  console.log(data);
+  const data = forecast?.data?.location?.combinedForecast;
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -76,19 +51,9 @@ const Forecast: React.FC = () => {
   } else {
     stuffToRender =
       data &&
-      data.map((datum) => {
-        const date = new Date(datum.date);
-        return (
-          <ForecastCard
-            key={datum.name}
-            datum={datum}
-            sunData={sunData}
-            tideData={tideData}
-            tideStationName={tideStationName}
-            date={date}
-          />
-        );
-      });
+      data.map((datum) => (
+        <ForecastCard key={datum.timePeriod} datum={datum} />
+      ));
   }
 
   return (
