@@ -1,23 +1,14 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import {
-  useCombinedForecastQuery,
-  useCombinedForecastV2Query,
-} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import React, { useContext, useCallback, useEffect } from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  View,
-  RefreshControl,
-  Text,
-} from 'react-native';
-import ForecastCard from '../components/ForecastCard';
+import { useCombinedForecastV2Query } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { addDays, endOfDay, format, startOfDay } from 'date-fns';
+import React, { useCallback, useContext, useEffect } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import ForecastCard, { styles as cardStyles } from '../components/ForecastCard';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
-import { format, startOfDay, addDays, endOfDay } from 'date-fns';
 import { ISO_FORMAT } from './TideScreen';
 
 const NUM_DAYS = 9;
@@ -64,9 +55,6 @@ const Forecast: React.FC = () => {
         <ForecastLoaderCard />
         <ForecastLoaderCard />
         <ForecastLoaderCard />
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
       </>
     );
   } else if (forecast.error && !data) {
@@ -104,31 +92,15 @@ const Forecast: React.FC = () => {
 };
 
 const ForecastLoaderCard = () => (
-  <View style={styles.loadingContainer}>
-    {/* eslint-disable react-native/no-inline-styles */}
-    <View style={styles.loadingWrapper}>
-      <LoaderBlock styles={{ width: '50%', height: 25, marginBottom: 15 }} />
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 15,
-          height: 90,
-        }}
-      >
-        <LoaderBlock
-          styles={{
-            width: '25%',
-            height: 'auto',
-          }}
-        />
-        <LoaderBlock styles={{ width: '40%', height: 'auto' }} />
-        <LoaderBlock styles={{ width: '30%', height: 'auto' }} />
+  <View style={cardStyles.container}>
+    <View style={cardStyles.cardWrapper}>
+      <View style={cardStyles.header}>
+        <LoaderBlock styles={styles.loaderBlockHeader} />
       </View>
-
-      <LoaderBlock styles={{ width: '100%', height: 50 }} />
+      <View style={[cardStyles.children, { padding: 15 }]}>
+        <LoaderBlock styles={styles.loaderBlockBody} />
+      </View>
     </View>
-    {/* eslint-enable react-native/no-inline-styles */}
   </View>
 );
 
@@ -162,5 +134,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1,
     elevation: 3,
+  },
+  loaderBlockHeader: {
+    width: '55%',
+    height: 23,
+    backgroundColor: '#cbd5e0',
+  },
+  loaderBlockBody: {
+    width: '100%',
+    height: 600,
   },
 });

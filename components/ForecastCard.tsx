@@ -53,7 +53,7 @@ const ForecastCard: React.FC<Props> = ({
 
 export default ForecastCard;
 
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
   container: {
     padding: 10,
   },
