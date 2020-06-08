@@ -3,7 +3,7 @@ import { Svg, Path, G } from 'react-native-svg';
 
 const Choppy: React.FC<any> = (props) => {
   return (
-    <Svg viewBox="0 0 100 125" x="0px" y="0px" {...props}>
+    <Svg viewBox="0 28 100 45" x="0px" y="0px" {...props}>
       <G>
         <Path
           stroke="#4299e1"

@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     color: '#718096',
     textTransform: 'uppercase',
     fontWeight: '600',
-    marginBottom: 2,
+    marginBottom: 5,
   },
   sectionContent: {
     color: '#4a5568',

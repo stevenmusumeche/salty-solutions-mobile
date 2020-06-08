@@ -4,7 +4,7 @@ import { Svg, Path, G } from 'react-native-svg';
 const Smooth: React.FC<any> = (props) => {
   // fill:none;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:10;
   return (
-    <Svg {...props}>
+    <Svg viewBox="0 0 100 50" {...props}>
       <G>
         <G id="Svg_1">
           <Path
