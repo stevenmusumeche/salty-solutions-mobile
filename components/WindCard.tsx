@@ -3,14 +3,14 @@ import { startOfDay, subHours } from 'date-fns';
 import React, { useContext, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Text as SvgText } from 'react-native-svg';
+import { VictoryScatter } from 'victory-native';
 import { blue } from '../colors';
-import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
+import ConditionCard from './ConditionCard';
+import { ErrorIcon } from './FullScreenError';
 import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
-import { VictoryScatter } from 'victory-native';
-import { ErrorIcon } from './FullScreenError';
 
 const WindCard: React.FC<{ requestRefresh: boolean }> = ({
   requestRefresh,
@@ -104,11 +104,11 @@ const ArrowPoint: React.FC<ArrowPointProps | any> = ({
   datum,
   index,
 }) => {
-  const adjustedX = x - 5;
-  const adjustedY = y + 3;
+  const adjustedX = x + 7;
+  const adjustedY = y - 5;
   const transformAngle = Math.abs(datum.directionDegrees + 180);
 
-  if (index % 3 !== 0) {
+  if (index % 4 !== 0) {
     return null;
   }
 
@@ -117,7 +117,9 @@ const ArrowPoint: React.FC<ArrowPointProps | any> = ({
       x={adjustedX}
       y={adjustedY}
       fontSize={12}
-      transform={`rotate(${transformAngle},${adjustedX},${adjustedY})`}
+      fontWeight="bold"
+      fill="black"
+      transform={`rotate(${transformAngle},${adjustedX - 2},${adjustedY - 4})`}
     >
       ↑
     </SvgText>
