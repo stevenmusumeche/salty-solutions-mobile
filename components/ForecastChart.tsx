@@ -2,7 +2,7 @@ import { prepareForecastData } from '@stevenmusumeche/salty-solutions-shared/dis
 import { CombinedForecastV2DetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { addHours, format } from 'date-fns';
 import React, { FC, useMemo } from 'react';
-import { StyleSheet, useWindowDimensions, View } from 'react-native';
+import { StyleSheet, useWindowDimensions, View, Text } from 'react-native';
 import { Path } from 'react-native-svg';
 import {
   VictoryAxis,
@@ -12,6 +12,7 @@ import {
   VictoryScatter,
   VictoryStack,
 } from 'victory-native';
+import ChartLabelSwatch from './ChartLabelSwatch';
 
 const WIND_WARNING_MIN = 20;
 
@@ -109,18 +110,14 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
           dataComponent={<RainDrop />}
         />
       </VictoryChart>
+      <ChartLegend />
     </View>
   );
 };
 
 export default ForecastChart;
 
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 10,
-  },
-});
-
+// todo
 const EmptyChart: FC<{ yTickVals: Date[] }> = ({ yTickVals }) => <View></View>;
 
 function noDecimals(x: any) {
@@ -194,3 +191,38 @@ const ArrowPoint: React.FC<ArrowPointProps | any> = ({ x, index, datum }) => {
     />
   );
 };
+
+const ChartLegend: React.FC = () => {
+  return (
+    <View style={styles.chartLabelWrapper}>
+      <View style={styles.chartLabelInnerWrapper}>
+        <ChartLabelSwatch color="#2b6cb0" />
+        <Text style={[styles.chartLabelText, { marginRight: 10 }]}>Wind</Text>
+        <ChartLabelSwatch color="#2b6cb0" opacity={0.3} />
+        <Text style={styles.chartLabelText}>Gusts</Text>
+      </View>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 10,
+  },
+  chartLabelWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  chartLabelInnerWrapper: {
+    marginRight: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chartLabelText: {
+    textTransform: 'uppercase',
+    color: '#718096',
+    fontSize: 10,
+    letterSpacing: -0.3,
+  },
+});

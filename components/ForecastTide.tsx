@@ -11,6 +11,7 @@ import {
 } from '@stevenmusumeche/salty-solutions-shared/dist/tide-helpers';
 import { VictoryChart, VictoryAxis, VictoryArea } from 'victory-native';
 import { renderBackgroundColor } from './MainTideChart';
+import ChartLabelSwatch from './ChartLabelSwatch';
 
 interface Props {
   stationName: string;
@@ -150,17 +151,6 @@ const ChartLegend: React.FC<{ stationName: string }> = ({ stationName }) => {
   );
 };
 
-const ChartLabelSwatch: React.FC<{ color: string }> = ({ color }) => (
-  <View
-    style={[
-      styles.chartLabelSwatch,
-      {
-        backgroundColor: color,
-      },
-    ]}
-  />
-);
-
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 10,
@@ -175,12 +165,6 @@ const styles = StyleSheet.create({
     marginRight: 20,
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  chartLabelSwatch: {
-    height: 12,
-    width: 12,
-    borderRadius: 2,
-    marginRight: 5,
   },
   chartLabelText: {
     textTransform: 'uppercase',
