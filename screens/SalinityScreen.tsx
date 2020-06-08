@@ -112,8 +112,6 @@ interface ImageScreenProps {
 }
 
 const ImageDetailScreen: React.FC<ImageScreenProps> = ({ route }) => {
-  console.log(route.params.image);
-
   return (
     <WebView
       source={{

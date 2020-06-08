@@ -1,6 +1,3 @@
-// const [{ data, fetching, error }] = useLocationsQuery();
-// console.log({ data, fetching, error });
-
 import React, {
   createContext,
   useState,

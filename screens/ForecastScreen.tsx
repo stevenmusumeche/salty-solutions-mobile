@@ -46,8 +46,6 @@ const Forecast: React.FC = () => {
   let tideStationName =
     forecast.data?.location?.tidePreditionStations[0].name || '';
 
-  console.log(data);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     refresh({ requestPolicy: 'network-only' });
