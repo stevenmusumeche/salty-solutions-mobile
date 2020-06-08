@@ -36,6 +36,7 @@ const ChangeLocationScreen: React.FC<Props> = ({ navigation }) => {
           <Button
             title={item.name}
             onPress={() => handleLocationSelection(item)}
+            color="#3182ce"
           />
         )}
         ItemSeparatorComponent={Separator}
