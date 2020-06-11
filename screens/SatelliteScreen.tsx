@@ -107,7 +107,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
       <View style={styles.tileHeader}>
         <View>
           <MaterialCommunityIcons
-            name="gesture-swipe-left"
+            name="gesture-swipe-right"
             size={20}
             color={curIndex > 0 ? 'rgba(0,0,0,.5)' : 'transparent'}
           />
@@ -123,7 +123,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
         </View>
         <View>
           <MaterialCommunityIcons
-            name="gesture-swipe-right"
+            name="gesture-swipe-left"
             size={20}
             color={
               curIndex < maps.length - 1 ? 'rgba(0,0,0,.5)' : 'transparent'

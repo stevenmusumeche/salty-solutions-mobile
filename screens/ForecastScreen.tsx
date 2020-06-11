@@ -129,7 +129,7 @@ const Header: React.FC<{
     <View style={styles.headerInner}>
       <View>
         <MaterialCommunityIcons
-          name="gesture-swipe-left"
+          name="gesture-swipe-right"
           size={20}
           color={curIndex > 0 ? 'rgba(255,255,255,.6)' : 'transparent'}
         />
@@ -141,7 +141,7 @@ const Header: React.FC<{
       </View>
       <View>
         <MaterialCommunityIcons
-          name="gesture-swipe-right"
+          name="gesture-swipe-left"
           size={20}
           color={
             curIndex < data.length - 1 ? 'rgba(255,255,255,.6))' : 'transparent'
