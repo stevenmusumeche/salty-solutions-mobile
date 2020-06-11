@@ -38,7 +38,6 @@ const ForecastCard: React.FC<Props> = (props) => {
     onRefresh,
   } = props;
   const date = new Date(dateString);
-  console.log('rendering card', date);
 
   const { width } = useWindowDimensions();
 

@@ -2,7 +2,7 @@ import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext, useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Text as SvgText } from 'react-native-svg';
+import { Text as SvgText, Path } from 'react-native-svg';
 import { VictoryScatter } from 'victory-native';
 import { blue } from '../colors';
 import { AppContext } from '../context/AppContext';
@@ -101,27 +101,25 @@ interface ArrowPointProps {
 const ArrowPoint: React.FC<ArrowPointProps | any> = ({
   x,
   y,
-  datum,
   index,
+  datum,
 }) => {
-  const adjustedX = x + 7;
-  const adjustedY = y - 5;
-  const transformAngle = Math.abs(datum.directionDegrees + 180);
-
-  if (index % 4 !== 0) {
+  if (index % 9 !== 1) {
     return null;
   }
 
+  const transformAngle = Math.abs(datum.directionDegrees + 180);
+  const adjustedX = x;
+  const adjustedY = y - 10;
+
   return (
-    <SvgText
+    <Path
+      scale={0.05}
       x={adjustedX}
       y={adjustedY}
-      fontSize={12}
-      fontWeight="bold"
+      d="m9.5,238.88542l90.5,-229.88542l90,231l-90,-50l-90.5,49z"
       fill="black"
-      transform={`rotate(${transformAngle},${adjustedX - 2},${adjustedY - 4})`}
-    >
-      ↑
-    </SvgText>
+      transform={`rotate(${transformAngle},110,125)`}
+    />
   );
 };

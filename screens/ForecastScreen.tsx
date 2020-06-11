@@ -61,8 +61,6 @@ const Forecast: React.FC = () => {
     }
   }, [refreshing, forecast.fetching]);
 
-  console.log({ curIndex });
-
   let stuffToRender;
   if (forecast.fetching) {
     stuffToRender = <ForecastLoaderCard />;
