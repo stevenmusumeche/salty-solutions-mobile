@@ -61,6 +61,8 @@ const Forecast: React.FC = () => {
     }
   }, [refreshing, forecast.fetching]);
 
+  console.log({ curIndex });
+
   let stuffToRender;
   if (forecast.fetching) {
     stuffToRender = <ForecastLoaderCard />;
@@ -75,7 +77,7 @@ const Forecast: React.FC = () => {
           keyExtractor={(item) => item.name}
           horizontal={true}
           pagingEnabled={true}
-          initialNumToRender={3}
+          initialNumToRender={2}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           getItemLayout={(data, index) => ({
@@ -84,7 +86,7 @@ const Forecast: React.FC = () => {
             index,
           })}
           onMomentumScrollEnd={(e) => {
-            setCurIndex(Math.floor(e.nativeEvent.contentOffset.x / width));
+            setCurIndex(Math.round(e.nativeEvent.contentOffset.x / width));
           }}
           renderItem={({ item }) => {
             return (
