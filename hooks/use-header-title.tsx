@@ -16,6 +16,9 @@ export const useHeaderTitle = (title: string) => {
         width: width - 70,
         textAlign: Platform.OS === 'ios' ? 'center' : 'left',
       },
+      headerStyle: {
+        shadowColor: 'transparent',
+      },
     });
   }, [activeLocation, navigation, title, width]);
 };

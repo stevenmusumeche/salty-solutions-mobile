@@ -57,7 +57,7 @@ const ForecastTide: React.FC<Props> = ({
     <View style={styles.container}>
       <VictoryChart
         height={180}
-        width={width - 50}
+        width={width - 10}
         style={{
           parent: {
             backgroundColor: 'white',

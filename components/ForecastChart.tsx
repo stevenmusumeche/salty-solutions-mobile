@@ -47,7 +47,7 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
         domainPadding={{ y: 10, x: 7 }}
         style={{ parent: { touchAction: 'auto' } }}
         height={180}
-        width={width - 50}
+        width={width - 10}
       >
         <VictoryAxis
           scale={{ x: 'time' }}

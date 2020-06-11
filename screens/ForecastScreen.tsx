@@ -1,8 +1,17 @@
 import { createStackNavigator } from '@react-navigation/stack';
-import { useCombinedForecastV2Query } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import {
+  useCombinedForecastV2Query,
+  CombinedForecastV2DetailFragment,
+} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { addDays, endOfDay, format, startOfDay } from 'date-fns';
 import React, { useCallback, useContext, useEffect } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  FlatList,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+  Text,
+} from 'react-native';
 import ForecastCard, { styles as cardStyles } from '../components/ForecastCard';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
@@ -10,6 +19,7 @@ import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { ISO_FORMAT } from './TideScreen';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 const NUM_DAYS = 9;
 
@@ -18,8 +28,10 @@ const ForecastStack = createStackNavigator();
 const Forecast: React.FC = () => {
   useLocationSwitcher();
   useHeaderTitle('Forecast');
+  const { width } = useWindowDimensions();
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [curIndex, setCurIndex] = React.useState(0);
   const { activeLocation } = useContext(AppContext);
 
   const [forecast, refresh] = useCombinedForecastV2Query({
@@ -40,7 +52,8 @@ const Forecast: React.FC = () => {
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     refresh({ requestPolicy: 'network-only' });
-  }, [refresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (refreshing && !forecast.fetching) {
@@ -50,55 +63,88 @@ const Forecast: React.FC = () => {
 
   let stuffToRender;
   if (forecast.fetching) {
-    stuffToRender = (
-      <>
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-      </>
-    );
+    stuffToRender = <ForecastLoaderCard />;
   } else if (forecast.error && !data) {
     stuffToRender = <FullScreenError />;
   } else {
-    stuffToRender =
-      data &&
-      data.map((datum) => {
-        const date = new Date(datum.date);
-        return (
-          <ForecastCard
-            key={datum.name}
-            datum={datum}
-            sunData={sunData}
-            tideData={tideData}
-            tideStationName={tideStationName}
-            date={date}
-          />
-        );
-      });
+    stuffToRender = (
+      <>
+        <Header curIndex={curIndex} data={data} />
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.name}
+          horizontal={true}
+          pagingEnabled={true}
+          initialNumToRender={3}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          getItemLayout={(data, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
+          onMomentumScrollEnd={(e) => {
+            setCurIndex(Math.floor(e.nativeEvent.contentOffset.x / width));
+          }}
+          renderItem={({ item }) => {
+            return (
+              <ForecastCard
+                key={item.name}
+                datum={item}
+                sunData={sunData}
+                tideData={tideData}
+                tideStationName={tideStationName}
+                dateString={item.date}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            );
+          }}
+        />
+      </>
+    );
   }
 
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {stuffToRender}
-      </ScrollView>
-    </View>
-  );
+  return stuffToRender;
 };
 
 const ForecastLoaderCard = () => (
-  <View style={cardStyles.container}>
-    <View style={cardStyles.cardWrapper}>
-      <View style={cardStyles.header}>
-        <LoaderBlock styles={styles.loaderBlockHeader} />
+  <View style={cardStyles.cardWrapper}>
+    <View style={[styles.header, { alignItems: 'center' }]}>
+      <LoaderBlock styles={styles.loaderBlockHeader} />
+    </View>
+    <View style={[cardStyles.children, { padding: 15 }]}>
+      <LoaderBlock styles={styles.loaderBlockBody} />
+    </View>
+  </View>
+);
+
+const Header: React.FC<{
+  curIndex: number;
+  data: CombinedForecastV2DetailFragment[];
+}> = ({ curIndex, data }) => (
+  <View style={styles.header}>
+    <View style={styles.headerInner}>
+      <View>
+        <MaterialCommunityIcons
+          name="gesture-swipe-left"
+          size={20}
+          color={curIndex > 0 ? 'rgba(255,255,255,.6)' : 'transparent'}
+        />
       </View>
-      <View style={[cardStyles.children, { padding: 15 }]}>
-        <LoaderBlock styles={styles.loaderBlockBody} />
+      <View>
+        <Text style={styles.headerText}>
+          {data[curIndex].name} {format(new Date(data[curIndex].date), 'M/d')}
+        </Text>
+      </View>
+      <View>
+        <MaterialCommunityIcons
+          name="gesture-swipe-right"
+          size={20}
+          color={
+            curIndex < data.length - 1 ? 'rgba(255,255,255,.6))' : 'transparent'
+          }
+        />
       </View>
     </View>
   </View>
@@ -138,10 +184,26 @@ const styles = StyleSheet.create({
   loaderBlockHeader: {
     width: '55%',
     height: 23,
-    backgroundColor: '#cbd5e0',
+    backgroundColor: '#718096',
   },
   loaderBlockBody: {
     width: '100%',
-    height: 600,
+    height: '100%',
+  },
+  header: {
+    backgroundColor: '#4a5568',
+    paddingVertical: 10,
+    width: '100%',
+  },
+  headerInner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  headerText: {
+    color: 'white',
+    fontSize: 17,
+    fontWeight: '600',
   },
 });
