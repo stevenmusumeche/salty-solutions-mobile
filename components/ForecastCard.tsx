@@ -43,7 +43,6 @@ const ForecastCard: React.FC<Props> = (props) => {
 
   return (
     <ScrollView
-      stickyHeaderIndices={[0]}
       style={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

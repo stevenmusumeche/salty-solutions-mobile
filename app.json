@@ -2,9 +2,9 @@
   "expo": {
     "name": "Salty Solutions",
     "slug": "salty-solutions",
-    "privacy": "unlisted",
+    "privacy": "public",
     "platforms": ["ios", "android"],
-    "version": "1.0.22",
+    "version": "1.0.24",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "splash": {
@@ -19,14 +19,14 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.musumeche.salty.solutions",
-      "buildNumber": "1.0.22",
+      "buildNumber": "1.0.24",
       "config": {
         "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.musumeche.salty.solutions",
-      "versionCode": 2
+      "versionCode": 1
     }
   }
 }
