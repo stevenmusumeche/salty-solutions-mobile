@@ -19,7 +19,7 @@ import {
   startOfDay,
   subDays,
 } from 'date-fns';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   VictoryArea,
@@ -28,14 +28,13 @@ import {
   VictoryLine,
 } from 'victory-native';
 import { renderBackgroundColor } from './MainTideChart';
+import { TideContext } from '../context/TideContext';
 
 interface Props {
   sunData: SunDetailFieldsFragment[];
   tideData: TideDetailFieldsFragment[];
   waterHeightData: WaterHeightFieldsFragment[];
-  activeDate: Date;
   numDays: number;
-  setActiveDate: (date: Date) => void;
 }
 
 interface Entry {
@@ -47,10 +46,9 @@ const MultiDayTideCharts: React.FC<Props> = ({
   sunData,
   tideData: rawTideData,
   waterHeightData: rawWaterHeightData,
-  activeDate,
-  setActiveDate,
   numDays,
 }) => {
+  const { date: activeDate, actions } = useContext(TideContext);
   const dayPadding = Math.floor(numDays / 2);
 
   const { tideData, waterHeightData, tideBoundaries } = buildDatasets(
@@ -112,11 +110,11 @@ const MultiDayTideCharts: React.FC<Props> = ({
       <View style={styles.clickableOverlay}>
         <TouchableOpacity
           style={styles.clickable}
-          onPress={() => setActiveDate(addDays(activeDate, -1))}
+          onPress={() => actions.setDate(addDays(activeDate, -1))}
         />
         <TouchableOpacity
           style={styles.clickable}
-          onPress={() => setActiveDate(addDays(activeDate, 1))}
+          onPress={() => actions.setDate(addDays(activeDate, 1))}
         />
       </View>
       <VictoryChart

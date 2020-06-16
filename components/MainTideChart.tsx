@@ -8,7 +8,7 @@ import {
   Y_PADDING,
 } from '@stevenmusumeche/salty-solutions-shared/dist/tide-helpers';
 import { addHours, endOfDay, format, startOfDay } from 'date-fns';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   VictoryArea,
@@ -16,20 +16,20 @@ import {
   VictoryChart,
   VictoryLine,
 } from 'victory-native';
+import { TideContext } from '../context/TideContext';
 
 interface Props {
   sunData: SunDetailFieldsFragment;
   tideData: TideDetailFieldsFragment[];
   waterHeightData: WaterHeightFieldsFragment[];
-  date: Date;
 }
 
 const MainTideChart: React.FC<Props> = ({
   sunData,
   tideData: rawTideData,
   waterHeightData: rawWaterHeightData,
-  date,
 }) => {
+  const { date } = useContext(TideContext);
   const {
     dawn,
     dusk,

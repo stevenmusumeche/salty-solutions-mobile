@@ -1,4 +1,3 @@
-import { AntDesign } from '@expo/vector-icons';
 import { RouteProp } from '@react-navigation/native';
 import {
   createStackNavigator,

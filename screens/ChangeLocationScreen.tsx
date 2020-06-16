@@ -41,6 +41,11 @@ const ChangeLocationScreen: React.FC<Props> = ({ navigation }) => {
         )}
         ItemSeparatorComponent={Separator}
       />
+      <Button
+        color="#d11a2a"
+        title="Cancel"
+        onPress={() => navigation.goBack()}
+      />
     </SafeAreaView>
   );
 };
