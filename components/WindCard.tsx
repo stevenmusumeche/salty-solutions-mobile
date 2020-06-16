@@ -103,13 +103,15 @@ const ArrowPoint: React.FC<ArrowPointProps | any> = ({
   y,
   index,
   datum,
+  data,
 }) => {
-  if (index % 9 !== 1) {
+  const numEntries = data.length;
+  if (index % Math.floor(numEntries / 8) !== 0) {
     return null;
   }
 
   const transformAngle = Math.abs(datum.directionDegrees + 180);
-  const adjustedX = x;
+  const adjustedX = x - 5;
   const adjustedY = y - 10;
 
   return (

@@ -336,7 +336,11 @@ const Wrapper: React.FC<WrapperProps> = ({
           <TideStationSelect
             tideStations={tideStations}
             selectedId={selectedTideStationId}
-            handleChange={(stationId) => setSelectedTideStationId(stationId)}
+            handleChange={(stationId) => {
+              if (stationId) {
+                setSelectedTideStationId(stationId);
+              }
+            }}
           />
         </View>
         <View style={styles.usgsSelectWrapper}>

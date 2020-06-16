@@ -7,6 +7,7 @@
     "version": "1.0.24",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "primaryColor": "#4a5568",
     "splash": {
       "image": "./assets/logo.png",
       "resizeMode": "contain",
@@ -26,7 +27,8 @@
     },
     "android": {
       "package": "com.musumeche.salty.solutions",
-      "versionCode": 1
+      "versionCode": 1,
+      "permissions": []
     }
   }
 }

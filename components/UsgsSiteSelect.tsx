@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -11,12 +11,21 @@ const UsgsSiteSelect: React.FC<{
   selectedId: string;
   style?: any;
 }> = ({ sites, handleChange, selectedId, style = {} }) => {
+  const onValueChange = useCallback(
+    (selectedItem) => {
+      if (selectedItem) {
+        handleChange(selectedItem);
+      }
+    },
+    [handleChange],
+  );
+
   return (
     <RNPickerSelect
       useNativeAndroidPickerStyle={false}
       value={selectedId}
       placeholder={{ label: 'Select Observation Site:' }}
-      onValueChange={handleChange}
+      onValueChange={onValueChange}
       items={sites.map((site) => ({
         label: site.name,
         value: site.id,

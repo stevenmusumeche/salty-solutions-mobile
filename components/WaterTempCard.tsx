@@ -46,15 +46,7 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
     }
   }, [requestRefresh, refresh]);
 
-  if (fetching) {
-    return (
-      <ConditionCard headerText={headerText}>
-        <LoaderBlock />
-      </ConditionCard>
-    );
-  }
-
-  if (error) {
+  if (!fetching && error) {
     return (
       <ConditionCard headerText={headerText}>
         <View style={styles.errorWrapper}>
@@ -66,8 +58,15 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
 
   return (
     <ConditionCard headerText={headerText}>
-      <BigBlue>{curValue}</BigBlue>
-      {curDetail && <Graph data={curDetail} />}
+      {fetching ? (
+        <LoaderBlock />
+      ) : (
+        <>
+          <BigBlue>{curValue}</BigBlue>
+          {curDetail && <Graph data={curDetail} />}
+        </>
+      )}
+
       <View style={styles.usgsWrapper}>
         <UsgsSiteSelect
           sites={usgsSites}
