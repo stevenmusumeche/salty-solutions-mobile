@@ -67,13 +67,15 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
         </>
       )}
 
-      <View style={styles.usgsWrapper}>
-        <UsgsSiteSelect
-          sites={usgsSites}
-          handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
-          selectedId={selectedUsgsSiteId}
-        />
-      </View>
+      {usgsSites.length > 1 && (
+        <View style={styles.usgsWrapper}>
+          <UsgsSiteSelect
+            sites={usgsSites}
+            handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
+            selectedId={selectedUsgsSiteId}
+          />
+        </View>
+      )}
     </ConditionCard>
   );
 };

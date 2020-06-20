@@ -1,6 +1,6 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import { UsgsParam } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
 import AirTempCard from '../components/AirTempCard';
 import CardGrid from '../components/CardGrid';
@@ -25,6 +25,30 @@ const Now: React.FC = () => {
     Promise.resolve().then(() => setRequestRefresh(false));
   };
 
+  const waterTempSites = useMemo(
+    () =>
+      activeLocation.usgsSites.filter((site) =>
+        site.availableParams.includes(UsgsParam.WaterTemp),
+      ),
+    [activeLocation.usgsSites],
+  );
+
+  const salinitySites = useMemo(
+    () =>
+      activeLocation.usgsSites.filter((site) =>
+        site.availableParams.includes(UsgsParam.Salinity),
+      ),
+    [activeLocation.usgsSites],
+  );
+
+  const windSites = useMemo(
+    () =>
+      activeLocation.usgsSites.filter((site) =>
+        site.availableParams.includes(UsgsParam.WindSpeed),
+      ),
+    [activeLocation.usgsSites],
+  );
+
   return (
     <View style={styles.container}>
       <ScrollView
@@ -33,18 +57,14 @@ const Now: React.FC = () => {
         }
       >
         <CardGrid>
-          <WindCard requestRefresh={requestRefresh} />
+          <WindCard requestRefresh={requestRefresh} usgsSites={windSites} />
           <AirTempCard requestRefresh={requestRefresh} />
           <WaterTempCard
-            usgsSites={activeLocation.usgsSites.filter((site) =>
-              site.availableParams.includes(UsgsParam.WaterTemp),
-            )}
+            usgsSites={waterTempSites}
             requestRefresh={requestRefresh}
           />
           <SalinityCard
-            usgsSites={activeLocation.usgsSites.filter((site) =>
-              site.availableParams.includes(UsgsParam.Salinity),
-            )}
+            usgsSites={salinitySites}
             requestRefresh={requestRefresh}
           />
         </CardGrid>

@@ -66,13 +66,15 @@ const SalinityCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
           {curDetail && <Graph data={curDetail} />}
         </>
       )}
-      <View style={styles.usgsWrapper}>
-        <UsgsSiteSelect
-          sites={usgsSites}
-          handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
-          selectedId={selectedUsgsSiteId}
-        />
-      </View>
+      {usgsSites.length > 1 && (
+        <View style={styles.usgsWrapper}>
+          <UsgsSiteSelect
+            sites={usgsSites}
+            handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
+            selectedId={selectedUsgsSiteId}
+          />
+        </View>
+      )}
     </ConditionCard>
   );
 };

@@ -1,6 +1,6 @@
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Text as SvgText, Path } from 'react-native-svg';
 import { VictoryScatter } from 'victory-native';
@@ -11,13 +11,21 @@ import ConditionCard from './ConditionCard';
 import { ErrorIcon } from './FullScreenError';
 import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
+import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import UsgsSiteSelect from './UsgsSiteSelect';
 
-const WindCard: React.FC<{ requestRefresh: boolean }> = ({
-  requestRefresh,
-}) => {
+interface Props {
+  usgsSites: UsgsSiteDetailFragment[];
+  requestRefresh: boolean;
+}
+
+const WindCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
   const headerText = 'Wind (mph)';
 
   const { activeLocation } = useContext(AppContext);
+  const [selectedUsgsSiteId, setSelectedUsgsSiteId] = useState(() =>
+    usgsSites.length ? usgsSites[0].id : undefined,
+  );
   const date = startOfDay(new Date());
   const {
     curValue,
@@ -26,7 +34,16 @@ const WindCard: React.FC<{ requestRefresh: boolean }> = ({
     curDetail,
     error,
     refresh,
-  } = hooks.useCurrentWindData(activeLocation.id, subHours(date, 48), date);
+  } = hooks.useCurrentWindData(
+    activeLocation.id,
+    subHours(date, 48),
+    date,
+    selectedUsgsSiteId,
+  );
+
+  useEffect(() => {
+    setSelectedUsgsSiteId(usgsSites.length ? usgsSites[0].id : undefined);
+  }, [usgsSites]);
 
   useEffect(() => {
     if (requestRefresh) {
@@ -63,6 +80,15 @@ const WindCard: React.FC<{ requestRefresh: boolean }> = ({
           <VictoryScatter dataComponent={<ArrowPoint />} />
         </Graph>
       )}
+      {selectedUsgsSiteId && usgsSites.length > 1 && (
+        <View style={styles.usgsWrapper}>
+          <UsgsSiteSelect
+            sites={usgsSites}
+            handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
+            selectedId={selectedUsgsSiteId}
+          />
+        </View>
+      )}
     </ConditionCard>
   );
 };
@@ -88,6 +114,9 @@ const styles = StyleSheet.create({
   errorWrapper: {
     justifyContent: 'center',
     flex: 1,
+  },
+  usgsWrapper: {
+    marginTop: 10,
   },
 });
 
