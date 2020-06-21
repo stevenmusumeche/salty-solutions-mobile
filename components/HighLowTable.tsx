@@ -6,6 +6,7 @@ import { format } from 'date-fns';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Pill from './Pill';
+import { blue, orange } from '../colors';
 
 interface Props {
   hiLowData: any[];
@@ -27,28 +28,28 @@ const HighLowTable: React.FC<Props> = ({ hiLowData, sunData, moonData }) => {
       ))}
 
       {sunData && sunData.dawn && (
-        <Pill label="Dawn" color="#c05621">
+        <Pill label="Dawn" color={orange[700]}>
           {formatDate(sunData.dawn)}
         </Pill>
       )}
       {sunData && sunData.sunrise && (
-        <Pill label="Sunrise" color="#c05621">
+        <Pill label="Sunrise" color={orange[700]}>
           {formatDate(sunData.sunrise)}
         </Pill>
       )}
       {sunData && sunData.sunset && (
-        <Pill label="Sunset" color="#c05621">
+        <Pill label="Sunset" color={orange[700]}>
           {formatDate(sunData.sunset)}
         </Pill>
       )}
       {sunData && sunData.dusk && (
-        <Pill label="Dusk" color="#c05621">
+        <Pill label="Dusk" color={orange[700]}>
           {formatDate(sunData.dusk)}
         </Pill>
       )}
 
       {moonData && moonData.phase && (
-        <Pill label="Moon" color="#2c5282">
+        <Pill label="Moon" color={blue[800]}>
           {/* todo moon icon */}
           <Text style={{ fontSize: 10 }}>{moonData.phase}</Text>
         </Pill>

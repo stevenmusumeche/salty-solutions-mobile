@@ -1,4 +1,3 @@
-import { AntDesign } from '@expo/vector-icons';
 import { RouteProp } from '@react-navigation/native';
 import {
   createStackNavigator,
@@ -20,12 +19,15 @@ import {
   TouchableWithoutFeedback,
   useWindowDimensions,
   View,
+  Platform,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { brandYellow, gray, white } from '../colors';
 
 type StackParams = {
   'Satellite Image Detail': {
@@ -86,6 +88,10 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
   const curImage = maps[curIndex];
   const curDate = new Date(curImage.date);
   const dayDiff = differenceInDays(new Date(), curDate);
+  const pressText = Platform.OS === 'android' ? 'Long press' : 'Press';
+  const touchableProps = {
+    [Platform.OS === 'ios' ? 'onPress' : 'onLongPress']: handleSmallMapPress,
+  };
 
   return (
     <View style={styles.container}>
@@ -100,10 +106,10 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
 
       <View style={styles.tileHeader}>
         <View>
-          <AntDesign
-            name="left"
-            size={24}
-            color={curIndex > 0 ? 'black' : 'transparent'}
+          <MaterialCommunityIcons
+            name="gesture-swipe-right"
+            size={20}
+            color={curIndex > 0 ? 'rgba(0,0,0,.5)' : 'transparent'}
           />
         </View>
         <View>
@@ -116,10 +122,12 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
           </Text>
         </View>
         <View>
-          <AntDesign
-            name="right"
-            size={24}
-            color={curIndex < maps.length - 1 ? 'black' : 'transparent'}
+          <MaterialCommunityIcons
+            name="gesture-swipe-left"
+            size={20}
+            color={
+              curIndex < maps.length - 1 ? 'rgba(0,0,0,.5)' : 'transparent'
+            }
           />
         </View>
       </View>
@@ -131,7 +139,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
         showsHorizontalScrollIndicator={false}
         onMomentumScrollEnd={(e) => {
           const newIndex = Math.floor(
-            e.nativeEvent.contentOffset.x / (width - 40),
+            e.nativeEvent.contentOffset.x / (width - 60),
           );
           setCurIndex(newIndex);
         }}
@@ -144,7 +152,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
 
           return (
             <View key={i}>
-              <TouchableWithoutFeedback onPress={handleSmallMapPress}>
+              <TouchableWithoutFeedback {...touchableProps}>
                 <Image
                   source={{
                     uri: map.small.url,
@@ -158,10 +166,12 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
         })}
       </ScrollView>
 
-      <Text style={styles.zoomText}>Press image to open zoomable view.</Text>
+      <Text style={styles.zoomText}>
+        {pressText} image to open zoomable view.
+      </Text>
       <Text>
-        Swipe left and right to view different days, and press any image to open
-        a zoomable view.
+        Swipe left and right to view different days, and{' '}
+        {pressText.toLowerCase()} any image to open a zoomable view.
       </Text>
     </View>
   );
@@ -195,8 +205,8 @@ const SatelliteScreen = () => (
         const title = format(new Date(route.params.image.date), 'EEEE, LLLL d');
         return {
           title,
-          headerTitleStyle: { color: 'white' },
-          headerTintColor: '#fec857',
+          headerTitleStyle: { color: white },
+          headerTintColor: brandYellow,
         };
       }}
     />
@@ -229,7 +239,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   loaderBlock: {
-    backgroundColor: '#cbd5e0',
+    backgroundColor: gray[400],
     width: '100%',
     marginBottom: 20,
   },
@@ -237,7 +247,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 20,
-    color: '#606F7B',
+    color: gray[700],
   },
   webviewLoading: {
     flex: 1,

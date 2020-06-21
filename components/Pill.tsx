@@ -1,10 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { blue, white } from '../colors';
 
 const Pill: React.FC<{ label: string; color?: string }> = ({
   label,
   children,
-  color = '#3182ce',
+  color = blue[600],
 }) => {
   return (
     <View
@@ -33,7 +34,7 @@ const styles = StyleSheet.create({
   label: {
     width: '50%',
     textAlign: 'center',
-    color: 'white',
+    color: white,
     paddingVertical: 5,
     textTransform: 'uppercase',
     fontSize: 11,
@@ -43,9 +44,11 @@ const styles = StyleSheet.create({
     width: '50%',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    backgroundColor: white,
   },
   valueText: {
+    width: '100%',
     fontSize: 14,
+    textAlign: 'center',
   },
 });

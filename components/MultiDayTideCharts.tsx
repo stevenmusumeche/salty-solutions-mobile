@@ -19,7 +19,7 @@ import {
   startOfDay,
   subDays,
 } from 'date-fns';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import {
   VictoryArea,
@@ -28,14 +28,14 @@ import {
   VictoryLine,
 } from 'victory-native';
 import { renderBackgroundColor } from './MainTideChart';
+import { TideContext } from '../context/TideContext';
+import { blue, gray, white } from '../colors';
 
 interface Props {
   sunData: SunDetailFieldsFragment[];
   tideData: TideDetailFieldsFragment[];
   waterHeightData: WaterHeightFieldsFragment[];
-  activeDate: Date;
   numDays: number;
-  setActiveDate: (date: Date) => void;
 }
 
 interface Entry {
@@ -47,10 +47,9 @@ const MultiDayTideCharts: React.FC<Props> = ({
   sunData,
   tideData: rawTideData,
   waterHeightData: rawWaterHeightData,
-  activeDate,
-  setActiveDate,
   numDays,
 }) => {
+  const { date: activeDate, actions } = useContext(TideContext);
   const dayPadding = Math.floor(numDays / 2);
 
   const { tideData, waterHeightData, tideBoundaries } = buildDatasets(
@@ -112,11 +111,11 @@ const MultiDayTideCharts: React.FC<Props> = ({
       <View style={styles.clickableOverlay}>
         <TouchableOpacity
           style={styles.clickable}
-          onPress={() => setActiveDate(addDays(activeDate, -1))}
+          onPress={() => actions.setDate(addDays(activeDate, -1))}
         />
         <TouchableOpacity
           style={styles.clickable}
-          onPress={() => setActiveDate(addDays(activeDate, 1))}
+          onPress={() => actions.setDate(addDays(activeDate, 1))}
         />
       </View>
       <VictoryChart
@@ -147,7 +146,7 @@ const MultiDayTideCharts: React.FC<Props> = ({
           style={{
             data: {
               strokeWidth: 0,
-              fill: '#4a5568',
+              fill: gray[700],
             },
           }}
           y0={() => (min < 0 ? min - Y_PADDING : 0)}
@@ -155,7 +154,7 @@ const MultiDayTideCharts: React.FC<Props> = ({
 
         {/* background colors for time periods like night, dusk, etc */}
         {daylights.map((daylight, i) =>
-          renderBackgroundColor(daylight, '#ebf8ff', min, max + Y_PADDING, i),
+          renderBackgroundColor(daylight, blue[100], min, max + Y_PADDING, i),
         )}
 
         {/* time x-axis */}
@@ -165,7 +164,7 @@ const MultiDayTideCharts: React.FC<Props> = ({
               // only show gridlines on midnight
               strokeWidth: (date) =>
                 getHours(new Date(date.tickValue)) === 0 ? 1 : 0,
-              stroke: 'white',
+              stroke: white,
             },
             tickLabels: { fontSize: 12, padding: 3 },
           }}
@@ -211,7 +210,7 @@ const MultiDayTideCharts: React.FC<Props> = ({
           style={{
             data: {
               strokeWidth: 1,
-              stroke: '#3182ce',
+              stroke: blue[600],
             },
           }}
         />

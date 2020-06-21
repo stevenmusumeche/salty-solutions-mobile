@@ -3,6 +3,7 @@ import { TideStationDetailFragment } from '@stevenmusumeche/salty-solutions-shar
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import RNPickerSelect from 'react-native-picker-select';
+import { blue, gray, white } from '../colors';
 
 const TideStationSelect: React.FC<{
   tideStations: TideStationDetailFragment[];
@@ -22,7 +23,7 @@ const TideStationSelect: React.FC<{
       style={pickerSelectStyles}
       Icon={() => {
         return (
-          <MaterialIcons name="arrow-drop-down" size={20} color="#2c5282" />
+          <MaterialIcons name="arrow-drop-down" size={20} color={blue[800]} />
         );
       }}
     />
@@ -34,22 +35,22 @@ export default TideStationSelect;
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: gray[300],
     borderRadius: 4,
     color: 'black',
     paddingRight: 16, // to ensure the text is never behind the icon
-    backgroundColor: 'white',
+    backgroundColor: white,
     paddingVertical: 6,
     paddingHorizontal: 10,
   },
   inputAndroid: {
     height: 30,
     borderWidth: 0.5,
-    borderColor: '#e2e8f0',
+    borderColor: gray[300],
     borderRadius: 4,
     color: 'black',
     paddingRight: 16, // to ensure the text is never behind the icon
-    backgroundColor: 'white',
+    backgroundColor: white,
     paddingVertical: 6,
     paddingHorizontal: 10,
   },

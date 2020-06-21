@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
 import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import deepMerge from 'deepmerge';
+import { blue, gray } from '../colors';
 
 const UsgsSiteSelect: React.FC<{
   sites: UsgsSiteDetailFragment[];
@@ -11,12 +12,21 @@ const UsgsSiteSelect: React.FC<{
   selectedId: string;
   style?: any;
 }> = ({ sites, handleChange, selectedId, style = {} }) => {
+  const onValueChange = useCallback(
+    (selectedItem) => {
+      if (selectedItem) {
+        handleChange(selectedItem);
+      }
+    },
+    [handleChange],
+  );
+
   return (
     <RNPickerSelect
       useNativeAndroidPickerStyle={false}
       value={selectedId}
       placeholder={{ label: 'Select Observation Site:' }}
-      onValueChange={handleChange}
+      onValueChange={onValueChange}
       items={sites.map((site) => ({
         label: site.name,
         value: site.id,
@@ -24,7 +34,7 @@ const UsgsSiteSelect: React.FC<{
       style={deepMerge(pickerSelectStyles, style)}
       Icon={() => {
         return (
-          <MaterialIcons name="arrow-drop-down" size={20} color="#2c5282" />
+          <MaterialIcons name="arrow-drop-down" size={20} color={blue[800]} />
         );
       }}
     />
@@ -39,7 +49,7 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 4,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: gray[300],
     borderRadius: 4,
     color: 'black',
     paddingRight: 16, // to ensure the text is never behind the icon
@@ -50,7 +60,7 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 2,
     paddingHorizontal: 4,
     borderWidth: 0.5,
-    borderColor: '#e2e8f0',
+    borderColor: gray[300],
     borderRadius: 4,
     color: 'black',
     paddingRight: 16, // to ensure the text is never behind the icon

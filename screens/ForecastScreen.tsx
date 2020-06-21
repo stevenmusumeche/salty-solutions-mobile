@@ -1,24 +1,26 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import {
-  useCombinedForecastQuery,
   useCombinedForecastV2Query,
+  CombinedForecastV2DetailFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import React, { useContext, useCallback, useEffect } from 'react';
+import { addDays, endOfDay, format, startOfDay } from 'date-fns';
+import React, { useCallback, useContext, useEffect } from 'react';
 import {
-  ScrollView,
+  FlatList,
   StyleSheet,
   View,
-  RefreshControl,
+  useWindowDimensions,
   Text,
 } from 'react-native';
-import ForecastCard from '../components/ForecastCard';
+import ForecastCard, { styles as cardStyles } from '../components/ForecastCard';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
-import { format, startOfDay, addDays, endOfDay } from 'date-fns';
 import { ISO_FORMAT } from './TideScreen';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { gray, black, white } from '../colors';
 
 const NUM_DAYS = 9;
 
@@ -27,8 +29,10 @@ const ForecastStack = createStackNavigator();
 const Forecast: React.FC = () => {
   useLocationSwitcher();
   useHeaderTitle('Forecast');
+  const { width } = useWindowDimensions();
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [curIndex, setCurIndex] = React.useState(0);
   const { activeLocation } = useContext(AppContext);
 
   const [forecast, refresh] = useCombinedForecastV2Query({
@@ -46,12 +50,11 @@ const Forecast: React.FC = () => {
   let tideStationName =
     forecast.data?.location?.tidePreditionStations[0].name || '';
 
-  console.log(data);
-
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     refresh({ requestPolicy: 'network-only' });
-  }, [refresh]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (refreshing && !forecast.fetching) {
@@ -61,76 +64,90 @@ const Forecast: React.FC = () => {
 
   let stuffToRender;
   if (forecast.fetching) {
-    stuffToRender = (
-      <>
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-        <ForecastLoaderCard />
-      </>
-    );
+    stuffToRender = <ForecastLoaderCard />;
   } else if (forecast.error && !data) {
     stuffToRender = <FullScreenError />;
   } else {
-    stuffToRender =
-      data &&
-      data.map((datum) => {
-        const date = new Date(datum.date);
-        return (
-          <ForecastCard
-            key={datum.name}
-            datum={datum}
-            sunData={sunData}
-            tideData={tideData}
-            tideStationName={tideStationName}
-            date={date}
-          />
-        );
-      });
+    stuffToRender = (
+      <>
+        <Header curIndex={curIndex} data={data} />
+        <FlatList
+          data={data}
+          keyExtractor={(item) => item.name}
+          horizontal={true}
+          pagingEnabled={true}
+          initialNumToRender={2}
+          showsHorizontalScrollIndicator={false}
+          showsVerticalScrollIndicator={false}
+          getItemLayout={(data, index) => ({
+            length: width,
+            offset: width * index,
+            index,
+          })}
+          onMomentumScrollEnd={(e) => {
+            setCurIndex(Math.round(e.nativeEvent.contentOffset.x / width));
+          }}
+          renderItem={({ item }) => {
+            return (
+              <ForecastCard
+                key={item.name}
+                datum={item}
+                sunData={sunData}
+                tideData={tideData}
+                tideStationName={tideStationName}
+                dateString={item.date}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+              />
+            );
+          }}
+        />
+      </>
+    );
   }
 
-  return (
-    <View style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {stuffToRender}
-      </ScrollView>
-    </View>
-  );
+  return stuffToRender;
 };
 
 const ForecastLoaderCard = () => (
-  <View style={styles.loadingContainer}>
-    {/* eslint-disable react-native/no-inline-styles */}
-    <View style={styles.loadingWrapper}>
-      <LoaderBlock styles={{ width: '50%', height: 25, marginBottom: 15 }} />
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginBottom: 15,
-          height: 90,
-        }}
-      >
-        <LoaderBlock
-          styles={{
-            width: '25%',
-            height: 'auto',
-          }}
-        />
-        <LoaderBlock styles={{ width: '40%', height: 'auto' }} />
-        <LoaderBlock styles={{ width: '30%', height: 'auto' }} />
-      </View>
-
-      <LoaderBlock styles={{ width: '100%', height: 50 }} />
+  <View style={cardStyles.cardWrapper}>
+    <View style={[styles.header, { alignItems: 'center' }]}>
+      <LoaderBlock styles={styles.loaderBlockHeader} />
     </View>
-    {/* eslint-enable react-native/no-inline-styles */}
+    <View style={[cardStyles.children, { padding: 15 }]}>
+      <LoaderBlock styles={styles.loaderBlockBody} />
+    </View>
+  </View>
+);
+
+const Header: React.FC<{
+  curIndex: number;
+  data: CombinedForecastV2DetailFragment[];
+}> = ({ curIndex, data }) => (
+  <View style={styles.header}>
+    <View style={styles.headerInner}>
+      <View>
+        <MaterialCommunityIcons
+          name="gesture-swipe-right"
+          size={20}
+          color={curIndex > 0 ? 'rgba(255,255,255,.6)' : 'transparent'}
+        />
+      </View>
+      <View>
+        <Text style={styles.headerText}>
+          {data[curIndex].name} {format(new Date(data[curIndex].date), 'M/d')}
+        </Text>
+      </View>
+      <View>
+        <MaterialCommunityIcons
+          name="gesture-swipe-left"
+          size={20}
+          color={
+            curIndex < data.length - 1 ? 'rgba(255,255,255,.6))' : 'transparent'
+          }
+        />
+      </View>
+    </View>
   </View>
 );
 
@@ -153,10 +170,10 @@ const styles = StyleSheet.create({
   },
   loadingWrapper: {
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: white,
     flexGrow: 1,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -164,5 +181,30 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1,
     elevation: 3,
+  },
+  loaderBlockHeader: {
+    width: '55%',
+    height: 23,
+    backgroundColor: gray[600],
+  },
+  loaderBlockBody: {
+    width: '100%',
+    height: '100%',
+  },
+  header: {
+    backgroundColor: gray[700],
+    paddingVertical: 10,
+    width: '100%',
+  },
+  headerInner: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginHorizontal: 10,
+  },
+  headerText: {
+    color: white,
+    fontSize: 17,
+    fontWeight: '600',
   },
 });

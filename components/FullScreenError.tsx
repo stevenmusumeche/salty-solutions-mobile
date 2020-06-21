@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { yellow } from '../colors';
 
 interface Props {
   message?: string;
@@ -29,5 +30,5 @@ const styles = StyleSheet.create({
 export default FullScreenError;
 
 export const ErrorIcon: React.FC<any> = (props) => (
-  <FontAwesome name="warning" size={60} color="#C68E37" {...props} />
+  <FontAwesome name="warning" size={60} color={yellow[600]} {...props} />
 );

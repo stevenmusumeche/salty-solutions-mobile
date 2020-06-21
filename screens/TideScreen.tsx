@@ -1,11 +1,10 @@
-import { MaterialIcons } from '@expo/vector-icons';
-import { createStackNavigator } from '@react-navigation/stack';
+import { Octicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import {
-  TideStationDetailFragment,
-  useTideQuery,
-  UsgsParam,
-  UsgsSiteDetailFragment,
-} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+  createStackNavigator,
+  StackNavigationProp,
+} from '@react-navigation/stack';
+import { useTideQuery } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { buildDatasets } from '@stevenmusumeche/salty-solutions-shared/dist/tide-helpers';
 import {
   addDays,
@@ -15,13 +14,7 @@ import {
   startOfDay,
   subDays,
 } from 'date-fns';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect } from 'react';
 import {
   RefreshControl,
   ScrollView,
@@ -30,60 +23,45 @@ import {
   View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { ErrorIcon } from '../components/FullScreenError';
 import HighLowTable from '../components/HighLowTable';
 import LoaderBlock from '../components/LoaderBlock';
 import MainTideChart from '../components/MainTideChart';
 import MultiDayTideCharts from '../components/MultiDayTideCharts';
-import TideStationSelect from '../components/TideStationSelect';
-import UsgsSiteSelect from '../components/UsgsSiteSelect';
 import { AppContext } from '../context/AppContext';
+import { TideContext, TideContextProvider } from '../context/TideContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
+import TideOptionsScreen from './TideOptionsScreen';
+import { blue, gray } from '../colors';
 
 const ForecastStack = createStackNavigator();
 
 export const ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
 
 const Tide: React.FC = () => {
+  const { date, selectedTideStation, selectedUsgsSite } = useContext(
+    TideContext,
+  );
+  const { activeLocation } = useContext(AppContext);
   const [refreshing, setRefreshing] = React.useState(false);
 
-  const [date, setDate] = useState(() => startOfDay(new Date()));
   useLocationSwitcher();
-  useHeaderTitle('Tides');
-
-  const { activeLocation } = useContext(AppContext);
-
-  const tideStations = activeLocation.tidePreditionStations;
-  const usgsSites = useMemo(
-    () =>
-      activeLocation.usgsSites.filter((site) =>
-        site.availableParams.includes(UsgsParam.GuageHeight),
-      ),
-    [activeLocation.usgsSites],
+  useHeaderTitle(
+    `${activeLocation.name} Tides (${format(new Date(date), 'EEEE M/d')})`,
+    false,
+    14,
   );
-
-  const [selectedTideStationId, setSelectedTideStationId] = useState(
-    tideStations[0].id,
-  );
-  const [selectedUsgsSiteId, setSelectedUsgsSiteId] = useState(usgsSites[0].id);
-
-  useEffect(() => {
-    // if locationId changes, set tide station back to the default
-    setSelectedTideStationId(tideStations[0].id);
-    setSelectedUsgsSiteId(usgsSites[0].id);
-  }, [activeLocation, tideStations, usgsSites]);
 
   const [tideResult, refresh] = useTideQuery({
     variables: {
       locationId: activeLocation.id,
-      tideStationId: selectedTideStationId!,
-      usgsSiteId: selectedUsgsSiteId!,
-      startDate: format(subDays(startOfDay(date), 3), ISO_FORMAT),
-      endDate: format(addDays(startOfDay(date), 4), ISO_FORMAT),
+      tideStationId: selectedTideStation?.id!,
+      usgsSiteId: selectedUsgsSite?.id!,
+      startDate: format(subDays(startOfDay(date), 1), ISO_FORMAT),
+      endDate: format(addDays(startOfDay(date), 2), ISO_FORMAT),
     },
-    pause: selectedTideStationId === undefined,
+    pause: !selectedTideStation || !selectedUsgsSite,
   });
 
   const onRefresh = useCallback(() => {
@@ -155,14 +133,11 @@ const Tide: React.FC = () => {
             sunData={sunData}
             tideData={curDayTides}
             waterHeightData={curDayWaterHeight}
-            date={date}
           />
           <MultiDayTideCharts
             sunData={tideResult.data.location.sun}
             tideData={tideResult.data.tidePreditionStation.tides}
             waterHeightData={tideResult.data.usgsSite.waterHeight}
-            activeDate={date}
-            setActiveDate={setDate}
             numDays={3}
           />
           <ChartLabel />
@@ -179,14 +154,6 @@ const Tide: React.FC = () => {
   const wrapperProps = {
     onRefresh,
     refreshing,
-    date,
-    setDate,
-    tideStations,
-    selectedTideStationId,
-    setSelectedTideStationId,
-    usgsSites,
-    selectedUsgsSiteId,
-    setSelectedUsgsSiteId,
   };
 
   return <Wrapper {...wrapperProps}>{stuffToRender}</Wrapper>;
@@ -199,7 +166,7 @@ const ChartLabel = () => (
       <Text>PREDICTED</Text>
     </View>
     <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color="#3182ce" />
+      <ChartLabelSwatch color={blue[600]} />
       <Text>OBSERVED</Text>
     </View>
   </View>
@@ -216,111 +183,42 @@ const ChartLabelSwatch: React.FC<{ color: string }> = ({ color }) => (
   />
 );
 
-const TideScreen = () => (
-  <ForecastStack.Navigator>
-    <ForecastStack.Screen name="Forecast" component={Tide} />
-  </ForecastStack.Navigator>
-);
+const Header = () => {
+  const navigation = useNavigation<StackNavigationProp<any>>();
+  const { selectedTideStation, selectedUsgsSite } = useContext(TideContext);
 
-export default TideScreen;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    margin: 20,
-    marginBottom: 0,
-  },
-  selectLabel: {
-    textTransform: 'uppercase',
-    marginBottom: 5,
-  },
-  dateWrapper: {
-    backgroundColor: 'white',
-    borderWidth: 1,
-    borderColor: '#e2e8f0',
-    borderRadius: 4,
-    color: 'black',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  dateCaret: {
-    position: 'absolute',
-    right: 5,
-    top: 5,
-  },
-  usgsSelectWrapper: {
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  loaderBlock: {
-    backgroundColor: '#cbd5e0',
-    width: '100%',
-    marginBottom: 20,
-  },
-  loaderPillWrapper: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    flexWrap: 'wrap',
-    marginBottom: 20,
-  },
-  loaderPill: {
-    backgroundColor: '#cbd5e0',
-    width: '49%',
-    height: 30,
-    marginBottom: 5,
-  },
-  errorContainer: {
-    flexGrow: 1,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  chartLabelWrapper: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginBottom: 20,
-  },
-  chartLabelInnerWrapper: {
-    marginRight: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  chartLabelSwatch: {
-    height: 18,
-    width: 18,
-    borderRadius: 3,
-    marginRight: 5,
-  },
-});
+  return (
+    <TouchableOpacity onPress={() => navigation.push('TideOptionsScreen')}>
+      <View style={styles.headerContainer}>
+        <View style={styles.headerLeft}>
+          <Text numberOfLines={1}>
+            <Text style={styles.headerLabel}>Station</Text>
+            {': '}
+            {selectedTideStation?.name}
+          </Text>
+          <Text numberOfLines={1}>
+            <Text style={styles.headerLabel}>Observed</Text>
+            {': '}
+            {selectedUsgsSite?.name}
+          </Text>
+        </View>
+        <View>
+          <Octicons name="settings" size={32} color={gray[700]} />
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 interface WrapperProps {
   refreshing: boolean;
   onRefresh: () => void;
-  date: Date;
-  setDate: (date: Date) => void;
-  tideStations: TideStationDetailFragment[];
-  selectedTideStationId: string;
-  setSelectedTideStationId: (id: string) => void;
-  usgsSites: UsgsSiteDetailFragment[];
-  selectedUsgsSiteId: string;
-  setSelectedUsgsSiteId: (id: string) => void;
 }
 
 const Wrapper: React.FC<WrapperProps> = ({
   children,
   refreshing,
   onRefresh,
-  date,
-  setDate,
-  tideStations,
-  selectedTideStationId,
-  setSelectedTideStationId,
-  usgsSites,
-  selectedUsgsSiteId,
-  setSelectedUsgsSiteId,
 }) => {
   return (
     <View style={styles.container}>
@@ -330,42 +228,7 @@ const Wrapper: React.FC<WrapperProps> = ({
         }
         showsVerticalScrollIndicator={false}
       >
-        <DateSelect date={date} setDate={setDate} />
-        <View>
-          <Text style={styles.selectLabel}>Tide Station:</Text>
-          <TideStationSelect
-            tideStations={tideStations}
-            selectedId={selectedTideStationId}
-            handleChange={(stationId) => setSelectedTideStationId(stationId)}
-          />
-        </View>
-        <View style={styles.usgsSelectWrapper}>
-          <Text style={styles.selectLabel}>Observation Site:</Text>
-          <UsgsSiteSelect
-            sites={usgsSites}
-            selectedId={selectedUsgsSiteId}
-            handleChange={(siteId) => setSelectedUsgsSiteId(siteId)}
-            style={{
-              inputIOS: {
-                fontSize: undefined,
-                backgroundColor: 'white',
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-              },
-              inputAndroid: {
-                height: 30,
-                fontSize: undefined,
-                backgroundColor: 'white',
-                paddingVertical: 6,
-                paddingHorizontal: 10,
-              },
-              iconContainer: {
-                top: 5,
-                right: 5,
-              },
-            }}
-          />
-        </View>
+        <Header />
         {children}
       </ScrollView>
     </View>
@@ -398,43 +261,90 @@ const Loading: React.FC = () => (
   </>
 );
 
-const DateSelect: React.FC<{ date: Date; setDate: (date: Date) => void }> = ({
-  setDate,
-  date,
-}) => {
-  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
+const RootStack = createStackNavigator();
 
-  const showDatePicker = () => {
-    setDatePickerVisibility(true);
-  };
-
-  const hideDatePicker = () => {
-    setDatePickerVisibility(false);
-  };
-
-  const handleConfirm = (date: Date) => {
-    hideDatePicker();
-    setDate(date);
-  };
-
-  return (
-    <View>
-      <Text style={styles.selectLabel}>Date:</Text>
-      <TouchableOpacity onPress={showDatePicker}>
-        <View style={styles.dateWrapper}>
-          <Text>{format(date, 'EEEE, MMMM d, yyyy')}</Text>
-          <View style={styles.dateCaret}>
-            <MaterialIcons name="arrow-drop-down" size={20} color="#2c5282" />
-          </View>
-        </View>
-      </TouchableOpacity>
-      <DateTimePickerModal
-        isVisible={isDatePickerVisible}
-        mode="date"
-        onConfirm={handleConfirm}
-        date={date}
-        onCancel={hideDatePicker}
+const TideStackScreen = () => (
+  <TideContextProvider>
+    <RootStack.Navigator
+      mode="modal"
+      screenOptions={{
+        headerShown: false,
+      }}
+    >
+      <RootStack.Screen name="TideScreen" component={TideScreen} />
+      <RootStack.Screen
+        name="TideOptionsScreen"
+        component={TideOptionsScreen}
       />
-    </View>
-  );
-};
+    </RootStack.Navigator>
+  </TideContextProvider>
+);
+
+const TideScreen = () => (
+  <ForecastStack.Navigator>
+    <ForecastStack.Screen name="Tide" component={Tide} />
+  </ForecastStack.Navigator>
+);
+
+export default TideStackScreen;
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    margin: 20,
+    marginBottom: 0,
+  },
+  loaderBlock: {
+    backgroundColor: gray[400],
+    width: '100%',
+    marginBottom: 20,
+  },
+  loaderPillWrapper: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    marginBottom: 20,
+  },
+  loaderPill: {
+    backgroundColor: gray[400],
+    width: '49%',
+    height: 30,
+    marginBottom: 5,
+  },
+  errorContainer: {
+    flexGrow: 1,
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  chartLabelWrapper: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  chartLabelInnerWrapper: {
+    marginRight: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  chartLabelSwatch: {
+    height: 18,
+    width: 18,
+    borderRadius: 3,
+    marginRight: 5,
+  },
+  headerContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 15,
+  },
+  headerLeft: {
+    marginRight: 10,
+    flexBasis: 0,
+    flexGrow: 1,
+  },
+  headerLabel: {
+    textDecorationLine: 'underline',
+  },
+});

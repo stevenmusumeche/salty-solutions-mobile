@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Button } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
 import {
   Maybe,
   ForecastDescription,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { gray, blue } from '../colors';
 
 interface Props {
   day?: Maybe<ForecastDescription>;
@@ -11,31 +12,11 @@ interface Props {
 }
 
 const ForecastText: React.FC<Props> = ({ day, night }) => {
-  const [collapsed, setCollapsed] = useState(true);
   const hasAny =
     !!day?.marine || !!night?.marine || !!day?.detailed || !!night?.detailed;
-  const previewText =
-    day?.marine || night?.marine || day?.detailed || night?.detailed;
 
   if (!hasAny) {
     return null;
-  }
-
-  if (collapsed) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.section}>
-          <Text numberOfLines={3} style={styles.sectionContent}>
-            {previewText}
-          </Text>
-        </View>
-        <Button
-          onPress={() => setCollapsed(false)}
-          title="Read More"
-          color="#3182ce"
-        />
-      </View>
-    );
   }
 
   return (
@@ -62,13 +43,6 @@ const ForecastText: React.FC<Props> = ({ day, night }) => {
           <Text style={styles.sectionContent}>{night.detailed}</Text>
         </View>
       )}
-      <View>
-        <Button
-          onPress={() => setCollapsed(true)}
-          title="Show Less"
-          color="#3182ce"
-        />
-      </View>
     </View>
   );
 };
@@ -84,15 +58,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   sectionHeader: {
-    color: '#718096',
+    color: gray[600],
     textTransform: 'uppercase',
     fontWeight: '600',
     marginBottom: 5,
   },
   sectionContent: {
-    color: '#4a5568',
+    color: gray[700],
   },
   toggleButton: {
-    color: '#3182ce',
+    color: blue[600],
   },
 });

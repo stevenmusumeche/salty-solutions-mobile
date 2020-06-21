@@ -7,6 +7,7 @@ import {
   VictoryGroup,
   VictoryLine,
 } from 'victory-native';
+import { yellow, gray } from '../colors';
 
 interface Props {
   data: {
@@ -37,7 +38,7 @@ const Graph: React.FC<Props> = ({ data, children }) => {
           }}
           style={{
             tickLabels: { fontSize: 11, padding: 1 },
-            grid: { stroke: '#a0aec0', strokeDasharray: '6, 6' },
+            grid: { stroke: gray[500], strokeDasharray: '6, 6' },
           }}
         />
         <VictoryAxis
@@ -57,8 +58,7 @@ const Graph: React.FC<Props> = ({ data, children }) => {
           <VictoryLine
             interpolation="natural"
             style={{
-              data: { stroke: '#C68E37', strokeWidth: 1 },
-              parent: { border: '1px solid #ccc' },
+              data: { stroke: yellow[700], strokeWidth: 1 },
             }}
           />
           {children}

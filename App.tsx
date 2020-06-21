@@ -6,6 +6,7 @@ import { createClient, Provider } from 'urql';
 import { AppContextProvider } from './context/AppContext';
 import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';
+import { gray, white } from './colors';
 
 const client = createClient({
   url: 'https://o2hlpsp9ac.execute-api.us-east-1.amazonaws.com/prod/api',
@@ -17,9 +18,9 @@ const MyTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    background: '#e2e8f0',
-    card: '#2d3748',
-    text: 'white',
+    background: gray[300],
+    card: gray[800],
+    text: white,
   },
 };
 

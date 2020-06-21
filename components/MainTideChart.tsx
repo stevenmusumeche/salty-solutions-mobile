@@ -8,7 +8,7 @@ import {
   Y_PADDING,
 } from '@stevenmusumeche/salty-solutions-shared/dist/tide-helpers';
 import { addHours, endOfDay, format, startOfDay } from 'date-fns';
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
 import {
   VictoryArea,
@@ -16,20 +16,21 @@ import {
   VictoryChart,
   VictoryLine,
 } from 'victory-native';
+import { TideContext } from '../context/TideContext';
+import { gray, blue } from '../colors';
 
 interface Props {
   sunData: SunDetailFieldsFragment;
   tideData: TideDetailFieldsFragment[];
   waterHeightData: WaterHeightFieldsFragment[];
-  date: Date;
 }
 
 const MainTideChart: React.FC<Props> = ({
   sunData,
   tideData: rawTideData,
   waterHeightData: rawWaterHeightData,
-  date,
 }) => {
+  const { date } = useContext(TideContext);
   const {
     dawn,
     dusk,
@@ -72,23 +73,23 @@ const MainTideChart: React.FC<Props> = ({
           style={{
             data: {
               strokeWidth: 0,
-              fill: '#4a5568',
+              fill: gray[700],
             },
           }}
           y0={() => (min < 0 ? min - Y_PADDING : 0)}
         />
 
         {/* background colors for time periods like night, dusk, etc */}
-        {renderBackgroundColor(daylight, '#ebf8ff', min)}
-        {renderBackgroundColor(dawn, '#a0aec0', min)}
-        {renderBackgroundColor(dusk, '#a0aec0', min)}
+        {renderBackgroundColor(daylight, blue[100], min)}
+        {renderBackgroundColor(dawn, gray[500], min)}
+        {renderBackgroundColor(dusk, gray[500], min)}
 
         {/* time x-axis */}
         <VictoryAxis
           style={{
             grid: {
               strokeWidth: 1,
-              stroke: '#718096',
+              stroke: gray[600],
               strokeDasharray: '2 4',
             },
             tickLabels: { fontSize: 12, padding: 3 },
@@ -103,7 +104,7 @@ const MainTideChart: React.FC<Props> = ({
           dependentAxis
           style={{
             grid: {
-              stroke: '#718096',
+              stroke: gray[600],
               strokeWidth: (y) => (y === 0 && min < 0 ? 2 : 1),
               strokeDasharray: (y) => (y === 0 && min < 0 ? '12 6' : '2 10'),
             },
@@ -134,7 +135,7 @@ const MainTideChart: React.FC<Props> = ({
           style={{
             data: {
               strokeWidth: 2,
-              stroke: '#3182ce',
+              stroke: blue[600],
             },
           }}
         />
