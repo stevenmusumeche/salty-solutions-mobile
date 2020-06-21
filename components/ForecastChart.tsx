@@ -13,6 +13,7 @@ import {
   VictoryStack,
 } from 'victory-native';
 import ChartLabelSwatch from './ChartLabelSwatch';
+import { blue, gray, red } from '../colors';
 
 const WIND_WARNING_MIN = 20;
 
@@ -80,7 +81,7 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
                 data: {
                   width: 10,
                   fill: ({ datum }) => {
-                    return datum.y >= WIND_WARNING_MIN ? '#c53030' : '#2b6cb0';
+                    return datum.y >= WIND_WARNING_MIN ? red[700] : blue[700];
                   },
                 },
               }}
@@ -95,7 +96,7 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
               data: {
                 width: 10,
                 fill: ({ datum }) => {
-                  return datum.y >= WIND_WARNING_MIN ? '#c53030' : '#2b6cb0';
+                  return datum.y >= WIND_WARNING_MIN ? red[700] : blue[700];
                 },
                 fillOpacity: ({ datum }) => {
                   return datum.y >= WIND_WARNING_MIN ? 0.2 : 0.3;
@@ -132,13 +133,15 @@ interface ArrowPointProps {
 }
 
 const RainDrop: React.FC<any> = ({ x, y, datum, index, data, ...props }) => {
-  if (datum.rain === 0) return null;
+  if (datum.rain === 0) {
+    return null;
+  }
 
   const renderDrop = (xOffset: number, yOffset: number, scale = 0.05) => (
     <Path
       scale={scale}
       d="m80.5,7.11458c-3.14918,-0.14918 -152,228 -1,228c151,0 4.14918,-227.85081 1,-228z"
-      fill="#4299e1"
+      fill={blue[500]}
       x={x - xOffset}
       y={y - yOffset}
     />
@@ -186,7 +189,7 @@ const ArrowPoint: React.FC<ArrowPointProps | any> = ({ x, index, datum }) => {
       x={adjustedX}
       y={adjustedY}
       d="m9.5,238.88542l90.5,-229.88542l90,231l-90,-50l-90.5,49z"
-      fill="#4a5568"
+      fill={blue[700]}
       transform={`rotate(${transformAngle},110,125)`}
     />
   );
@@ -196,9 +199,9 @@ const ChartLegend: React.FC = () => {
   return (
     <View style={styles.chartLabelWrapper}>
       <View style={styles.chartLabelInnerWrapper}>
-        <ChartLabelSwatch color="#2b6cb0" />
+        <ChartLabelSwatch color={blue[700]} />
         <Text style={[styles.chartLabelText, { marginRight: 10 }]}>Wind</Text>
-        <ChartLabelSwatch color="#2b6cb0" opacity={0.3} />
+        <ChartLabelSwatch color={blue[700]} opacity={0.3} />
         <Text style={styles.chartLabelText}>Gusts</Text>
       </View>
     </View>
@@ -221,7 +224,7 @@ const styles = StyleSheet.create({
   },
   chartLabelText: {
     textTransform: 'uppercase',
-    color: '#718096',
+    color: gray[600],
     fontSize: 10,
     letterSpacing: -0.3,
   },

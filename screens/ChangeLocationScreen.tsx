@@ -5,6 +5,7 @@ import { FlatList } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppContext } from '../context/AppContext';
 import { LocationDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { blue, red } from '../colors';
 
 interface Props {
   navigation: StackNavigationProp<any, 'ChangeLocation'>;
@@ -36,13 +37,13 @@ const ChangeLocationScreen: React.FC<Props> = ({ navigation }) => {
           <Button
             title={item.name}
             onPress={() => handleLocationSelection(item)}
-            color="#3182ce"
+            color={blue[600]}
           />
         )}
         ItemSeparatorComponent={Separator}
       />
       <Button
-        color="#d11a2a"
+        color={red[700]}
         title="Cancel"
         onPress={() => navigation.goBack()}
       />

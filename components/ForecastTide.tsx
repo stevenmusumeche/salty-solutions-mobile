@@ -12,6 +12,7 @@ import {
 import { VictoryChart, VictoryAxis, VictoryArea } from 'victory-native';
 import { renderBackgroundColor } from './MainTideChart';
 import ChartLabelSwatch from './ChartLabelSwatch';
+import { gray, blue, white } from '../colors';
 
 interface Props {
   stationName: string;
@@ -60,7 +61,7 @@ const ForecastTide: React.FC<Props> = ({
         width={width - 10}
         style={{
           parent: {
-            backgroundColor: 'white',
+            backgroundColor: white,
             touchAction: 'auto',
           },
         }}
@@ -84,14 +85,14 @@ const ForecastTide: React.FC<Props> = ({
           style={{
             data: {
               strokeWidth: 0,
-              fill: '#4a5568',
+              fill: gray[700],
             },
           }}
           y0={() => (min < 0 ? min - Y_PADDING : 0)}
         />
 
         {/* background colors for time periods like night, dusk, etc */}
-        {renderBackgroundColor(daylight, '#f7fafc', min)}
+        {renderBackgroundColor(daylight, gray[100], min)}
 
         {/* time x-axis */}
         <VictoryAxis
@@ -126,9 +127,9 @@ const ForecastTide: React.FC<Props> = ({
           interpolation={'natural'}
           style={{
             data: {
-              stroke: '#2c5282',
+              stroke: blue[800],
               strokeWidth: 1,
-              fill: '#5f8dc1',
+              fill: blue[650],
             },
           }}
         />
@@ -144,7 +145,7 @@ const ChartLegend: React.FC<{ stationName: string }> = ({ stationName }) => {
   return (
     <View style={styles.chartLabelWrapper}>
       <View style={styles.chartLabelInnerWrapper}>
-        <ChartLabelSwatch color="#5f8dc1" />
+        <ChartLabelSwatch color={blue[650]} />
         <Text style={styles.chartLabelText}>Tides for {stationName}</Text>
       </View>
     </View>
@@ -168,7 +169,7 @@ const styles = StyleSheet.create({
   },
   chartLabelText: {
     textTransform: 'uppercase',
-    color: '#718096',
+    color: gray[600],
     fontSize: 10,
     letterSpacing: -0.3,
   },

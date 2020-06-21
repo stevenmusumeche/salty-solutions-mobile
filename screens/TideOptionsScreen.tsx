@@ -9,6 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import TideStationSelect from '../components/TideStationSelect';
 import UsgsSiteSelect from '../components/UsgsSiteSelect';
 import { TideContext } from '../context/TideContext';
+import { blue, gray, white } from '../colors';
 
 interface Props {
   navigation: StackNavigationProp<any>;
@@ -49,14 +50,14 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
           style={{
             inputIOS: {
               fontSize: undefined,
-              backgroundColor: 'white',
+              backgroundColor: white,
               paddingVertical: 6,
               paddingHorizontal: 10,
             },
             inputAndroid: {
               height: 30,
               fontSize: undefined,
-              backgroundColor: 'white',
+              backgroundColor: white,
               paddingVertical: 6,
               paddingHorizontal: 10,
             },
@@ -68,7 +69,7 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
         />
       </View>
       <Button
-        color="#3182ce"
+        color={blue[600]}
         title="Save Tide Settings"
         onPress={() => navigation.goBack()}
       />
@@ -104,7 +105,7 @@ const DateSelect: React.FC<{ date: Date; setDate: (date: Date) => void }> = ({
         <View style={styles.dateWrapper}>
           <Text>{format(date, 'EEEE, MMMM d, yyyy')}</Text>
           <View style={styles.dateCaret}>
-            <MaterialIcons name="arrow-drop-down" size={20} color="#2c5282" />
+            <MaterialIcons name="arrow-drop-down" size={20} color={blue[800]} />
           </View>
         </View>
       </TouchableOpacity>
@@ -131,9 +132,9 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   dateWrapper: {
-    backgroundColor: 'white',
+    backgroundColor: white,
     borderWidth: 1,
-    borderColor: '#e2e8f0',
+    borderColor: gray[300],
     borderRadius: 4,
     color: 'black',
     paddingVertical: 6,

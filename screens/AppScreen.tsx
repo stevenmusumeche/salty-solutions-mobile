@@ -8,6 +8,7 @@ import NowScreen from './NowScreen';
 import SalinityScreen from './SalinityScreen';
 import SatelliteScreen from './SatelliteScreen';
 import TideScreen from './TideScreen';
+import { brandYellow, white } from '../colors';
 
 const AppTabs = createBottomTabNavigator();
 
@@ -21,8 +22,8 @@ const AppScreen = () => {
   return (
     <AppTabs.Navigator
       tabBarOptions={{
-        activeTintColor: '#fec857',
-        inactiveTintColor: 'white',
+        activeTintColor: brandYellow,
+        inactiveTintColor: white,
       }}
     >
       <AppTabs.Screen

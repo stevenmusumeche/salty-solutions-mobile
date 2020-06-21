@@ -33,6 +33,7 @@ import { TideContext, TideContextProvider } from '../context/TideContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import TideOptionsScreen from './TideOptionsScreen';
+import { blue, gray } from '../colors';
 
 const ForecastStack = createStackNavigator();
 
@@ -165,7 +166,7 @@ const ChartLabel = () => (
       <Text>PREDICTED</Text>
     </View>
     <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color="#3182ce" />
+      <ChartLabelSwatch color={blue[600]} />
       <Text>OBSERVED</Text>
     </View>
   </View>
@@ -202,7 +203,7 @@ const Header = () => {
           </Text>
         </View>
         <View>
-          <Octicons name="settings" size={32} color="#4a5568" />
+          <Octicons name="settings" size={32} color={gray[700]} />
         </View>
       </View>
     </TouchableOpacity>
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   loaderBlock: {
-    backgroundColor: '#cbd5e0',
+    backgroundColor: gray[400],
     width: '100%',
     marginBottom: 20,
   },
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loaderPill: {
-    backgroundColor: '#cbd5e0',
+    backgroundColor: gray[400],
     width: '49%',
     height: 30,
     marginBottom: 5,

@@ -105,12 +105,6 @@ const styles = StyleSheet.create({
     color: blue[800],
     fontSize: 18,
   },
-  graph: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5fcff',
-  },
   errorWrapper: {
     justifyContent: 'center',
     flex: 1,

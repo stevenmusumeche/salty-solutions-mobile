@@ -21,6 +21,7 @@ import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import RemoteImage from '../components/RemoteImage';
 import { RouteProp } from '@react-navigation/native';
+import { brandYellow, black, gray, white } from '../colors';
 
 type StackParams = {
   'Zoomable Salinity Map': {
@@ -130,8 +131,8 @@ const SalinityScreen = () => (
       component={ImageDetailScreen}
       options={() => {
         return {
-          headerTitleStyle: { color: 'white' },
-          headerTintColor: '#fec857',
+          headerTitleStyle: { color: white },
+          headerTintColor: brandYellow,
         };
       }}
     />
@@ -151,10 +152,10 @@ const styles = StyleSheet.create({
   },
   loadingWrapper: {
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: white,
     flexGrow: 1,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -164,7 +165,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   loaderBlock: {
-    backgroundColor: '#cbd5e0',
+    backgroundColor: gray[400],
     width: '100%',
     marginBottom: 20,
   },
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 20,
-    color: '#606F7B',
+    color: gray[700],
   },
   webviewLoading: {
     flex: 1,

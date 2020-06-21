@@ -4,6 +4,7 @@ import {
   Maybe,
   ForecastDescription,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { gray, blue } from '../colors';
 
 interface Props {
   day?: Maybe<ForecastDescription>;
@@ -57,15 +58,15 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   sectionHeader: {
-    color: '#718096',
+    color: gray[600],
     textTransform: 'uppercase',
     fontWeight: '600',
     marginBottom: 5,
   },
   sectionContent: {
-    color: '#4a5568',
+    color: gray[700],
   },
   toggleButton: {
-    color: '#3182ce',
+    color: blue[600],
   },
 });

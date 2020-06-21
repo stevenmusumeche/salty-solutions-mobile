@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { black, white, gray } from '../colors';
 
 interface Props {
   headerText: string;
@@ -26,11 +27,11 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   cardWrapper: {
-    backgroundColor: 'white',
+    backgroundColor: white,
     flexGrow: 1,
     alignItems: 'center',
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -40,7 +41,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   header: {
-    backgroundColor: '#edf2f7',
+    backgroundColor: gray[200],
     width: '100%',
     alignItems: 'center',
     padding: 8,

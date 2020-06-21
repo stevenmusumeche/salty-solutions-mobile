@@ -20,6 +20,7 @@ import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { ISO_FORMAT } from './TideScreen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { gray, black, white } from '../colors';
 
 const NUM_DAYS = 9;
 
@@ -169,10 +170,10 @@ const styles = StyleSheet.create({
   },
   loadingWrapper: {
     padding: 10,
-    backgroundColor: 'white',
+    backgroundColor: white,
     flexGrow: 1,
     borderRadius: 8,
-    shadowColor: '#000',
+    shadowColor: black,
     shadowOffset: {
       width: 0,
       height: 1,
@@ -184,14 +185,14 @@ const styles = StyleSheet.create({
   loaderBlockHeader: {
     width: '55%',
     height: 23,
-    backgroundColor: '#718096',
+    backgroundColor: gray[600],
   },
   loaderBlockBody: {
     width: '100%',
     height: '100%',
   },
   header: {
-    backgroundColor: '#4a5568',
+    backgroundColor: gray[700],
     paddingVertical: 10,
     width: '100%',
   },
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
   },
   headerText: {
-    color: 'white',
+    color: white,
     fontSize: 17,
     fontWeight: '600',
   },

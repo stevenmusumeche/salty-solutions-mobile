@@ -6,13 +6,12 @@ import {
   degreesToCompass,
 } from '@stevenmusumeche/salty-solutions-shared/dist/forecast-helpers';
 import WaterConditionIcon from './WaterConditionIcon';
+import { gray } from '../colors';
 
 interface Props {
   data: CombinedForecastV2DetailFragment;
   date: Date;
 }
-
-// todo wind text and temp
 
 const ForecastTimeBuckets: React.FC<Props> = ({ data, date }) => {
   const { timeChunks } = prepareForecastData(data, date);
@@ -53,8 +52,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 15,
     marginTop: 15,
-    backgroundColor: '#f7fafc',
-    borderColor: '#edf2f7',
+    backgroundColor: gray[100],
+    borderColor: gray[200],
     borderTopWidth: 1,
     borderBottomWidth: 1,
     flexDirection: 'row',
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
   label: {
     textAlign: 'center',
     textTransform: 'uppercase',
-    color: '#718096',
+    color: gray[600],
     fontSize: 12,
   },
   wind: {

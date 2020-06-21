@@ -27,6 +27,7 @@ import { AppContext } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { brandYellow, gray, white } from '../colors';
 
 type StackParams = {
   'Satellite Image Detail': {
@@ -204,8 +205,8 @@ const SatelliteScreen = () => (
         const title = format(new Date(route.params.image.date), 'EEEE, LLLL d');
         return {
           title,
-          headerTitleStyle: { color: 'white' },
-          headerTintColor: '#fec857',
+          headerTitleStyle: { color: white },
+          headerTintColor: brandYellow,
         };
       }}
     />
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     textTransform: 'capitalize',
   },
   loaderBlock: {
-    backgroundColor: '#cbd5e0',
+    backgroundColor: gray[400],
     width: '100%',
     marginBottom: 20,
   },
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     marginBottom: 20,
-    color: '#606F7B',
+    color: gray[700],
   },
   webviewLoading: {
     flex: 1,

@@ -16,6 +16,7 @@ import ForecastSun from './ForecastSun';
 import ForecastText from './ForecastText';
 import ForecastTide from './ForecastTide';
 import ForecastTimeBuckets from './ForecastTimeBuckets';
+import { white } from '../colors';
 
 interface Props {
   datum: CombinedForecastV2DetailFragment;
@@ -72,12 +73,12 @@ export default React.memo(ForecastCard);
 
 export const styles = StyleSheet.create({
   cardWrapper: {
-    backgroundColor: 'white',
+    backgroundColor: white,
     flexGrow: 1,
     alignItems: 'center',
   },
   container: {
-    backgroundColor: 'white',
+    backgroundColor: white,
   },
   children: {
     flex: 1,

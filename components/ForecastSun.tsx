@@ -2,6 +2,7 @@ import React, { useMemo, FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { SunDetailFieldsFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { startOfDay, format } from 'date-fns';
+import { gray } from '../colors';
 
 interface Props {
   sunData: SunDetailFieldsFragment[];
@@ -41,8 +42,8 @@ const styles = StyleSheet.create({
   container: {
     padding: 15,
     marginTop: 15,
-    backgroundColor: '#f7fafc',
-    borderColor: '#edf2f7',
+    backgroundColor: gray[100],
+    borderColor: gray[200],
     borderTopWidth: 1,
     borderBottomWidth: 1,
     flexDirection: 'row',
@@ -67,7 +68,7 @@ const sunDayStyles = StyleSheet.create({
   label: {
     textAlign: 'center',
     textTransform: 'uppercase',
-    color: '#718096',
+    color: gray[600],
     fontSize: 10,
     letterSpacing: -0.3,
   },
