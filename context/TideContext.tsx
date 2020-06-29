@@ -33,7 +33,13 @@ export const TideContextProvider: React.FC = ({ children }) => {
   const { activeLocation } = useContext(AppContext);
 
   const [date, setDate] = useState(() => startOfDay(new Date()));
-  const tideStations = activeLocation.tidePreditionStations;
+  const tideStations = useMemo(
+    () =>
+      activeLocation.tidePreditionStations.filter((station) =>
+        station.availableParams.includes(NoaaParam.TidePrediction),
+      ),
+    [activeLocation.tidePreditionStations],
+  );
   const sites = useMemo(() => {
     const usgs =
       activeLocation.usgsSites.filter((site) =>
@@ -52,8 +58,6 @@ export const TideContextProvider: React.FC = ({ children }) => {
     tideStations[0].id,
   );
   const [selectedSite, setSelectedSite] = useState(sites[0]);
-
-  console.log(selectedSite.__typename);
 
   // reset everything back to the default if the location changes
   useEffect(() => {
