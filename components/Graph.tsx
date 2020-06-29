@@ -1,4 +1,4 @@
-import { differenceInDays } from 'date-fns';
+import { differenceInHours } from 'date-fns';
 import React from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import {
@@ -39,8 +39,15 @@ const Graph: React.FC<Props> = ({ data, children }) => {
           fixLabelOverlap={false}
           tickCount={2}
           tickFormat={(date: string) => {
-            const dayDiff = differenceInDays(new Date(date), new Date());
-            return dayDiff === 0 ? 'now' : `${dayDiff}d`;
+            const hourDiff = Math.abs(
+              differenceInHours(new Date(date), new Date()),
+            );
+            if (hourDiff >= 46) {
+              return '-2d';
+            } else if (hourDiff >= 22) {
+              return '-1d';
+            }
+            return 'now';
           }}
           style={{
             tickLabels: { fontSize: 11, padding: 1 },
