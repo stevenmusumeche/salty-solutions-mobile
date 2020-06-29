@@ -10,7 +10,7 @@ import {
   addDays,
   addHours,
   format,
-  isSameDay,
+  isWithinInterval,
   startOfDay,
   subDays,
 } from 'date-fns';
@@ -23,6 +23,7 @@ import {
   View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { blue, gray } from '../colors';
 import { ErrorIcon } from '../components/FullScreenError';
 import HighLowTable from '../components/HighLowTable';
 import LoaderBlock from '../components/LoaderBlock';
@@ -33,16 +34,13 @@ import { TideContext, TideContextProvider } from '../context/TideContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import TideOptionsScreen from './TideOptionsScreen';
-import { blue, gray } from '../colors';
 
 const ForecastStack = createStackNavigator();
 
 export const ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
 
 const Tide: React.FC = () => {
-  const { date, selectedTideStation, selectedUsgsSite } = useContext(
-    TideContext,
-  );
+  const { date, selectedTideStation, selectedSite } = useContext(TideContext);
   const { activeLocation } = useContext(AppContext);
   const [refreshing, setRefreshing] = React.useState(false);
 
@@ -53,15 +51,28 @@ const Tide: React.FC = () => {
     14,
   );
 
+  const usgsSiteId =
+    selectedSite && selectedSite.__typename === 'UsgsSite'
+      ? selectedSite.id
+      : undefined;
+
+  const noaaStationId =
+    selectedSite && selectedSite.__typename === 'TidePreditionStation'
+      ? selectedSite.id
+      : undefined;
+
   const [tideResult, refresh] = useTideQuery({
     variables: {
       locationId: activeLocation.id,
       tideStationId: selectedTideStation?.id!,
-      usgsSiteId: selectedUsgsSite?.id!,
+      usgsSiteId,
+      includeUsgs: !!usgsSiteId,
+      noaaStationId,
+      includeNoaa: !!noaaStationId,
       startDate: format(subDays(startOfDay(date), 1), ISO_FORMAT),
       endDate: format(addDays(startOfDay(date), 2), ISO_FORMAT),
     },
-    pause: !selectedTideStation || !selectedUsgsSite,
+    pause: !selectedTideStation || !selectedSite,
   });
 
   const onRefresh = useCallback(() => {
@@ -75,6 +86,10 @@ const Tide: React.FC = () => {
     }
   }, [refreshing, tideResult.fetching]);
 
+  const waterHeightBase =
+    tideResult.data?.usgsSite?.waterHeight ||
+    tideResult.data?.noaaWaterHeight?.waterHeight;
+
   let stuffToRender;
   if (tideResult.fetching) {
     stuffToRender = <Loading />;
@@ -82,7 +97,7 @@ const Tide: React.FC = () => {
     !tideResult?.data?.tidePreditionStation?.tides ||
     !tideResult.data.location?.sun ||
     !tideResult.data.location.moon ||
-    !tideResult.data.usgsSite?.waterHeight
+    !waterHeightBase
   ) {
     stuffToRender = (
       <View style={styles.errorContainer}>
@@ -106,14 +121,19 @@ const Tide: React.FC = () => {
           startOfDay(date).toISOString(),
       )[0];
 
-      const curDayWaterHeight = tideResult.data.usgsSite.waterHeight.filter(
-        (x) => {
-          return isSameDay(new Date(x.timestamp), date);
-        },
+      const curDayWaterHeight = waterHeightBase.filter((x) =>
+        isWithinInterval(new Date(x.timestamp), {
+          start: startOfDay(date),
+          end: startOfDay(addDays(date, 1)),
+        }),
       );
 
       const curDayTides = tideResult.data.tidePreditionStation.tides.filter(
-        (x) => isSameDay(new Date(x.time), date),
+        (x) =>
+          isWithinInterval(new Date(x.time), {
+            start: startOfDay(date),
+            end: startOfDay(addDays(date, 1)),
+          }),
       );
 
       const { hiLowData } = buildDatasets(
@@ -137,7 +157,7 @@ const Tide: React.FC = () => {
           <MultiDayTideCharts
             sunData={tideResult.data.location.sun}
             tideData={tideResult.data.tidePreditionStation.tides}
-            waterHeightData={tideResult.data.usgsSite.waterHeight}
+            waterHeightData={waterHeightBase}
             numDays={3}
           />
           <ChartLabel />
@@ -185,7 +205,9 @@ const ChartLabelSwatch: React.FC<{ color: string }> = ({ color }) => (
 
 const Header = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
-  const { selectedTideStation, selectedUsgsSite } = useContext(TideContext);
+  const { selectedTideStation, selectedSite: selectedUsgsSite } = useContext(
+    TideContext,
+  );
 
   return (
     <TouchableOpacity onPress={() => navigation.push('TideOptionsScreen')}>
