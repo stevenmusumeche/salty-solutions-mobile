@@ -1,7 +1,7 @@
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { startOfDay, subHours } from 'date-fns';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
@@ -10,19 +10,20 @@ import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
 import UsgsSiteSelect from './UsgsSiteSelect';
 import { ErrorIcon } from './FullScreenError';
+import NoData from './NoData';
 
 interface Props {
-  usgsSites: UsgsSiteDetailFragment[];
+  sites: UsgsSiteDetailFragment[];
   requestRefresh: boolean;
 }
 
-const SalinityCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
+const SalinityCard: React.FC<Props> = ({ sites, requestRefresh }) => {
   const headerText = 'Salinity';
 
   const { activeLocation } = useContext(AppContext);
-  const [selectedUsgsSiteId, setSelectedUsgsSiteId] = useState(usgsSites[0].id);
+  const [selectedSite, setSelectedSite] = useState(sites[0]);
 
-  const date = startOfDay(new Date());
+  const date = useMemo(() => new Date(), []);
   const {
     curValue,
     curDetail,
@@ -31,14 +32,14 @@ const SalinityCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
     refresh,
   } = hooks.useSalinityData(
     activeLocation.id,
-    selectedUsgsSiteId,
+    selectedSite.id,
     subHours(date, 48),
     date,
   );
 
   useEffect(() => {
-    setSelectedUsgsSiteId(usgsSites[0].id);
-  }, [usgsSites]);
+    setSelectedSite(sites[0]);
+  }, [sites]);
 
   useEffect(() => {
     if (requestRefresh) {
@@ -46,7 +47,15 @@ const SalinityCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
     }
   }, [requestRefresh, refresh]);
 
-  if (!fetching && error) {
+  if (fetching) {
+    return (
+      <ConditionCard headerText={headerText}>
+        <LoaderBlock />
+      </ConditionCard>
+    );
+  }
+
+  if (error) {
     return (
       <ConditionCard headerText={headerText}>
         <View style={styles.errorWrapper}>
@@ -58,20 +67,23 @@ const SalinityCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
 
   return (
     <ConditionCard headerText={headerText}>
-      {fetching ? (
-        <LoaderBlock />
-      ) : (
+      {curValue ? (
         <>
           <BigBlue>{curValue}</BigBlue>
           {curDetail && <Graph data={curDetail} />}
         </>
+      ) : (
+        <NoData />
       )}
-      {usgsSites.length > 1 && (
+      {selectedSite && (
         <View style={styles.usgsWrapper}>
           <UsgsSiteSelect
-            sites={usgsSites}
-            handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
-            selectedId={selectedUsgsSiteId}
+            sites={sites}
+            handleChange={(itemValue) => {
+              const match = sites.find((site) => site.id === itemValue);
+              setSelectedSite(match!);
+            }}
+            selectedId={selectedSite.id}
           />
         </View>
       )}
@@ -84,6 +96,7 @@ export default SalinityCard;
 const styles = StyleSheet.create({
   usgsWrapper: {
     marginTop: 10,
+    width: '100%',
   },
   errorWrapper: {
     justifyContent: 'center',

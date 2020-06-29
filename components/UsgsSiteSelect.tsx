@@ -2,12 +2,12 @@ import React, { useCallback } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons';
-import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import deepMerge from 'deepmerge';
 import { blue, gray } from '../colors';
+import { DataSite } from '../screens/NowScreen';
 
 const UsgsSiteSelect: React.FC<{
-  sites: UsgsSiteDetailFragment[];
+  sites: DataSite[];
   handleChange: (selectedItem: string) => void;
   selectedId: string;
   style?: any;

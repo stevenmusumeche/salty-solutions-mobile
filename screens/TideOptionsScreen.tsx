@@ -20,9 +20,9 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
     date,
     tideStations,
     selectedTideStation,
-    selectedUsgsSite,
-    usgsSites,
-    actions: { setSelectedTideStationId, setSelectedUsgsSiteId, setDate },
+    selectedSite,
+    sites,
+    actions: { setSelectedTideStationId, setSelectedSite, setDate },
   } = useContext(TideContext);
 
   return (
@@ -44,9 +44,12 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.usgsSelectWrapper}>
         <Text style={styles.selectLabel}>Observation Site:</Text>
         <UsgsSiteSelect
-          sites={usgsSites}
-          selectedId={selectedUsgsSite?.id || ''}
-          handleChange={(siteId) => setSelectedUsgsSiteId(siteId)}
+          sites={sites}
+          selectedId={selectedSite?.id || ''}
+          handleChange={(itemValue) => {
+            const match = sites.find((site) => site.id === itemValue);
+            setSelectedSite(match!);
+          }}
           style={{
             inputIOS: {
               fontSize: undefined,

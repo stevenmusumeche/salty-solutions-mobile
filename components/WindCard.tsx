@@ -1,32 +1,34 @@
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
-import { startOfDay, subHours } from 'date-fns';
-import React, { useContext, useEffect, useState } from 'react';
+import { subHours } from 'date-fns';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Text as SvgText, Path } from 'react-native-svg';
+import { Path } from 'react-native-svg';
 import { VictoryScatter } from 'victory-native';
 import { blue } from '../colors';
 import { AppContext } from '../context/AppContext';
+import { DataSite } from '../screens/NowScreen';
 import BigBlue from './BigBlue';
 import ConditionCard from './ConditionCard';
 import { ErrorIcon } from './FullScreenError';
 import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
-import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import NoData from './NoData';
 import UsgsSiteSelect from './UsgsSiteSelect';
 
 interface Props {
-  usgsSites: UsgsSiteDetailFragment[];
+  sites: DataSite[];
   requestRefresh: boolean;
 }
 
-const WindCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
+const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
   const headerText = 'Wind (mph)';
 
   const { activeLocation } = useContext(AppContext);
-  const [selectedUsgsSiteId, setSelectedUsgsSiteId] = useState(() =>
-    usgsSites.length ? usgsSites[0].id : undefined,
+
+  const [selectedSite, setSelectedSite] = useState(() =>
+    sites.length ? sites[0] : undefined,
   );
-  const date = startOfDay(new Date());
+  const date = useMemo(() => new Date(), []);
   const {
     curValue,
     curDirectionValue,
@@ -34,16 +36,23 @@ const WindCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
     curDetail,
     error,
     refresh,
-  } = hooks.useCurrentWindData(
-    activeLocation.id,
-    subHours(date, 48),
-    date,
-    selectedUsgsSiteId,
-  );
+  } = hooks.useCurrentWindData({
+    locationId: activeLocation.id,
+    startDate: subHours(date, 48),
+    endDate: date,
+    usgsSiteId:
+      selectedSite && selectedSite.__typename === 'UsgsSite'
+        ? selectedSite.id
+        : undefined,
+    noaaStationId:
+      selectedSite && selectedSite.__typename === 'TidePreditionStation'
+        ? selectedSite.id
+        : undefined,
+  });
 
   useEffect(() => {
-    setSelectedUsgsSiteId(usgsSites.length ? usgsSites[0].id : undefined);
-  }, [usgsSites]);
+    setSelectedSite(sites.length ? sites[0] : undefined);
+  }, [sites]);
 
   useEffect(() => {
     if (requestRefresh) {
@@ -71,21 +80,30 @@ const WindCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
 
   return (
     <ConditionCard headerText={headerText}>
-      <BigBlue>{curValue}</BigBlue>
-      <View style={styles.directionWrapper}>
-        <Text style={styles.directionText}>{curDirectionValue}</Text>
-      </View>
-      {curDetail && (
-        <Graph data={curDetail}>
-          <VictoryScatter dataComponent={<ArrowPoint />} />
-        </Graph>
+      {curValue ? (
+        <>
+          <BigBlue>{curValue}</BigBlue>
+          <View style={styles.directionWrapper}>
+            <Text style={styles.directionText}>{curDirectionValue}</Text>
+          </View>
+          {curDetail && (
+            <Graph data={curDetail}>
+              <VictoryScatter dataComponent={<ArrowPoint />} />
+            </Graph>
+          )}
+        </>
+      ) : (
+        <NoData />
       )}
-      {selectedUsgsSiteId && usgsSites.length > 1 && (
+      {selectedSite && (
         <View style={styles.usgsWrapper}>
           <UsgsSiteSelect
-            sites={usgsSites}
-            handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
-            selectedId={selectedUsgsSiteId}
+            sites={sites}
+            handleChange={(itemValue) => {
+              const match = sites.find((site) => site.id === itemValue);
+              setSelectedSite(match);
+            }}
+            selectedId={selectedSite.id}
           />
         </View>
       )}
@@ -111,6 +129,7 @@ const styles = StyleSheet.create({
   },
   usgsWrapper: {
     marginTop: 10,
+    width: '100%',
   },
 });
 

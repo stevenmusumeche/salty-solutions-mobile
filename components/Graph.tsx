@@ -21,6 +21,12 @@ interface Props {
 const Graph: React.FC<Props> = ({ data, children }) => {
   const windowWidth = useWindowDimensions().width;
 
+  // reduce the number of data points to display on the graph
+  const mod = Math.ceil(data.length / 72);
+  if (mod > 1) {
+    data = data.filter((_: any, i: number) => i % mod === 0);
+  }
+
   return (
     <View style={styles.container}>
       <VictoryChart

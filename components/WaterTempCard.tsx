@@ -1,6 +1,6 @@
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { startOfDay, subHours } from 'date-fns';
-import React, { useContext, useState, useEffect } from 'react';
+import React, { useContext, useState, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
@@ -10,35 +10,46 @@ import LoaderBlock from './LoaderBlock';
 import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import UsgsSiteSelect from './UsgsSiteSelect';
 import { ErrorIcon } from './FullScreenError';
+import { DataSite } from '../screens/NowScreen';
+import NoData from './NoData';
 
 interface Props {
-  usgsSites: UsgsSiteDetailFragment[];
+  sites: DataSite[];
   requestRefresh: boolean;
 }
 
-const WaterTempCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
+const WaterTempCard: React.FC<Props> = ({ sites, requestRefresh }) => {
   const headerText = 'Water Temperature (F)';
 
   const { activeLocation } = useContext(AppContext);
-  const [selectedUsgsSiteId, setSelectedUsgsSiteId] = useState(usgsSites[0].id);
+  const [selectedSite, setSelectedSite] = useState(() =>
+    sites.length ? sites[0] : undefined,
+  );
 
-  const date = startOfDay(new Date());
+  const date = useMemo(() => new Date(), []);
   const {
     curValue,
     curDetail,
     fetching,
     error,
     refresh,
-  } = hooks.useWaterTemperatureData(
-    activeLocation.id,
-    selectedUsgsSiteId,
-    subHours(date, 48),
-    date,
-  );
+  } = hooks.useWaterTemperatureData({
+    locationId: activeLocation.id,
+    startDate: subHours(date, 48),
+    endDate: date,
+    usgsSiteId:
+      selectedSite && selectedSite.__typename === 'UsgsSite'
+        ? selectedSite.id
+        : undefined,
+    noaaStationId:
+      selectedSite && selectedSite.__typename === 'TidePreditionStation'
+        ? selectedSite.id
+        : undefined,
+  });
 
   useEffect(() => {
-    setSelectedUsgsSiteId(usgsSites[0].id);
-  }, [usgsSites]);
+    setSelectedSite(sites.length ? sites[0] : undefined);
+  }, [sites]);
 
   useEffect(() => {
     if (requestRefresh) {
@@ -46,7 +57,15 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
     }
   }, [requestRefresh, refresh]);
 
-  if (!fetching && error) {
+  if (fetching) {
+    return (
+      <ConditionCard headerText={headerText}>
+        <LoaderBlock />
+      </ConditionCard>
+    );
+  }
+
+  if (error) {
     return (
       <ConditionCard headerText={headerText}>
         <View style={styles.errorWrapper}>
@@ -58,21 +77,24 @@ const WaterTempCard: React.FC<Props> = ({ usgsSites, requestRefresh }) => {
 
   return (
     <ConditionCard headerText={headerText}>
-      {fetching ? (
-        <LoaderBlock />
-      ) : (
+      {curValue ? (
         <>
           <BigBlue>{curValue}</BigBlue>
           {curDetail && <Graph data={curDetail} />}
         </>
+      ) : (
+        <NoData />
       )}
 
-      {usgsSites.length > 1 && (
+      {selectedSite && (
         <View style={styles.usgsWrapper}>
           <UsgsSiteSelect
-            sites={usgsSites}
-            handleChange={(itemValue) => setSelectedUsgsSiteId(itemValue)}
-            selectedId={selectedUsgsSiteId}
+            sites={sites}
+            handleChange={(itemValue) => {
+              const match = sites.find((site) => site.id === itemValue);
+              setSelectedSite(match);
+            }}
+            selectedId={selectedSite.id}
           />
         </View>
       )}
@@ -85,6 +107,7 @@ export default WaterTempCard;
 const styles = StyleSheet.create({
   usgsWrapper: {
     marginTop: 10,
+    width: '100%',
   },
   errorWrapper: {
     justifyContent: 'center',

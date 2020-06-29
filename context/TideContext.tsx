@@ -1,7 +1,7 @@
 import {
   TideStationDetailFragment,
   UsgsParam,
-  UsgsSiteDetailFragment,
+  NoaaParam,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { startOfDay } from 'date-fns';
 import React, {
@@ -12,17 +12,18 @@ import React, {
   useState,
 } from 'react';
 import { AppContext } from './AppContext';
+import { DataSite } from '../screens/NowScreen';
 
 interface TideContext {
   date: Date;
   selectedTideStation?: TideStationDetailFragment;
   tideStations: TideStationDetailFragment[];
-  usgsSites: UsgsSiteDetailFragment[];
-  selectedUsgsSite?: UsgsSiteDetailFragment;
+  sites: DataSite[];
+  selectedSite?: DataSite;
   actions: {
     setDate: (date: Date) => void;
     setSelectedTideStationId: (id: string) => void;
-    setSelectedUsgsSiteId: (id: string) => void;
+    setSelectedSite: (site: DataSite) => void;
   };
 }
 
@@ -33,25 +34,33 @@ export const TideContextProvider: React.FC = ({ children }) => {
 
   const [date, setDate] = useState(() => startOfDay(new Date()));
   const tideStations = activeLocation.tidePreditionStations;
-  const usgsSites = useMemo(
-    () =>
+  const sites = useMemo(() => {
+    const usgs =
       activeLocation.usgsSites.filter((site) =>
         site.availableParams.includes(UsgsParam.GuageHeight),
-      ),
-    [activeLocation.usgsSites],
-  );
+      ) || [];
+
+    const noaa =
+      activeLocation.tidePreditionStations.filter((station) =>
+        station.availableParams.includes(NoaaParam.WaterLevel),
+      ) || [];
+
+    return [...noaa, ...usgs];
+  }, [activeLocation.tidePreditionStations, activeLocation.usgsSites]);
 
   const [selectedTideStationId, setSelectedTideStationId] = useState(
     tideStations[0].id,
   );
-  const [selectedUsgsSiteId, setSelectedUsgsSiteId] = useState(usgsSites[0].id);
+  const [selectedSite, setSelectedSite] = useState(sites[0]);
+
+  console.log(selectedSite.__typename);
 
   // reset everything back to the default if the location changes
   useEffect(() => {
     setDate(startOfDay(new Date()));
     setSelectedTideStationId(tideStations[0].id);
-    setSelectedUsgsSiteId(usgsSites[0].id);
-  }, [activeLocation, tideStations, usgsSites]);
+    setSelectedSite(sites[0]);
+  }, [activeLocation, tideStations, sites]);
 
   const providerValue: TideContext = useMemo(
     () => ({
@@ -60,13 +69,15 @@ export const TideContextProvider: React.FC = ({ children }) => {
       selectedTideStation: tideStations.find(
         (station) => station.id === selectedTideStationId,
       ),
-      usgsSites,
-      selectedUsgsSite: usgsSites.find(
-        (site) => site.id === selectedUsgsSiteId,
-      ),
-      actions: { setDate, setSelectedUsgsSiteId, setSelectedTideStationId },
+      sites,
+      selectedSite: sites.find((site) => site.id === selectedSite.id),
+      actions: {
+        setDate,
+        setSelectedSite,
+        setSelectedTideStationId,
+      },
     }),
-    [date, selectedTideStationId, selectedUsgsSiteId, tideStations, usgsSites],
+    [date, selectedTideStationId, selectedSite, tideStations, sites],
   );
 
   return (
