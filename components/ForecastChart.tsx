@@ -41,6 +41,8 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
     return <EmptyChart yTickVals={yTickVals} />;
   }
 
+  const maxWind = Math.max(...chartData.map((datum) => datum.gustY + datum.y));
+
   return (
     <View style={styles.container}>
       <VictoryChart
@@ -49,6 +51,9 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
         style={{ parent: { touchAction: 'auto' } }}
         height={180}
         width={width - 10}
+        maxDomain={{
+          y: maxWind > WIND_WARNING_MIN ? maxWind : WIND_WARNING_MIN,
+        }}
       >
         <VictoryAxis
           scale={{ x: 'time' }}
@@ -81,7 +86,9 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
                 data: {
                   width: 10,
                   fill: ({ datum }) => {
-                    return datum.y >= WIND_WARNING_MIN ? red[700] : blue[700];
+                    return datum.y + datum.gustY >= WIND_WARNING_MIN
+                      ? red[700]
+                      : blue[700];
                   },
                 },
               }}
@@ -96,10 +103,12 @@ const ForecastChart: React.FC<Props> = ({ data, date }) => {
               data: {
                 width: 10,
                 fill: ({ datum }) => {
-                  return datum.y >= WIND_WARNING_MIN ? red[700] : blue[700];
+                  return datum.y + datum.gustY >= WIND_WARNING_MIN
+                    ? red[700]
+                    : blue[700];
                 },
                 fillOpacity: ({ datum }) => {
-                  return datum.y >= WIND_WARNING_MIN ? 0.2 : 0.3;
+                  return datum.y + datum.gustY >= WIND_WARNING_MIN ? 0.2 : 0.3;
                 },
               },
             }}
