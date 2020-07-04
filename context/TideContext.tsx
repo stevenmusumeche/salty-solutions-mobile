@@ -1,8 +1,8 @@
+import { TideStationDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import {
-  TideStationDetailFragment,
-  UsgsParam,
-  NoaaParam,
-} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+  useTideStationSites,
+  useWaterHeightSites,
+} from '@stevenmusumeche/salty-solutions-shared/dist/hooks';
 import { startOfDay } from 'date-fns';
 import React, {
   createContext,
@@ -11,8 +11,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { AppContext } from './AppContext';
 import { DataSite } from '../screens/NowScreen';
+import { AppContext } from './AppContext';
 
 interface TideContext {
   date: Date;
@@ -33,26 +33,8 @@ export const TideContextProvider: React.FC = ({ children }) => {
   const { activeLocation } = useContext(AppContext);
 
   const [date, setDate] = useState(() => startOfDay(new Date()));
-  const tideStations = useMemo(
-    () =>
-      activeLocation.tidePreditionStations.filter((station) =>
-        station.availableParams.includes(NoaaParam.TidePrediction),
-      ),
-    [activeLocation.tidePreditionStations],
-  );
-  const sites = useMemo(() => {
-    const usgs =
-      activeLocation.usgsSites.filter((site) =>
-        site.availableParams.includes(UsgsParam.GuageHeight),
-      ) || [];
-
-    const noaa =
-      activeLocation.tidePreditionStations.filter((station) =>
-        station.availableParams.includes(NoaaParam.WaterLevel),
-      ) || [];
-
-    return [...noaa, ...usgs];
-  }, [activeLocation.tidePreditionStations, activeLocation.usgsSites]);
+  const tideStations = useTideStationSites(activeLocation);
+  const sites = useWaterHeightSites(activeLocation);
 
   const [selectedTideStationId, setSelectedTideStationId] = useState(
     tideStations[0].id,

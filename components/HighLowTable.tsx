@@ -27,24 +27,34 @@ const HighLowTable: React.FC<Props> = ({ hiLowData, sunData, moonData }) => {
         </Pill>
       ))}
 
-      {sunData && sunData.dawn && (
+      {sunData?.nauticalDawn && (
+        <Pill label="Naut Dawn" color={orange[700]}>
+          {formatDate(sunData.nauticalDawn)}
+        </Pill>
+      )}
+      {sunData?.dawn && (
         <Pill label="Dawn" color={orange[700]}>
           {formatDate(sunData.dawn)}
         </Pill>
       )}
-      {sunData && sunData.sunrise && (
+      {sunData?.sunrise && (
         <Pill label="Sunrise" color={orange[700]}>
           {formatDate(sunData.sunrise)}
         </Pill>
       )}
-      {sunData && sunData.sunset && (
+      {sunData?.sunset && (
         <Pill label="Sunset" color={orange[700]}>
           {formatDate(sunData.sunset)}
         </Pill>
       )}
-      {sunData && sunData.dusk && (
+      {sunData?.dusk && (
         <Pill label="Dusk" color={orange[700]}>
           {formatDate(sunData.dusk)}
+        </Pill>
+      )}
+      {sunData?.nauticalDusk && (
+        <Pill label="Naut Dusk" color={orange[700]}>
+          {formatDate(sunData.nauticalDusk)}
         </Pill>
       )}
 

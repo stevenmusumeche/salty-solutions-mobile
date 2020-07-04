@@ -1,12 +1,15 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import {
-  UsgsParam,
-  NoaaParam,
-  UsgsSiteDetailFragment,
   TideStationDetailFragment,
+  UsgsSiteDetailFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import React, { useContext, useState, useMemo } from 'react';
-import { ScrollView, StyleSheet, View, RefreshControl } from 'react-native';
+import {
+  useSalinitySites,
+  useWaterTempSites,
+  useWindSites,
+} from '@stevenmusumeche/salty-solutions-shared/dist/hooks';
+import React, { useContext, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import AirTempCard from '../components/AirTempCard';
 import CardGrid from '../components/CardGrid';
 import SalinityCard from '../components/SalinityCard';
@@ -32,49 +35,9 @@ const Now: React.FC = () => {
     Promise.resolve().then(() => setRequestRefresh(false));
   };
 
-  const airTempSites = useMemo(() => {
-    return (
-      activeLocation.tidePreditionStations.filter((station) =>
-        station.availableParams.includes(NoaaParam.AirTemperature),
-      ) || []
-    );
-  }, [activeLocation.tidePreditionStations]);
-
-  const waterTempSites = useMemo(() => {
-    const usgs =
-      activeLocation.usgsSites.filter((site) =>
-        site.availableParams.includes(UsgsParam.WaterTemp),
-      ) || [];
-
-    const noaa =
-      activeLocation.tidePreditionStations.filter((station) =>
-        station.availableParams.includes(NoaaParam.WaterTemperature),
-      ) || [];
-
-    return [...usgs, ...noaa];
-  }, [activeLocation.tidePreditionStations, activeLocation.usgsSites]);
-
-  const salinitySites = useMemo(
-    () =>
-      activeLocation.usgsSites.filter((site) =>
-        site.availableParams.includes(UsgsParam.Salinity),
-      ),
-    [activeLocation.usgsSites],
-  );
-
-  const windSites = useMemo(() => {
-    const usgs =
-      activeLocation.usgsSites.filter((site) =>
-        site.availableParams.includes(UsgsParam.WindSpeed),
-      ) || [];
-
-    const noaa =
-      activeLocation.tidePreditionStations.filter((station) =>
-        station.availableParams.includes(NoaaParam.Wind),
-      ) || [];
-
-    return [...usgs, ...noaa];
-  }, [activeLocation.tidePreditionStations, activeLocation.usgsSites]);
+  const salinitySites = useSalinitySites(activeLocation);
+  const waterTempSites = useWaterTempSites(activeLocation);
+  const windSites = useWindSites(activeLocation);
 
   return (
     <View style={styles.container}>
@@ -85,7 +48,7 @@ const Now: React.FC = () => {
       >
         <CardGrid>
           <WindCard requestRefresh={requestRefresh} sites={windSites} />
-          <AirTempCard requestRefresh={requestRefresh} sites={airTempSites} />
+          <AirTempCard requestRefresh={requestRefresh} />
           <WaterTempCard
             sites={waterTempSites}
             requestRefresh={requestRefresh}
