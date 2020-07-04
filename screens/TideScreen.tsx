@@ -35,7 +35,7 @@ import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import TideOptionsScreen from './TideOptionsScreen';
 
-const ForecastStack = createStackNavigator();
+const TideStack = createStackNavigator();
 
 export const ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
 
@@ -214,14 +214,12 @@ const Header = () => {
       <View style={styles.headerContainer}>
         <View style={styles.headerLeft}>
           <Text numberOfLines={1}>
-            <Text style={styles.headerLabel}>Station</Text>
-            {': '}
-            {selectedTideStation?.name}
+            <Text style={styles.headerLabel}>Station: </Text>
+            <Text>{selectedTideStation?.name}</Text>
           </Text>
           <Text numberOfLines={1}>
-            <Text style={styles.headerLabel}>Observed</Text>
-            {': '}
-            {selectedUsgsSite?.name}
+            <Text style={styles.headerLabel}>Observed: </Text>
+            <Text>{selectedUsgsSite?.name} and some more text</Text>
           </Text>
         </View>
         <View>
@@ -303,9 +301,9 @@ const TideStackScreen = () => (
 );
 
 const TideScreen = () => (
-  <ForecastStack.Navigator>
-    <ForecastStack.Screen name="Tide" component={Tide} />
-  </ForecastStack.Navigator>
+  <TideStack.Navigator>
+    <TideStack.Screen name="Tide" component={Tide} />
+  </TideStack.Navigator>
 );
 
 export default TideStackScreen;
@@ -367,6 +365,8 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   headerLabel: {
-    textDecorationLine: 'underline',
+    textTransform: 'uppercase',
+    color: gray[700],
+    width: 80,
   },
 });
