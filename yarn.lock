@@ -1506,10 +1506,10 @@
   dependencies:
     any-observable "^0.3.0"
 
-"@stevenmusumeche/salty-solutions-shared@^1.0.66":
-  version "1.0.66"
-  resolved "https://npm.pkg.github.com/download/@stevenmusumeche/salty-solutions-shared/1.0.66/a1dc8ce4e39c5f0a697e11e9c96fb9c271f821832a2fa3240bc228e61de47d47#c953a8d9dc33f757b4bdc52c7241f10e477955da"
-  integrity sha512-InU7x3bc0loF5B4DzWpzZueO5GhmqFgyCG6U8D/2hE4wAUmo4SZ/QNt3paqNuEeqIpYsKM62bhXUl9dWQA3m4A==
+"@stevenmusumeche/salty-solutions-shared@^1.0.67":
+  version "1.0.67"
+  resolved "https://npm.pkg.github.com/download/@stevenmusumeche/salty-solutions-shared/1.0.67/c90db8c7cf82e22eab850c418604ac26a5de3d1acdfafa5022bb688e86a2be0a#c85708fe0e9f508a79b523fce077d31e7642d297"
+  integrity sha512-Hg/PHXkxcvU64DbFGobm2PQ+YRov5GmL71+0aSeKCZ4g+1Ojm4PYmWECKQSQjhEBku7U/oVfg1btCiT0FoQYIg==
 
 "@types/color-name@^1.1.1":
   version "1.1.1"
@@ -2683,7 +2683,7 @@ commondir@^1.0.1:
   resolved "https://registry.yarnpkg.com/commondir/-/commondir-1.0.1.tgz#ddd800da0c66127393cca5950ea968a3aaf1253b"
   integrity sha1-3dgA2gxmEnOTzKWVDqloo6rxJTs=
 
-compare-versions@^3.4.0:
+compare-versions@^3.4.0, compare-versions@^3.6.0:
   version "3.6.0"
   resolved "https://registry.yarnpkg.com/compare-versions/-/compare-versions-3.6.0.tgz#1a5689913685e5a87637b8d3ffca75514ec41d62"
   integrity sha512-W6Af2Iw1z4CB7q4uU4hv646dW9GQuBM+YpC0UvUCWSD8w90SJjp+ujJuXaEMtAXBtSqGfMPuFOVn4/+FlaqfBA==

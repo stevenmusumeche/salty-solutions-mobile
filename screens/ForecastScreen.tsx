@@ -21,6 +21,8 @@ import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { ISO_FORMAT } from './TideScreen';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { gray, black, white } from '../colors';
+import UpgradeNotice from '../components/UpgradeNotice';
+import { useAppVersionContext } from '../context/AppVersionContext';
 
 const NUM_DAYS = 9;
 
@@ -123,33 +125,43 @@ const ForecastLoaderCard = () => (
 const Header: React.FC<{
   curIndex: number;
   data: CombinedForecastV2DetailFragment[];
-}> = ({ curIndex, data }) => (
-  <View style={styles.header}>
-    <View style={styles.headerInner}>
-      <View>
-        <MaterialCommunityIcons
-          name="gesture-swipe-right"
-          size={20}
-          color={curIndex > 0 ? 'rgba(255,255,255,.6)' : 'transparent'}
-        />
+}> = ({ curIndex, data }) => {
+  const { newVersionAvailable } = useAppVersionContext();
+
+  return (
+    <>
+      <View style={styles.header}>
+        <View style={styles.headerInner}>
+          <View>
+            <MaterialCommunityIcons
+              name="gesture-swipe-right"
+              size={20}
+              color={curIndex > 0 ? 'rgba(255,255,255,.6)' : 'transparent'}
+            />
+          </View>
+          <View>
+            <Text style={styles.headerText}>
+              {data[curIndex].name}{' '}
+              {format(new Date(data[curIndex].date), 'M/d')}
+            </Text>
+          </View>
+          <View>
+            <MaterialCommunityIcons
+              name="gesture-swipe-left"
+              size={20}
+              color={
+                curIndex < data.length - 1
+                  ? 'rgba(255,255,255,.6))'
+                  : 'transparent'
+              }
+            />
+          </View>
+        </View>
       </View>
-      <View>
-        <Text style={styles.headerText}>
-          {data[curIndex].name} {format(new Date(data[curIndex].date), 'M/d')}
-        </Text>
-      </View>
-      <View>
-        <MaterialCommunityIcons
-          name="gesture-swipe-left"
-          size={20}
-          color={
-            curIndex < data.length - 1 ? 'rgba(255,255,255,.6))' : 'transparent'
-          }
-        />
-      </View>
-    </View>
-  </View>
-);
+      {newVersionAvailable && <UpgradeNotice />}
+    </>
+  );
+};
 
 const ForecastScreen = () => (
   <ForecastStack.Navigator>

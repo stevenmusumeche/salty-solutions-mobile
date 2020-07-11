@@ -11,12 +11,12 @@ import {
   useWindowDimensions,
   View,
 } from 'react-native';
+import { white } from '../colors';
 import ForecastChart from './ForecastChart';
 import ForecastSun from './ForecastSun';
 import ForecastText from './ForecastText';
 import ForecastTide from './ForecastTide';
 import ForecastTimeBuckets from './ForecastTimeBuckets';
-import { white } from '../colors';
 
 interface Props {
   datum: CombinedForecastV2DetailFragment;

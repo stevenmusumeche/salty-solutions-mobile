@@ -34,6 +34,8 @@ import { TideContext, TideContextProvider } from '../context/TideContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import TideOptionsScreen from './TideOptionsScreen';
+import UpgradeNotice from '../components/UpgradeNotice';
+import { useAppVersionContext } from '../context/AppVersionContext';
 
 const TideStack = createStackNavigator();
 
@@ -183,11 +185,11 @@ const ChartLabel = () => (
   <View style={styles.chartLabelWrapper}>
     <View style={styles.chartLabelInnerWrapper}>
       <ChartLabelSwatch color="black" />
-      <Text>PREDICTED</Text>
+      <Text style={styles.chartLabel}>PREDICTED</Text>
     </View>
     <View style={styles.chartLabelInnerWrapper}>
       <ChartLabelSwatch color={blue[600]} />
-      <Text>OBSERVED</Text>
+      <Text style={styles.chartLabel}>OBSERVED</Text>
     </View>
   </View>
 );
@@ -240,18 +242,22 @@ const Wrapper: React.FC<WrapperProps> = ({
   refreshing,
   onRefresh,
 }) => {
+  const { newVersionAvailable } = useAppVersionContext();
   return (
-    <View style={styles.container}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        showsVerticalScrollIndicator={false}
-      >
-        <Header />
-        {children}
-      </ScrollView>
-    </View>
+    <>
+      {newVersionAvailable && <UpgradeNotice />}
+      <View style={styles.container}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+          showsVerticalScrollIndicator={false}
+        >
+          <Header />
+          {children}
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
@@ -311,7 +317,7 @@ export default TideStackScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 20,
+    margin: 10,
     marginBottom: 0,
   },
   loaderBlock: {
@@ -340,7 +346,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 25,
   },
   chartLabelInnerWrapper: {
     marginRight: 20,
@@ -348,10 +354,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   chartLabelSwatch: {
-    height: 18,
-    width: 18,
+    height: 12,
+    width: 12,
     borderRadius: 3,
     marginRight: 5,
+  },
+  chartLabel: {
+    fontSize: 12,
+    letterSpacing: 0.2,
   },
   headerContainer: {
     flexDirection: 'row',

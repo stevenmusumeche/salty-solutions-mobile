@@ -1,14 +1,14 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-} from 'react';
 import {
   LocationDetailFragment,
   useLocationsQuery,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { AsyncStorage } from 'react-native';
 
 interface AppContext {

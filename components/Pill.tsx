@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     marginBottom: 5,
     borderWidth: 1,
-    borderRadius: 5,
+    borderRadius: 4,
     overflow: 'hidden',
     alignItems: 'stretch',
   },
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     width: '50%',
     textAlign: 'center',
     color: white,
-    paddingVertical: 5,
+    paddingVertical: 3,
     textTransform: 'uppercase',
     fontSize: 11,
     fontWeight: '500',
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   },
   valueText: {
     width: '100%',
-    fontSize: 14,
+    fontSize: 12,
     textAlign: 'center',
   },
 });

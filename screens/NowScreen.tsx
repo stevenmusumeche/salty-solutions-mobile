@@ -13,9 +13,11 @@ import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import AirTempCard from '../components/AirTempCard';
 import CardGrid from '../components/CardGrid';
 import SalinityCard from '../components/SalinityCard';
+import UpgradeNotice from '../components/UpgradeNotice';
 import WaterTempCard from '../components/WaterTempCard';
 import WindCard from '../components/WindCard';
 import { AppContext } from '../context/AppContext';
+import { useAppVersionContext } from '../context/AppVersionContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 
@@ -28,6 +30,7 @@ const Now: React.FC = () => {
   useHeaderTitle('Current Conditions');
 
   const { activeLocation } = useContext(AppContext);
+  const { newVersionAvailable } = useAppVersionContext();
   const [requestRefresh, setRequestRefresh] = useState(false);
 
   const makeRefreshRequest = () => {
@@ -40,23 +43,29 @@ const Now: React.FC = () => {
   const windSites = useWindSites(activeLocation);
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={false} onRefresh={makeRefreshRequest} />
-        }
-      >
-        <CardGrid>
-          <WindCard requestRefresh={requestRefresh} sites={windSites} />
-          <AirTempCard requestRefresh={requestRefresh} />
-          <WaterTempCard
-            sites={waterTempSites}
-            requestRefresh={requestRefresh}
-          />
-          <SalinityCard sites={salinitySites} requestRefresh={requestRefresh} />
-        </CardGrid>
-      </ScrollView>
-    </View>
+    <>
+      {newVersionAvailable && <UpgradeNotice />}
+      <View style={styles.container}>
+        <ScrollView
+          refreshControl={
+            <RefreshControl refreshing={false} onRefresh={makeRefreshRequest} />
+          }
+        >
+          <CardGrid>
+            <WindCard requestRefresh={requestRefresh} sites={windSites} />
+            <AirTempCard requestRefresh={requestRefresh} />
+            <WaterTempCard
+              sites={waterTempSites}
+              requestRefresh={requestRefresh}
+            />
+            <SalinityCard
+              sites={salinitySites}
+              requestRefresh={requestRefresh}
+            />
+          </CardGrid>
+        </ScrollView>
+      </View>
+    </>
   );
 };
 

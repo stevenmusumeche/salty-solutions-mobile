@@ -21,7 +21,7 @@ const HighLowTable: React.FC<Props> = ({ hiLowData, sunData, moonData }) => {
 
   return (
     <View style={styles.container}>
-      {hiLowData.map(({ x, y, type }, i) => (
+      {hiLowData.map(({ x, type }, i) => (
         <Pill key={i} label={`${type} Tide`}>
           {formatDate(x)}
         </Pill>

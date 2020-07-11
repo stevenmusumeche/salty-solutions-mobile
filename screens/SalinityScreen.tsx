@@ -22,6 +22,8 @@ import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import RemoteImage from '../components/RemoteImage';
 import { RouteProp } from '@react-navigation/native';
 import { brandYellow, black, gray, white } from '../colors';
+import UpgradeNotice from '../components/UpgradeNotice';
+import { useAppVersionContext } from '../context/AppVersionContext';
 
 type StackParams = {
   'Zoomable Salinity Map': {
@@ -45,6 +47,7 @@ const Salinity: React.FC<Props> = ({ navigation }) => {
 
   const [refreshing, setRefreshing] = React.useState(false);
   const { activeLocation } = useContext(AppContext);
+  const { newVersionAvailable } = useAppVersionContext();
   const [salinityMap, refresh] = useSalinityMapQuery({
     variables: { locationId: activeLocation.id },
     pause: !activeLocation,
@@ -95,16 +98,19 @@ const Salinity: React.FC<Props> = ({ navigation }) => {
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-      >
-        {stuffToRender}
-      </ScrollView>
-    </View>
+    <>
+      {newVersionAvailable && <UpgradeNotice />}
+      <View style={styles.container}>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }
+        >
+          {stuffToRender}
+        </ScrollView>
+      </View>
+    </>
   );
 };
 

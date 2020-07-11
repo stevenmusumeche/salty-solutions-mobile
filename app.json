@@ -4,7 +4,7 @@
     "slug": "salty-solutions",
     "privacy": "public",
     "platforms": ["ios", "android"],
-    "version": "1.0.24",
+    "version": "1.0.25",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "primaryColor": "#4a5568",
@@ -20,14 +20,14 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "com.musumeche.salty.solutions",
-      "buildNumber": "1.0.24",
+      "buildNumber": "1.0.25",
       "config": {
         "usesNonExemptEncryption": false
       }
     },
     "android": {
       "package": "com.musumeche.salty.solutions",
-      "versionCode": 1,
+      "versionCode": 25,
       "permissions": []
     }
   }

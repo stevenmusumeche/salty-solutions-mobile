@@ -198,7 +198,7 @@ const ArrowPoint: React.FC<ArrowPointProps | any> = ({ x, index, datum }) => {
       x={adjustedX}
       y={adjustedY}
       d="m9.5,238.88542l90.5,-229.88542l90,231l-90,-50l-90.5,49z"
-      fill={blue[700]}
+      fill={gray[800]}
       transform={`rotate(${transformAngle},110,125)`}
     />
   );

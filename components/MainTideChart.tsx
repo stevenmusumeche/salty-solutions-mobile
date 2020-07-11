@@ -57,7 +57,7 @@ const MainTideChart: React.FC<Props> = ({
           top: 0,
           bottom: 30,
           left: 25,
-          right: 55,
+          right: 35,
         }}
       >
         {/* background colors for night */}

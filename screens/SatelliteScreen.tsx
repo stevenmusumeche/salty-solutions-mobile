@@ -28,6 +28,8 @@ import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { brandYellow, gray, white } from '../colors';
+import UpgradeNotice from '../components/UpgradeNotice';
+import { useAppVersionContext } from '../context/AppVersionContext';
 
 type StackParams = {
   'Satellite Image Detail': {
@@ -53,6 +55,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
   const scrollRef = useRef<any>(null);
   const { width } = useWindowDimensions();
   const { activeLocation } = useContext(AppContext);
+  const { newVersionAvailable } = useAppVersionContext();
   const [modisMap] = useModisMapQuery({
     variables: { locationId: activeLocation.id },
   });
@@ -94,86 +97,91 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.introText}>
-        MODIS is an extensive program with two satellites (Aqua and Terra) that
-        pass over the United States and take a giant photo each day. Most
-        importantly for fishermen,{' '}
-        <Text style={styles.bold}>
-          you can use the imagery to find clean water.
-        </Text>
-      </Text>
-
-      <View style={styles.tileHeader}>
-        <View>
-          <MaterialCommunityIcons
-            name="gesture-swipe-right"
-            size={20}
-            color={curIndex > 0 ? 'rgba(0,0,0,.5)' : 'transparent'}
-          />
-        </View>
-        <View>
-          <Text style={styles.tileText}>{format(curDate, 'EEEE, LLLL d')}</Text>
-          <Text style={styles.tileDiffText}>
-            {dayDiff === 0
-              ? 'Today '
-              : `${dayDiff} day${dayDiff > 1 ? 's' : ''} ago `}
-            ({curImage.satellite.toLowerCase()} satellite)
+    <>
+      {newVersionAvailable && <UpgradeNotice />}
+      <View style={styles.container}>
+        <Text style={styles.introText}>
+          MODIS is an extensive program with two satellites (Aqua and Terra)
+          that pass over the United States and take a giant photo each day. Most
+          importantly for fishermen,{' '}
+          <Text style={styles.bold}>
+            you can use the imagery to find clean water.
           </Text>
+        </Text>
+
+        <View style={styles.tileHeader}>
+          <View>
+            <MaterialCommunityIcons
+              name="gesture-swipe-right"
+              size={20}
+              color={curIndex > 0 ? 'rgba(0,0,0,.5)' : 'transparent'}
+            />
+          </View>
+          <View>
+            <Text style={styles.tileText}>
+              {format(curDate, 'EEEE, LLLL d')}
+            </Text>
+            <Text style={styles.tileDiffText}>
+              {dayDiff === 0
+                ? 'Today '
+                : `${dayDiff} day${dayDiff > 1 ? 's' : ''} ago `}
+              ({curImage.satellite.toLowerCase()} satellite)
+            </Text>
+          </View>
+          <View>
+            <MaterialCommunityIcons
+              name="gesture-swipe-left"
+              size={20}
+              color={
+                curIndex < maps.length - 1 ? 'rgba(0,0,0,.5)' : 'transparent'
+              }
+            />
+          </View>
         </View>
-        <View>
-          <MaterialCommunityIcons
-            name="gesture-swipe-left"
-            size={20}
-            color={
-              curIndex < maps.length - 1 ? 'rgba(0,0,0,.5)' : 'transparent'
-            }
-          />
-        </View>
+
+        <ScrollView
+          ref={scrollRef}
+          horizontal={true}
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          onMomentumScrollEnd={(e) => {
+            const newIndex = Math.floor(
+              e.nativeEvent.contentOffset.x / (width - 60),
+            );
+            setCurIndex(newIndex);
+          }}
+          style={styles.swiperView}
+        >
+          {maps.map((map, i) => {
+            const smallImageDisplayWidth = width - 40;
+            const smallImageDisplayHeight =
+              (map.small.height * smallImageDisplayWidth) / map.small.width;
+
+            return (
+              <View key={i}>
+                <TouchableWithoutFeedback {...touchableProps}>
+                  <Image
+                    source={{
+                      uri: map.small.url,
+                      width: smallImageDisplayWidth,
+                      height: smallImageDisplayHeight,
+                    }}
+                  />
+                </TouchableWithoutFeedback>
+              </View>
+            );
+          })}
+        </ScrollView>
+
+        <Text style={styles.zoomText}>
+          {pressText} image to open zoomable view.
+        </Text>
+        <Text>
+          Swipe left and right to view different days, and{' '}
+          {pressText.toLowerCase()} any image to open a zoomable view.
+        </Text>
       </View>
-
-      <ScrollView
-        ref={scrollRef}
-        horizontal={true}
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        onMomentumScrollEnd={(e) => {
-          const newIndex = Math.floor(
-            e.nativeEvent.contentOffset.x / (width - 60),
-          );
-          setCurIndex(newIndex);
-        }}
-        style={styles.swiperView}
-      >
-        {maps.map((map, i) => {
-          const smallImageDisplayWidth = width - 40;
-          const smallImageDisplayHeight =
-            (map.small.height * smallImageDisplayWidth) / map.small.width;
-
-          return (
-            <View key={i}>
-              <TouchableWithoutFeedback {...touchableProps}>
-                <Image
-                  source={{
-                    uri: map.small.url,
-                    width: smallImageDisplayWidth,
-                    height: smallImageDisplayHeight,
-                  }}
-                />
-              </TouchableWithoutFeedback>
-            </View>
-          );
-        })}
-      </ScrollView>
-
-      <Text style={styles.zoomText}>
-        {pressText} image to open zoomable view.
-      </Text>
-      <Text>
-        Swipe left and right to view different days, and{' '}
-        {pressText.toLowerCase()} any image to open a zoomable view.
-      </Text>
-    </View>
+    </>
   );
 };
 
