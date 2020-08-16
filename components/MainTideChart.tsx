@@ -2,6 +2,7 @@ import {
   SunDetailFieldsFragment,
   TideDetailFieldsFragment,
   WaterHeightFieldsFragment,
+  SolunarDetailFieldsFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import {
   buildDatasets,
@@ -17,18 +18,20 @@ import {
   VictoryLine,
 } from 'victory-native';
 import { TideContext } from '../context/TideContext';
-import { gray, blue } from '../colors';
+import { gray, blue, black } from '../colors';
 
 interface Props {
   sunData: SunDetailFieldsFragment;
   tideData: TideDetailFieldsFragment[];
   waterHeightData: WaterHeightFieldsFragment[];
+  solunarData: SolunarDetailFieldsFragment;
 }
 
 const MainTideChart: React.FC<Props> = ({
   sunData,
   tideData: rawTideData,
   waterHeightData: rawWaterHeightData,
+  solunarData,
 }) => {
   const { date } = useContext(TideContext);
   const {
@@ -38,18 +41,21 @@ const MainTideChart: React.FC<Props> = ({
     tideData,
     waterHeightData,
     tideBoundaries,
-  } = buildDatasets(sunData, rawTideData, rawWaterHeightData);
+    tidesWithinSolunarPeriod,
+  } = buildDatasets(sunData, rawTideData, rawWaterHeightData, solunarData);
   const { min, max } = tideBoundaries;
 
   let timeTickValues = [];
-  for (let i = 0; i <= 24; i += 4) {
+  for (let i = 0; i <= 24; i += 3) {
     timeTickValues.push(addHours(startOfDay(date), i));
   }
+
+  const y0 = min - Y_PADDING > 0 ? 0 : min - Y_PADDING;
 
   return (
     <View style={styles.container}>
       <VictoryChart
-        height={250}
+        height={200}
         style={{
           parent: { touchAction: 'auto' },
         }}
@@ -59,6 +65,7 @@ const MainTideChart: React.FC<Props> = ({
           left: 25,
           right: 35,
         }}
+        domain={{ x: [startOfDay(date), endOfDay(date)] }}
       >
         {/* background colors for night */}
         <VictoryArea
@@ -76,7 +83,7 @@ const MainTideChart: React.FC<Props> = ({
               fill: gray[700],
             },
           }}
-          y0={() => (min < 0 ? min - Y_PADDING : 0)}
+          y0={() => y0}
         />
 
         {/* background colors for time periods like night, dusk, etc */}
@@ -84,13 +91,59 @@ const MainTideChart: React.FC<Props> = ({
         {renderBackgroundColor(dawn, gray[500], min)}
         {renderBackgroundColor(dusk, gray[500], min)}
 
+        {/* actual tide line */}
+        <VictoryArea
+          data={tideData}
+          scale={{ x: 'time', y: 'linear' }}
+          interpolation={'natural'}
+          style={{
+            data: {
+              stroke: blue[800],
+              strokeWidth: 2,
+              fill: blue[650],
+            },
+          }}
+          y0={() => y0}
+        />
+
+        {/* solunar periods */}
+        {tidesWithinSolunarPeriod.map((tides, i) => (
+          <VictoryArea
+            key={i}
+            data={tides}
+            y0={() => y0}
+            scale={{ x: 'time', y: 'linear' }}
+            interpolation={'natural'}
+            style={{
+              data: {
+                fill: 'rgba(255,255,255, .25)',
+                stroke: blue[800],
+                strokeWidth: 2,
+              },
+            }}
+          />
+        ))}
+
+        {/* observed water height */}
+        <VictoryLine
+          data={waterHeightData}
+          scale={{ x: 'time', y: 'linear' }}
+          interpolation={'natural'}
+          style={{
+            data: {
+              strokeWidth: 2,
+              stroke: black,
+            },
+          }}
+        />
+
         {/* time x-axis */}
         <VictoryAxis
           style={{
             grid: {
               strokeWidth: 1,
-              stroke: gray[600],
-              strokeDasharray: '2 4',
+              stroke: black,
+              strokeDasharray: '1 10',
             },
             tickLabels: { fontSize: 12, padding: 3 },
           }}
@@ -103,41 +156,10 @@ const MainTideChart: React.FC<Props> = ({
         <VictoryAxis
           dependentAxis
           style={{
-            grid: {
-              stroke: gray[600],
-              strokeWidth: (y) => (y === 0 && min < 0 ? 2 : 1),
-              strokeDasharray: (y) => (y === 0 && min < 0 ? '12 6' : '2 10'),
-            },
             tickLabels: { fontSize: 12, padding: 5 },
           }}
           tickCount={6}
           crossAxis={false}
-        />
-
-        {/* actual tide line */}
-        <VictoryLine
-          data={tideData}
-          scale={{ x: 'time', y: 'linear' }}
-          interpolation={'natural'}
-          style={{
-            data: {
-              strokeWidth: 2,
-              stroke: 'black',
-            },
-          }}
-        />
-
-        {/* observed water height */}
-        <VictoryLine
-          data={waterHeightData}
-          scale={{ x: 'time', y: 'linear' }}
-          interpolation={'natural'}
-          style={{
-            data: {
-              strokeWidth: 2,
-              stroke: blue[600],
-            },
-          }}
         />
       </VictoryChart>
     </View>

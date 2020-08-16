@@ -2,6 +2,7 @@ import {
   CombinedForecastV2DetailFragment,
   SunDetailFieldsFragment,
   TideDetailFieldsFragment,
+  SolunarDetailFieldsFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import React from 'react';
 import {
@@ -26,6 +27,7 @@ interface Props {
   dateString: string;
   refreshing: boolean;
   onRefresh: () => void;
+  solunarData: SolunarDetailFieldsFragment[];
 }
 
 const ForecastCard: React.FC<Props> = (props) => {
@@ -37,6 +39,7 @@ const ForecastCard: React.FC<Props> = (props) => {
     tideStationName,
     refreshing,
     onRefresh,
+    solunarData,
   } = props;
   const date = new Date(dateString);
 
@@ -59,8 +62,13 @@ const ForecastCard: React.FC<Props> = (props) => {
               stationName={tideStationName}
               date={date}
               sunData={sunData}
+              solunarData={solunarData}
             />
-            <ForecastSun sunData={sunData} date={date} />
+            <ForecastSun
+              sunData={sunData}
+              date={date}
+              solunarData={solunarData}
+            />
             <ForecastText day={datum.day} night={datum.night} />
           </View>
         </View>

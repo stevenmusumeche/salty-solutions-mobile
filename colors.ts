@@ -5,6 +5,7 @@ export const blue = {
   650: '#5f8dc1',
   700: '#2b6cb0',
   800: '#2c5282',
+  solunar: '#CBDFF3',
 };
 
 export const gray = {
@@ -23,6 +24,7 @@ export const red = {
 };
 
 export const yellow = {
+  500: '#ecc94b',
   600: '#D69E2E',
   700: '#B7791F',
 };
@@ -35,3 +37,7 @@ export const black = '#000';
 export const white = '#FFF';
 
 export const brandYellow = '#fec857';
+
+export const teal = {
+  600: '#319795',
+};

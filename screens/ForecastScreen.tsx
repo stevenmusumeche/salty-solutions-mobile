@@ -49,6 +49,7 @@ const Forecast: React.FC = () => {
 
   let sunData = forecast.data?.location?.sun || [];
   let tideData = forecast.data?.location?.tidePreditionStations[0]?.tides || [];
+  let solunarData = forecast.data?.location?.solunar || [];
   let tideStationName =
     forecast.data?.location?.tidePreditionStations[0].name || '';
 
@@ -100,6 +101,7 @@ const Forecast: React.FC = () => {
                 dateString={item.date}
                 refreshing={refreshing}
                 onRefresh={onRefresh}
+                solunarData={solunarData}
               />
             );
           }}

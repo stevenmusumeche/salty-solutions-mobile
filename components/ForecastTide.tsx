@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
 import {
   TideDetailFieldsFragment,
   SunDetailFieldsFragment,
+  SolunarDetailFieldsFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { isSameDay, startOfDay, addHours, format, endOfDay } from 'date-fns';
 import {
@@ -19,6 +20,7 @@ interface Props {
   tideData: TideDetailFieldsFragment[];
   sunData: SunDetailFieldsFragment[];
   date: Date;
+  solunarData: SolunarDetailFieldsFragment[];
 }
 
 const ForecastTide: React.FC<Props> = ({
@@ -26,6 +28,7 @@ const ForecastTide: React.FC<Props> = ({
   sunData,
   date,
   stationName,
+  solunarData,
 }) => {
   const { width } = useWindowDimensions();
   const curDayTideData = useMemo(
@@ -43,16 +46,33 @@ const ForecastTide: React.FC<Props> = ({
     [sunData, date],
   );
 
+  const curDaySolunarData: SolunarDetailFieldsFragment = useMemo(
+    () =>
+      solunarData.filter(
+        (x) =>
+          startOfDay(new Date(x.date)).toISOString() ===
+          startOfDay(date).toISOString(),
+      )[0] || {},
+    [solunarData, date],
+  );
+
   const yTickVals = useMemo(
     () => [0, 3, 6, 9, 12, 15, 18, 21].map((h) => addHours(date, h)),
     [date],
   );
 
-  const { tideData, tideBoundaries, daylight } = useMemo(
-    () => buildDatasets(curDaySunData, curDayTideData, []),
-    [curDaySunData, curDayTideData],
+  const {
+    tideData,
+    tideBoundaries,
+    daylight,
+    tidesWithinSolunarPeriod,
+  } = useMemo(
+    () => buildDatasets(curDaySunData, curDayTideData, [], curDaySolunarData),
+    [curDaySunData, curDayTideData, curDaySolunarData],
   );
   const { min, max } = tideBoundaries;
+
+  const y0 = min < 0 ? min - Y_PADDING : 0;
 
   return (
     <View style={styles.container}>
@@ -71,6 +91,7 @@ const ForecastTide: React.FC<Props> = ({
           left: 25,
           right: 25,
         }}
+        domain={{ x: [startOfDay(date), endOfDay(date)] }}
       >
         {/* background colors for night */}
         <VictoryArea
@@ -88,7 +109,7 @@ const ForecastTide: React.FC<Props> = ({
               fill: gray[700],
             },
           }}
-          y0={() => (min < 0 ? min - Y_PADDING : 0)}
+          y0={() => y0}
         />
 
         {/* background colors for time periods like night, dusk, etc */}
@@ -122,7 +143,6 @@ const ForecastTide: React.FC<Props> = ({
         {/* actual tide line */}
         <VictoryArea
           data={tideData}
-          y0={() => (min < 0 ? min - Y_PADDING : 0)}
           scale={{ x: 'time', y: 'linear' }}
           interpolation={'natural'}
           style={{
@@ -132,7 +152,26 @@ const ForecastTide: React.FC<Props> = ({
               fill: blue[650],
             },
           }}
+          y0={() => y0}
         />
+
+        {/* solunar periods */}
+        {tidesWithinSolunarPeriod.map((tides, i) => (
+          <VictoryArea
+            key={i}
+            data={tides}
+            y0={() => y0}
+            scale={{ x: 'time', y: 'linear' }}
+            interpolation={'natural'}
+            style={{
+              data: {
+                stroke: blue[800],
+                strokeWidth: 1,
+                fill: 'rgba(255,255,255, .25)',
+              },
+            }}
+          />
+        ))}
       </VictoryChart>
       <ChartLegend stationName={stationName} />
     </View>
@@ -148,6 +187,10 @@ const ChartLegend: React.FC<{ stationName: string }> = ({ stationName }) => {
         <ChartLabelSwatch color={blue[650]} />
         <Text style={styles.chartLabelText}>Tides for {stationName}</Text>
       </View>
+      <View style={[styles.chartLabelInnerWrapper, { marginBottom: 0 }]}>
+        <ChartLabelSwatch color={blue.solunar} />
+        <Text style={styles.chartLabelText}>Solunar Feeding Periods</Text>
+      </View>
     </View>
   );
 };
@@ -161,9 +204,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
+    flexWrap: 'wrap',
   },
   chartLabelInnerWrapper: {
     marginRight: 20,
+    marginBottom: 5,
     flexDirection: 'row',
     alignItems: 'center',
   },

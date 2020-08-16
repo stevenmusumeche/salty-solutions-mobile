@@ -12,9 +12,7 @@ const Pill: React.FC<{ label: string; color?: string }> = ({
       style={[styles.container, { borderColor: color, backgroundColor: color }]}
     >
       <Text style={styles.label}>{label}</Text>
-      <View style={styles.value}>
-        <Text style={styles.valueText}>{children}</Text>
-      </View>
+      <View style={styles.value}>{children}</View>
     </View>
   );
 };
@@ -23,9 +21,8 @@ export default Pill;
 
 const styles = StyleSheet.create({
   container: {
-    width: '49%',
     flexDirection: 'row',
-    marginBottom: 5,
+    marginBottom: 6,
     borderWidth: 1,
     borderRadius: 4,
     overflow: 'hidden',
@@ -34,21 +31,19 @@ const styles = StyleSheet.create({
   label: {
     width: '50%',
     textAlign: 'center',
+    alignSelf: 'center',
     color: white,
-    paddingVertical: 3,
+    paddingVertical: 5,
     textTransform: 'uppercase',
-    fontSize: 11,
-    fontWeight: '500',
+    fontSize: 14,
+    fontWeight: '400',
+    letterSpacing: 0.5,
   },
   value: {
+    paddingVertical: 5,
     width: '50%',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: white,
-  },
-  valueText: {
-    width: '100%',
-    fontSize: 12,
-    textAlign: 'center',
   },
 });

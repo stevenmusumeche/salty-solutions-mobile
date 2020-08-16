@@ -1,15 +1,21 @@
 import React, { useMemo, FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SunDetailFieldsFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import {
+  SunDetailFieldsFragment,
+  SolunarDetailFieldsFragment,
+  SolunarPeriodFieldsFragment,
+} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { startOfDay, format } from 'date-fns';
 import { gray } from '../colors';
+import Stars from './Stars';
 
 interface Props {
   sunData: SunDetailFieldsFragment[];
   date: Date;
+  solunarData: SolunarDetailFieldsFragment[];
 }
 
-const ForecastSun: React.FC<Props> = ({ sunData, date }) => {
+const ForecastSun: React.FC<Props> = ({ sunData, date, solunarData }) => {
   const curDaySunData: SunDetailFieldsFragment = useMemo(
     () =>
       sunData.filter(
@@ -20,18 +26,40 @@ const ForecastSun: React.FC<Props> = ({ sunData, date }) => {
     [sunData, date],
   );
 
+  const curDaySolunarData: SolunarDetailFieldsFragment = useMemo(
+    () =>
+      solunarData.filter(
+        (x) =>
+          startOfDay(new Date(x.date)).toISOString() ===
+          startOfDay(date).toISOString(),
+      )[0] || {},
+    [solunarData, date],
+  );
+
   return (
     <View style={styles.container}>
-      <SunDay
-        name="nautical dawn"
-        value={new Date(curDaySunData.nauticalDawn)}
-      />
-      <SunDay name="sunrise" value={new Date(curDaySunData.sunrise)} />
-      <SunDay name="sunset" value={new Date(curDaySunData.sunset)} />
-      <SunDay
-        name="nautical dusk"
-        value={new Date(curDaySunData.nauticalDusk)}
-      />
+      <View style={styles.rowWrapper}>
+        <SunDay
+          name="nautical dawn"
+          value={new Date(curDaySunData.nauticalDawn)}
+        />
+        <SunDay name="sunrise" value={new Date(curDaySunData.sunrise)} />
+        <SunDay name="sunset" value={new Date(curDaySunData.sunset)} />
+        <SunDay
+          name="nautical dusk"
+          value={new Date(curDaySunData.nauticalDusk)}
+        />
+      </View>
+      <View style={styles.rowWrapper}>
+        <SolunarPeriod type="Major" periods={curDaySolunarData.majorPeriods} />
+        <SolunarPeriod type="Minor" periods={curDaySolunarData.minorPeriods} />
+      </View>
+      <View style={styles.starsWrapper}>
+        <Stars score={curDaySolunarData.score} />
+        <Text style={[sunDayStyles.label, { fontSize: 12 }]}>
+          Solunar Score
+        </Text>
+      </View>
     </View>
   );
 };
@@ -46,7 +74,14 @@ const styles = StyleSheet.create({
     borderColor: gray[200],
     borderTopWidth: 1,
     borderBottomWidth: 1,
+  },
+  rowWrapper: {
     flexDirection: 'row',
+  },
+  starsWrapper: {
+    width: '40%',
+    marginTop: 20,
+    alignSelf: 'center',
   },
 });
 
@@ -61,6 +96,10 @@ const sunDayStyles = StyleSheet.create({
   container: {
     width: '25%',
   },
+  solunarContainer: {
+    width: '50%',
+    marginTop: 20,
+  },
   time: {
     textAlign: 'center',
     fontSize: 22,
@@ -73,3 +112,21 @@ const sunDayStyles = StyleSheet.create({
     letterSpacing: -0.3,
   },
 });
+
+const SolunarPeriod: FC<{
+  type: 'Major' | 'Minor';
+  periods: SolunarPeriodFieldsFragment[];
+}> = ({ type, periods }) => (
+  <View style={sunDayStyles.solunarContainer}>
+    {periods.map((period) => (
+      <View key={period.start}>
+        <Text style={[sunDayStyles.time, { fontSize: 16 }]}>
+          {format(new Date(period.start), 'h:mmaaaaa')} -{' '}
+          {format(new Date(period.end), 'h:mmaaaaa')}
+        </Text>
+      </View>
+    ))}
+
+    <Text style={sunDayStyles.label}>{type} Feeding Periods</Text>
+  </View>
+);

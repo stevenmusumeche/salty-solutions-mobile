@@ -1,40 +1,63 @@
 import {
   SunDetailFieldsFragment,
   MoonDetailFieldsFragment,
+  SolunarDetailFieldsFragment,
+  SolunarPeriodFieldsFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { format } from 'date-fns';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Pill from './Pill';
-import { blue, orange } from '../colors';
+import { blue, orange, teal } from '../colors';
+import Stars from './Stars';
 
 interface Props {
   hiLowData: any[];
   sunData?: SunDetailFieldsFragment;
   moonData: MoonDetailFieldsFragment;
+  solunarData: SolunarDetailFieldsFragment;
 }
 
-const HighLowTable: React.FC<Props> = ({ hiLowData, sunData, moonData }) => {
+const HighLowTable: React.FC<Props> = ({
+  hiLowData,
+  sunData,
+  moonData,
+  solunarData,
+}) => {
   const formatDate = (x: string) => (
     <Text style={styles.date}>{format(new Date(x), 'h:mma')}</Text>
   );
 
+  const formatPeriod = (period: SolunarPeriodFieldsFragment) => (
+    <View key={period.start}>
+      <Text style={styles.smallerFont}>
+        {format(new Date(period.start), 'h:mma')}-
+        {format(new Date(period.end), 'h:mma')}
+      </Text>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
-      {hiLowData.map(({ x, type }, i) => (
-        <Pill key={i} label={`${type} Tide`}>
-          {formatDate(x)}
-        </Pill>
-      ))}
+      <Pill color={teal[600]} label={'Solunar Score'}>
+        <Stars score={solunarData.score} />
+      </Pill>
+
+      <Pill color={teal[600]} label={'Major Feeding'}>
+        {solunarData.majorPeriods.map((period) => {
+          return formatPeriod(period);
+        })}
+      </Pill>
+
+      <Pill color={teal[600]} label={'Minor Feeding'}>
+        {solunarData.minorPeriods.map((period) => {
+          return formatPeriod(period);
+        })}
+      </Pill>
 
       {sunData?.nauticalDawn && (
-        <Pill label="Naut Dawn" color={orange[700]}>
+        <Pill label="Nautical Dawn" color={orange[700]}>
           {formatDate(sunData.nauticalDawn)}
-        </Pill>
-      )}
-      {sunData?.dawn && (
-        <Pill label="Dawn" color={orange[700]}>
-          {formatDate(sunData.dawn)}
         </Pill>
       )}
       {sunData?.sunrise && (
@@ -47,21 +70,22 @@ const HighLowTable: React.FC<Props> = ({ hiLowData, sunData, moonData }) => {
           {formatDate(sunData.sunset)}
         </Pill>
       )}
-      {sunData?.dusk && (
-        <Pill label="Dusk" color={orange[700]}>
-          {formatDate(sunData.dusk)}
-        </Pill>
-      )}
       {sunData?.nauticalDusk && (
-        <Pill label="Naut Dusk" color={orange[700]}>
+        <Pill label="Nautical Dusk" color={orange[700]}>
           {formatDate(sunData.nauticalDusk)}
         </Pill>
       )}
 
+      {hiLowData.map(({ x, type }, i) => (
+        <Pill key={i} label={`${type} Tide`}>
+          {formatDate(x)}
+        </Pill>
+      ))}
+
       {moonData && moonData.phase && (
         <Pill label="Moon" color={blue[800]}>
           {/* todo moon icon */}
-          <Text style={{ fontSize: 10 }}>{moonData.phase}</Text>
+          <Text style={styles.smallerFont}>{moonData.phase}</Text>
         </Pill>
       )}
     </View>
@@ -74,12 +98,17 @@ const styles = StyleSheet.create({
   container: {
     width: '100%',
     overflow: 'hidden',
-    flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
+    marginBottom: 9,
   },
   date: {
     textTransform: 'lowercase',
+    width: '100%',
+    fontSize: 16,
+    textAlign: 'center',
   },
+  smallerFont: {
+    fontSize: 14,
+  },
+  valueText: {},
 });

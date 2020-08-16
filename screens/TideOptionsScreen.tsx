@@ -9,7 +9,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import TideStationSelect from '../components/TideStationSelect';
 import UsgsSiteSelect from '../components/UsgsSiteSelect';
 import { TideContext } from '../context/TideContext';
-import { blue, gray, white } from '../colors';
+import { blue, gray, white, black } from '../colors';
 
 interface Props {
   navigation: StackNavigationProp<any>;
@@ -28,54 +28,56 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <DateSelect date={date} setDate={setDate} />
-      <View style={styles.fullWidth}>
-        <Text style={styles.selectLabel}>Tide Station:</Text>
-        <TideStationSelect
-          tideStations={tideStations}
-          selectedId={selectedTideStation?.id || ''}
-          handleChange={(stationId) => {
-            if (stationId) {
-              setSelectedTideStationId(stationId);
-            }
-          }}
+      <View style={styles.cardWrapper}>
+        <DateSelect date={date} setDate={setDate} />
+        <View style={styles.fullWidth}>
+          <Text style={styles.selectLabel}>Tide Station:</Text>
+          <TideStationSelect
+            tideStations={tideStations}
+            selectedId={selectedTideStation?.id || ''}
+            handleChange={(stationId) => {
+              if (stationId) {
+                setSelectedTideStationId(stationId);
+              }
+            }}
+          />
+        </View>
+        <View style={styles.usgsSelectWrapper}>
+          <Text style={styles.selectLabel}>Observation Site:</Text>
+          <UsgsSiteSelect
+            sites={sites}
+            selectedId={selectedSite?.id || ''}
+            handleChange={(itemValue) => {
+              const match = sites.find((site) => site.id === itemValue);
+              setSelectedSite(match!);
+            }}
+            style={{
+              inputIOS: {
+                fontSize: undefined,
+                backgroundColor: white,
+                paddingVertical: 6,
+                paddingHorizontal: 10,
+              },
+              inputAndroid: {
+                height: 30,
+                fontSize: undefined,
+                backgroundColor: white,
+                paddingVertical: 6,
+                paddingHorizontal: 10,
+              },
+              iconContainer: {
+                top: 5,
+                right: 5,
+              },
+            }}
+          />
+        </View>
+        <Button
+          color={blue[600]}
+          title="Save Tide Settings"
+          onPress={() => navigation.goBack()}
         />
       </View>
-      <View style={styles.usgsSelectWrapper}>
-        <Text style={styles.selectLabel}>Observation Site:</Text>
-        <UsgsSiteSelect
-          sites={sites}
-          selectedId={selectedSite?.id || ''}
-          handleChange={(itemValue) => {
-            const match = sites.find((site) => site.id === itemValue);
-            setSelectedSite(match!);
-          }}
-          style={{
-            inputIOS: {
-              fontSize: undefined,
-              backgroundColor: white,
-              paddingVertical: 6,
-              paddingHorizontal: 10,
-            },
-            inputAndroid: {
-              height: 30,
-              fontSize: undefined,
-              backgroundColor: white,
-              paddingVertical: 6,
-              paddingHorizontal: 10,
-            },
-            iconContainer: {
-              top: 5,
-              right: 5,
-            },
-          }}
-        />
-      </View>
-      <Button
-        color={blue[600]}
-        title="Save Tide Settings"
-        onPress={() => navigation.goBack()}
-      />
     </SafeAreaView>
   );
 };
@@ -129,6 +131,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     margin: 20,
+  },
+  cardWrapper: {
+    width: '100%',
+    backgroundColor: white,
+    padding: 20,
+    borderRadius: 8,
+    shadowColor: black,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 3,
   },
   selectLabel: {
     textTransform: 'uppercase',

@@ -23,7 +23,7 @@ import {
   View,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { blue, gray } from '../colors';
+import { blue, gray, black } from '../colors';
 import { ErrorIcon } from '../components/FullScreenError';
 import HighLowTable from '../components/HighLowTable';
 import LoaderBlock from '../components/LoaderBlock';
@@ -99,6 +99,7 @@ const Tide: React.FC = () => {
     !tideResult?.data?.tidePreditionStation?.tides ||
     !tideResult.data.location?.sun ||
     !tideResult.data.location.moon ||
+    !tideResult.data.location.solunar ||
     !waterHeightBase
   ) {
     stuffToRender = (
@@ -118,6 +119,12 @@ const Tide: React.FC = () => {
       stuffToRender = <Loading />;
     } else {
       const moonData = tideResult.data.location.moon.filter(
+        (x) =>
+          startOfDay(new Date(x.date)).toISOString() ===
+          startOfDay(date).toISOString(),
+      )[0];
+
+      const solunarData = tideResult.data.location.solunar.filter(
         (x) =>
           startOfDay(new Date(x.date)).toISOString() ===
           startOfDay(date).toISOString(),
@@ -151,23 +158,30 @@ const Tide: React.FC = () => {
 
       stuffToRender = (
         <>
-          <MainTideChart
-            sunData={sunData}
-            tideData={curDayTides}
-            waterHeightData={curDayWaterHeight}
-          />
-          <MultiDayTideCharts
-            sunData={tideResult.data.location.sun}
-            tideData={tideResult.data.tidePreditionStation.tides}
-            waterHeightData={waterHeightBase}
-            numDays={3}
-          />
-          <ChartLabel />
-          <HighLowTable
-            hiLowData={hiLowData}
-            sunData={sunData}
-            moonData={moonData}
-          />
+          <View style={styles.chartWrapper}>
+            <MainTideChart
+              sunData={sunData}
+              tideData={curDayTides}
+              waterHeightData={curDayWaterHeight}
+              solunarData={solunarData}
+            />
+            <MultiDayTideCharts
+              sunData={tideResult.data.location.sun}
+              tideData={tideResult.data.tidePreditionStation.tides}
+              waterHeightData={waterHeightBase}
+              numDays={3}
+              solunarData={tideResult.data.location.solunar}
+            />
+            <ChartLabel />
+          </View>
+          <View style={styles.hiLowWrapper}>
+            <HighLowTable
+              hiLowData={hiLowData}
+              sunData={sunData}
+              moonData={moonData}
+              solunarData={solunarData}
+            />
+          </View>
         </>
       );
     }
@@ -184,12 +198,16 @@ const Tide: React.FC = () => {
 const ChartLabel = () => (
   <View style={styles.chartLabelWrapper}>
     <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color="black" />
+      <ChartLabelSwatch color={blue[600]} />
       <Text style={styles.chartLabel}>PREDICTED</Text>
     </View>
     <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color={blue[600]} />
+      <ChartLabelSwatch color={black} />
       <Text style={styles.chartLabel}>OBSERVED</Text>
+    </View>
+    <View style={[styles.chartLabelInnerWrapper, { marginRight: 0 }]}>
+      <ChartLabelSwatch color={blue.solunar} />
+      <Text style={styles.chartLabel}>FEEDING PERIOD</Text>
     </View>
   </View>
 );
@@ -317,8 +335,8 @@ export default TideStackScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 10,
-    marginBottom: 0,
+    // margin: 10,
+    // marginBottom: 0,
   },
   loaderBlock: {
     backgroundColor: gray[400],
@@ -342,14 +360,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
   },
+  chartWrapper: {
+    backgroundColor: 'white',
+    paddingHorizontal: 10,
+    paddingVertical: 20,
+  },
+  hiLowWrapper: {
+    paddingHorizontal: 10,
+    paddingVertical: 15,
+    paddingBottom: 0,
+    borderTopColor: gray[400],
+    borderTopWidth: 1,
+  },
   chartLabelWrapper: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    marginBottom: 25,
+    marginTop: 10,
   },
   chartLabelInnerWrapper: {
-    marginRight: 20,
+    marginRight: 10,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -367,7 +397,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 15,
+    // marginBottom: 15,
+    padding: 10,
+    borderBottomColor: gray[400],
+    borderBottomWidth: 1,
   },
   headerLeft: {
     marginRight: 10,
