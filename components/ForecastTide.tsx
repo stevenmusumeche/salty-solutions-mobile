@@ -187,7 +187,7 @@ const ChartLegend: React.FC<{ stationName: string }> = ({ stationName }) => {
         <ChartLabelSwatch color={blue[650]} />
         <Text style={styles.chartLabelText}>Tides for {stationName}</Text>
       </View>
-      <View style={[styles.chartLabelInnerWrapper, { marginBottom: 0 }]}>
+      <View style={styles.chartLabelInnerWrapper}>
         <ChartLabelSwatch color={blue.solunar} />
         <Text style={styles.chartLabelText}>Solunar Feeding Periods</Text>
       </View>
@@ -198,6 +198,7 @@ const ChartLegend: React.FC<{ stationName: string }> = ({ stationName }) => {
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 10,
+    marginBottom: 0,
     marginTop: 4,
   },
   chartLabelWrapper: {
@@ -208,7 +209,7 @@ const styles = StyleSheet.create({
   },
   chartLabelInnerWrapper: {
     marginRight: 20,
-    marginBottom: 5,
+    marginTop: 5,
     flexDirection: 'row',
     alignItems: 'center',
   },

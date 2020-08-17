@@ -21,9 +21,10 @@ import {
   StyleSheet,
   Text,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { blue, gray, black } from '../colors';
+import { blue, gray, black, white } from '../colors';
 import { ErrorIcon } from '../components/FullScreenError';
 import HighLowTable from '../components/HighLowTable';
 import LoaderBlock from '../components/LoaderBlock';
@@ -279,31 +280,19 @@ const Wrapper: React.FC<WrapperProps> = ({
   );
 };
 
-const Loading: React.FC = () => (
-  <>
-    {/* eslint-disable react-native/no-inline-styles */}
-    <LoaderBlock styles={{ ...styles.loaderBlock, height: 250 }} />
-    <LoaderBlock styles={{ ...styles.loaderBlock, height: 110 }} />
-    <LoaderBlock
-      styles={{
-        ...styles.loaderBlock,
-        height: 30,
-        width: '60%',
-        alignSelf: 'center',
-      }}
-    />
-    {/* eslint-enable react-native/no-inline-styles */}
-    <View style={styles.loaderPillWrapper}>
-      <LoaderBlock styles={styles.loaderPill} />
-      <LoaderBlock styles={styles.loaderPill} />
-      <LoaderBlock styles={styles.loaderPill} />
-      <LoaderBlock styles={styles.loaderPill} />
-      <LoaderBlock styles={styles.loaderPill} />
-      <LoaderBlock styles={styles.loaderPill} />
-      <LoaderBlock styles={styles.loaderPill} />
+const Loading: React.FC = () => {
+  const { height } = useWindowDimensions();
+  return (
+    <View style={styles.loaderWrapper}>
+      <LoaderBlock
+        styles={{
+          ...styles.loaderBlock,
+          height: height - 255,
+        }}
+      />
     </View>
-  </>
-);
+  );
+};
 
 const RootStack = createStackNavigator();
 
@@ -335,13 +324,11 @@ export default TideStackScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // margin: 10,
-    // marginBottom: 0,
   },
+  loaderWrapper: { backgroundColor: white, flex: 1 },
   loaderBlock: {
-    backgroundColor: gray[400],
-    width: '100%',
-    marginBottom: 20,
+    width: 'auto',
+    margin: 15,
   },
   loaderPillWrapper: {
     flexDirection: 'row',
