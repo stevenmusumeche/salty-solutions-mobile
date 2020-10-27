@@ -35,7 +35,7 @@ const Graph: React.FC<Props> = ({
     data = data.filter((_: any, i: number) => i % mod === 0);
   }
 
-  const width = fullScreen ? windowWidth - 10 : windowWidth / 2 - 50;
+  const width = fullScreen ? windowWidth - 20 : windowWidth / 2 - 50;
   const height = fullScreen ? 300 : 140;
   const tickCount = fullScreen ? 8 : 2;
 
@@ -44,7 +44,7 @@ const Graph: React.FC<Props> = ({
       {wrapWithTouchable(
         <VictoryChart
           padding={{
-            left: 21,
+            left: 23,
             top: 10,
             right: 10,
             bottom: fullScreen ? 24 : 12,

@@ -85,14 +85,6 @@ const Now: React.FC = () => {
 const NowScreen = () => (
   <NowStack.Navigator>
     <NowStack.Screen name="Current Conditions" component={Now} />
-    <NowStack.Screen
-      name="FullScreenGraph"
-      component={FullScreenGraph}
-      options={{
-        headerTitleStyle: { color: white },
-        headerTintColor: brandYellow,
-      }}
-    />
   </NowStack.Navigator>
 );
 
