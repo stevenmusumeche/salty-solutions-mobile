@@ -1,17 +1,18 @@
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
-import { startOfDay, subHours } from 'date-fns';
-import React, { useContext, useState, useEffect, useMemo } from 'react';
+import { subHours } from 'date-fns';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
+import { DataSite } from '../screens/NowScreen';
 import BigBlue from './BigBlue';
+import ConditionCard from './ConditionCard';
+import { ErrorIcon } from './FullScreenError';
 import Graph from './Graph';
 import LoaderBlock from './LoaderBlock';
-import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import UsgsSiteSelect from './UsgsSiteSelect';
-import { ErrorIcon } from './FullScreenError';
-import { DataSite } from '../screens/NowScreen';
 import NoData from './NoData';
+import UsgsSiteSelect from './UsgsSiteSelect';
 
 interface Props {
   sites: DataSite[];
@@ -22,6 +23,8 @@ const WaterTempCard: React.FC<Props> = ({ sites, requestRefresh }) => {
   const headerText = 'Water Temperature (F)';
 
   const { activeLocation } = useContext(AppContext);
+  const navigation = useNavigation<StackNavigationProp<any>>();
+
   const [selectedSite, setSelectedSite] = useState(() =>
     sites.length ? sites[0] : undefined,
   );
@@ -80,7 +83,17 @@ const WaterTempCard: React.FC<Props> = ({ sites, requestRefresh }) => {
       {curValue ? (
         <>
           <BigBlue>{curValue}</BigBlue>
-          {curDetail && <Graph data={curDetail} />}
+          {curDetail && (
+            <Graph
+              data={curDetail}
+              onPress={() =>
+                navigation.push('FullScreenGraph', {
+                  data: curDetail,
+                  title: headerText,
+                })
+              }
+            />
+          )}
         </>
       ) : (
         <NoData />

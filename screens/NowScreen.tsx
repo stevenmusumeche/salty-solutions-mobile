@@ -10,8 +10,10 @@ import {
 } from '@stevenmusumeche/salty-solutions-shared/dist/hooks';
 import React, { useContext, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import { brandYellow, white } from '../colors';
 import AirTempCard from '../components/AirTempCard';
 import CardGrid from '../components/CardGrid';
+import FullScreenGraph from '../components/FullScreenGraph';
 import SalinityCard from '../components/SalinityCard';
 import UpgradeNotice from '../components/UpgradeNotice';
 import WaterTempCard from '../components/WaterTempCard';
@@ -21,6 +23,17 @@ import { useAppVersionContext } from '../context/AppVersionContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 
+export type NowStackParams = {
+  FullScreenGraph: {
+    title: string;
+    data: {
+      y: number;
+      x: string;
+      [other: string]: any;
+    }[];
+    includeArrows?: boolean;
+  };
+};
 const NowStack = createStackNavigator();
 
 export type DataSite = UsgsSiteDetailFragment | TideStationDetailFragment;
@@ -72,6 +85,14 @@ const Now: React.FC = () => {
 const NowScreen = () => (
   <NowStack.Navigator>
     <NowStack.Screen name="Current Conditions" component={Now} />
+    <NowStack.Screen
+      name="FullScreenGraph"
+      component={FullScreenGraph}
+      options={{
+        headerTitleStyle: { color: white },
+        headerTintColor: brandYellow,
+      }}
+    />
   </NowStack.Navigator>
 );
 

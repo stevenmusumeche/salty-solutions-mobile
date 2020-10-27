@@ -2,7 +2,7 @@ import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { startOfDay, subHours } from 'date-fns';
 import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import ConditionCard from './ConditionCard';
 import { AppContext } from '../context/AppContext';
 import BigBlue from './BigBlue';
@@ -11,6 +11,8 @@ import LoaderBlock from './LoaderBlock';
 import UsgsSiteSelect from './UsgsSiteSelect';
 import { ErrorIcon } from './FullScreenError';
 import NoData from './NoData';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 interface Props {
   sites: UsgsSiteDetailFragment[];
@@ -21,6 +23,8 @@ const SalinityCard: React.FC<Props> = ({ sites, requestRefresh }) => {
   const headerText = 'Salinity';
 
   const { activeLocation } = useContext(AppContext);
+  const navigation = useNavigation<StackNavigationProp<any>>();
+
   const [selectedSite, setSelectedSite] = useState(sites[0]);
 
   const date = useMemo(() => new Date(), []);
@@ -70,7 +74,17 @@ const SalinityCard: React.FC<Props> = ({ sites, requestRefresh }) => {
       {curValue ? (
         <>
           <BigBlue>{curValue}</BigBlue>
-          {curDetail && <Graph data={curDetail} />}
+          {curDetail && (
+            <Graph
+              data={curDetail}
+              onPress={() =>
+                navigation.push('FullScreenGraph', {
+                  data: curDetail,
+                  title: headerText,
+                })
+              }
+            />
+          )}
         </>
       ) : (
         <NoData />
