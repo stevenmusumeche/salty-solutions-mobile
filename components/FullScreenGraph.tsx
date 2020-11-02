@@ -1,8 +1,12 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { StyleSheet, useWindowDimensions } from 'react-native';
+import {
+  SafeAreaView,
+  useSafeArea,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import { VictoryScatter } from 'victory-native';
 import { white } from '../colors';
 import { NowStackParams } from '../screens/NowScreen';
@@ -17,6 +21,10 @@ interface Props {
 }
 
 const FullScreenGraph: React.FC<Props> = ({ route, navigation }) => {
+  const safeArea = useSafeArea();
+  const window = useWindowDimensions();
+  console.log(safeArea);
+
   // async function changeScreenOrientation() {
   //   await lockAsync(OrientationLock.LANDSCAPE_LEFT);
   // }
@@ -40,11 +48,18 @@ const FullScreenGraph: React.FC<Props> = ({ route, navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: white,
     justifyContent: 'center',
+    alignItems: 'flex-start',
+    backgroundColor: white,
   },
   graphWrapper: {
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
+    // paddingVertical: 50,
+    //transform: [{ rotate: '90deg' }],
+    flex: 1,
+    flexGrow: 1,
+    // justifyContent: 'center',
+    // alignItems: 'flex-start',
   },
 });
 
