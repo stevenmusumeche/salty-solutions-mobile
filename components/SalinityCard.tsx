@@ -1,18 +1,18 @@
-import { hooks } from '@stevenmusumeche/salty-solutions-shared';
-import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import { startOfDay, subHours } from 'date-fns';
-import React, { useContext, useEffect, useState, useMemo } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
-import ConditionCard from './ConditionCard';
-import { AppContext } from '../context/AppContext';
-import BigBlue from './BigBlue';
-import Graph from './Graph';
-import LoaderBlock from './LoaderBlock';
-import UsgsSiteSelect from './UsgsSiteSelect';
-import { ErrorIcon } from './FullScreenError';
-import NoData from './NoData';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { hooks } from '@stevenmusumeche/salty-solutions-shared';
+import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import { subHours } from 'date-fns';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import { AppContext } from '../context/AppContext';
+import BigBlue from './BigBlue';
+import ConditionCard from './ConditionCard';
+import { ErrorIcon } from './FullScreenError';
+import Graph from './Graph';
+import LoaderBlock from './LoaderBlock';
+import NoData from './NoData';
+import UsgsSiteSelect from './UsgsSiteSelect';
 
 interface Props {
   sites: UsgsSiteDetailFragment[];
@@ -81,6 +81,7 @@ const SalinityCard: React.FC<Props> = ({ sites, requestRefresh }) => {
                 navigation.push('FullScreenGraph', {
                   data: curDetail,
                   title: headerText,
+                  siteName: selectedSite ? selectedSite.name : '',
                 })
               }
             />

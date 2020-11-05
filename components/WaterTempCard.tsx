@@ -90,6 +90,7 @@ const WaterTempCard: React.FC<Props> = ({ sites, requestRefresh }) => {
                 navigation.push('FullScreenGraph', {
                   data: curDetail,
                   title: headerText,
+                  siteName: selectedSite ? selectedSite.name : '',
                 })
               }
             />

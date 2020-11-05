@@ -97,6 +97,7 @@ const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
                   data: curDetail,
                   title: headerText,
                   includeArrows: true,
+                  siteName: selectedSite ? selectedSite.name : '',
                 })
               }
             >

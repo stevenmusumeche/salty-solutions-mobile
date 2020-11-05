@@ -1,19 +1,12 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useEffect } from 'react';
-import { StyleSheet, useWindowDimensions } from 'react-native';
-import {
-  SafeAreaView,
-  useSafeArea,
-  useSafeAreaInsets,
-} from 'react-native-safe-area-context';
+import React from 'react';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { VictoryScatter } from 'victory-native';
 import { white } from '../colors';
 import { NowStackParams } from '../screens/NowScreen';
 import Graph from './Graph';
 import { ArrowPoint } from './WindCard';
-import { lockAsync, OrientationLock } from 'expo-screen-orientation';
-import { View } from 'react-native';
 
 interface Props {
   route: RouteProp<NowStackParams, 'FullScreenGraph'>;
@@ -21,46 +14,48 @@ interface Props {
 }
 
 const FullScreenGraph: React.FC<Props> = ({ route, navigation }) => {
-  const safeArea = useSafeArea();
-  const window = useWindowDimensions();
-  console.log(safeArea);
+  const { width: windowWidth } = useWindowDimensions();
+  navigation.setOptions({ title: route.params.title });
 
-  // async function changeScreenOrientation() {
-  //   await lockAsync(OrientationLock.LANDSCAPE_LEFT);
-  // }
-  // //useEffect(() => {
-  // changeScreenOrientation();
-  // //}, []);
-  // // navigation.setOptions({ title: route.params.title });
+  const width = windowWidth - 20;
+  const height = width * 0.9;
+
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.graphWrapper}>
-        <Graph data={route.params.data} fullScreen={true}>
-          {route.params.includeArrows && (
-            <VictoryScatter dataComponent={<ArrowPoint fullScreen={true} />} />
-          )}
-        </Graph>
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      {route.params.siteName && (
+        <View style={styles.siteWrapper}>
+          <Text style={styles.siteText}>{route.params.siteName}</Text>
+        </View>
+      )}
+      <Graph
+        data={route.params.data}
+        fullScreen={true}
+        width={width}
+        height={height}
+        tickCount={8}
+      >
+        {route.params.includeArrows && (
+          <VictoryScatter dataComponent={<ArrowPoint fullScreen={true} />} />
+        )}
+      </Graph>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
     backgroundColor: white,
+    paddingTop: 20,
   },
-  graphWrapper: {
-    // paddingHorizontal: 10,
-    // paddingVertical: 50,
-    //transform: [{ rotate: '90deg' }],
-    flex: 1,
-    flexGrow: 1,
-    // justifyContent: 'center',
-    // alignItems: 'flex-start',
+  siteWrapper: {
+    display: 'flex',
+    alignItems: 'center',
+    marginBottom: 15,
   },
+  siteText: { fontSize: 15 },
 });
 
 export default FullScreenGraph;

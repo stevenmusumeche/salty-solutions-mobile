@@ -4,7 +4,6 @@ import React from 'react';
 import { StatusBar } from 'react-native';
 import { createClient, Provider } from 'urql';
 import { gray, white } from './colors';
-import FullScreenGraph from './components/FullScreenGraph';
 import { AppContextProvider } from './context/AppContext';
 import { AppVersionContextProvider } from './context/AppVersionContext';
 import AppScreen from './screens/AppScreen';
@@ -41,10 +40,6 @@ const App = () => {
               <RootStack.Screen
                 name="ChangeLocation"
                 component={ChangeLocationScreen}
-              />
-              <RootStack.Screen
-                name="FullScreenGraph"
-                component={FullScreenGraph}
               />
             </RootStack.Navigator>
           </NavigationContainer>

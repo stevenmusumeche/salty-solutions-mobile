@@ -26,6 +26,7 @@ import { useLocationSwitcher } from '../hooks/use-location-switcher';
 export type NowStackParams = {
   FullScreenGraph: {
     title: string;
+    siteName?: string;
     data: {
       y: number;
       x: string;
@@ -85,6 +86,16 @@ const Now: React.FC = () => {
 const NowScreen = () => (
   <NowStack.Navigator>
     <NowStack.Screen name="Current Conditions" component={Now} />
+    <NowStack.Screen
+      name="FullScreenGraph"
+      component={FullScreenGraph}
+      options={() => {
+        return {
+          headerTitleStyle: { color: white, fontSize: 17 },
+          headerTintColor: brandYellow,
+        };
+      }}
+    />
   </NowStack.Navigator>
 );
 
