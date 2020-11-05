@@ -20,7 +20,6 @@
     "deepmerge": "^4.2.2",
     "expo": "~37.0.3",
     "expo-constants": "~9.0.0",
-    "expo-screen-orientation": "2",
     "graphql": "^15.0.0",
     "graphql-tag": "^2.10.3",
     "install": "^0.13.0",
