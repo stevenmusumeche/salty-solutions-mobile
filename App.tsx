@@ -3,11 +3,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createClient, Provider } from 'urql';
+import { gray, white } from './colors';
 import { AppContextProvider } from './context/AppContext';
+import { AppVersionContextProvider } from './context/AppVersionContext';
 import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';
-import { gray, white } from './colors';
-import { AppVersionContextProvider } from './context/AppVersionContext';
 
 const client = createClient({
   url: 'https://o2hlpsp9ac.execute-api.us-east-1.amazonaws.com/prod/api',

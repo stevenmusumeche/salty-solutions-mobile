@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { subHours } from 'date-fns';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
@@ -21,9 +23,10 @@ interface Props {
 }
 
 const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
-  const headerText = 'Wind (mph)';
+  const headerText = 'Wind Speed (mph)';
 
   const { activeLocation } = useContext(AppContext);
+  const navigation = useNavigation<StackNavigationProp<any>>();
 
   const [selectedSite, setSelectedSite] = useState(() =>
     sites.length ? sites[0] : undefined,
@@ -87,7 +90,17 @@ const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
             <Text style={styles.directionText}>{curDirectionValue}</Text>
           </View>
           {curDetail && (
-            <Graph data={curDetail}>
+            <Graph
+              data={curDetail}
+              onPress={() =>
+                navigation.push('FullScreenGraph', {
+                  data: curDetail,
+                  title: headerText,
+                  includeArrows: true,
+                  siteName: selectedSite ? selectedSite.name : '',
+                })
+              }
+            >
               <VictoryScatter dataComponent={<ArrowPoint />} />
             </Graph>
           )}
@@ -138,17 +151,20 @@ interface ArrowPointProps {
   y: number;
   datum: any;
   index: number;
+  fullScreen?: boolean;
 }
 
-const ArrowPoint: React.FC<ArrowPointProps | any> = ({
+export const ArrowPoint: React.FC<ArrowPointProps | any> = ({
   x,
   y,
   index,
   datum,
   data,
+  fullScreen = false,
 }) => {
   const numEntries = data.length;
-  if (index % Math.floor(numEntries / 8) !== 0) {
+  const mod = fullScreen ? 16 : 8;
+  if (index % Math.floor(numEntries / mod) !== 0) {
     return null;
   }
 

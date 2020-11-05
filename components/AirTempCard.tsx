@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { subHours } from 'date-fns';
 import React, { useContext, useEffect, useMemo } from 'react';
@@ -18,6 +20,7 @@ const AirTempCard: React.FC<Props> = ({ requestRefresh }) => {
   const headerText = 'Air Temperature (F)';
 
   const { activeLocation } = useContext(AppContext);
+  const navigation = useNavigation<StackNavigationProp<any>>();
 
   const date = useMemo(() => new Date(), []);
   const {
@@ -61,7 +64,17 @@ const AirTempCard: React.FC<Props> = ({ requestRefresh }) => {
       {curValue ? (
         <>
           <BigBlue>{curValue}</BigBlue>
-          {curDetail && <Graph data={curDetail} />}
+          {curDetail && (
+            <Graph
+              data={curDetail}
+              onPress={() =>
+                navigation.push('FullScreenGraph', {
+                  data: curDetail,
+                  title: headerText,
+                })
+              }
+            />
+          )}
         </>
       ) : (
         <NoData />
