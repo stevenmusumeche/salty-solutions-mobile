@@ -15,7 +15,7 @@ import {
 import ChartLabelSwatch from './ChartLabelSwatch';
 import { blue, gray, red } from '../colors';
 
-const WIND_WARNING_MIN = 20;
+const WIND_WARNING_MIN = 25;
 
 interface Props {
   data: CombinedForecastV2DetailFragment;
