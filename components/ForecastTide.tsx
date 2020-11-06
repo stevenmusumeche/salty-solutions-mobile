@@ -5,7 +5,14 @@ import {
   SunDetailFieldsFragment,
   SolunarDetailFieldsFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import { isSameDay, startOfDay, addHours, format, endOfDay } from 'date-fns';
+import {
+  startOfDay,
+  addHours,
+  format,
+  endOfDay,
+  isWithinInterval,
+  addDays,
+} from 'date-fns';
 import {
   buildDatasets,
   Y_PADDING,
@@ -31,8 +38,15 @@ const ForecastTide: React.FC<Props> = ({
   solunarData,
 }) => {
   const { width } = useWindowDimensions();
+
   const curDayTideData = useMemo(
-    () => rawTideData.filter((x) => isSameDay(new Date(x.time), date)),
+    () =>
+      rawTideData.filter((x) =>
+        isWithinInterval(new Date(x.time), {
+          start: addHours(startOfDay(date), -2),
+          end: addHours(startOfDay(addDays(date, 1)), 2),
+        }),
+      ),
     [rawTideData, date],
   );
 
