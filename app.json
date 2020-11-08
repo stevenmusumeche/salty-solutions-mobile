@@ -27,7 +27,7 @@
     },
     "android": {
       "package": "com.musumeche.salty.solutions",
-      "versionCode": 27,
+      "versionCode": 28,
       "permissions": []
     }
   }
