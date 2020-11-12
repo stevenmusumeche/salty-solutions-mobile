@@ -9,7 +9,13 @@ import {
   useWindSites,
 } from '@stevenmusumeche/salty-solutions-shared/dist/hooks';
 import React, { useContext, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
+import {
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  View,
+  Platform,
+} from 'react-native';
 import { brandYellow, white } from '../colors';
 import AirTempCard from '../components/AirTempCard';
 import CardGrid from '../components/CardGrid';
@@ -22,6 +28,8 @@ import { AppContext } from '../context/AppContext';
 import { useAppVersionContext } from '../context/AppVersionContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
+import * as StoreReview from 'expo-store-review';
+import { useEffect } from 'react';
 
 export type NowStackParams = {
   FullScreenGraph: {
@@ -55,6 +63,19 @@ const Now: React.FC = () => {
   const salinitySites = useSalinitySites(activeLocation);
   const waterTempSites = useWaterTempSites(activeLocation);
   const windSites = useWindSites(activeLocation);
+
+  useEffect(() => {
+    if (Platform.OS === 'ios') {
+      const timer = setTimeout(() => {
+        try {
+          StoreReview.requestReview();
+        } catch (e) {
+          // ignore
+        }
+      }, 10000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   return (
     <>

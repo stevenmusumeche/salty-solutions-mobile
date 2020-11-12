@@ -23,12 +23,14 @@
       "buildNumber": "1.1.2",
       "config": {
         "usesNonExemptEncryption": false
-      }
+      },
+      "appStoreUrl": "https://apps.apple.com/us/app/salty-solutions/id1511737992"
     },
     "android": {
       "package": "com.musumeche.salty.solutions",
       "versionCode": 28,
-      "permissions": []
+      "permissions": [],
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.musumeche.salty.solutions"
     }
   }
 }
