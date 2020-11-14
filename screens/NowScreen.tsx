@@ -72,7 +72,7 @@ const Now: React.FC = () => {
         } catch (e) {
           // ignore
         }
-      }, 10000);
+      }, 30000);
       return () => clearTimeout(timer);
     }
   }, []);

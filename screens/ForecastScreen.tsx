@@ -37,6 +37,10 @@ const Forecast: React.FC = () => {
   const [curIndex, setCurIndex] = React.useState(0);
   const { activeLocation } = useContext(AppContext);
 
+  useEffect(() => {
+    setCurIndex(0);
+  }, [activeLocation.id, refreshing]);
+
   const [forecast, refresh] = useCombinedForecastV2Query({
     variables: {
       locationId: activeLocation.id,

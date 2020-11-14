@@ -92,14 +92,14 @@ const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
           {curDetail && (
             <Graph
               data={curDetail}
-              onPress={() =>
+              onPress={() => {
                 navigation.push('FullScreenGraph', {
                   data: curDetail,
                   title: headerText,
                   includeArrows: true,
-                  siteName: selectedSite ? selectedSite.name : '',
-                })
-              }
+                  siteName: selectedSite?.name ?? undefined,
+                });
+              }}
             >
               <VictoryScatter dataComponent={<ArrowPoint />} />
             </Graph>
@@ -108,7 +108,7 @@ const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
       ) : (
         <NoData />
       )}
-      {selectedSite && (
+      {selectedSite ? (
         <View style={styles.usgsWrapper}>
           <UsgsSiteSelect
             sites={sites}
@@ -119,6 +119,8 @@ const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
             selectedId={selectedSite.id}
           />
         </View>
+      ) : (
+        <View style={styles.spacer} />
       )}
     </ConditionCard>
   );
@@ -143,6 +145,11 @@ const styles = StyleSheet.create({
   usgsWrapper: {
     marginTop: 10,
     width: '100%',
+  },
+  spacer: {
+    height: 19.3,
+    width: 50,
+    marginTop: 10,
   },
 });
 
