@@ -1,82 +1,160 @@
-import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useContext } from 'react';
-import { Button, StatusBar, StyleSheet, Text, View } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { AppContext } from '../context/AppContext';
+import { MaterialIcons } from '@expo/vector-icons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useNavigation } from '@react-navigation/native';
 import { LocationDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
-import { blue, red } from '../colors';
+import React, { useContext } from 'react';
+import {
+  Button,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
+import { black, brandYellow, gray, white } from '../colors';
+import { AppContext } from '../context/AppContext';
+
+const LocationTabs = createBottomTabNavigator();
+
+const ChangeLocationScreen = () => {
+  return (
+    <LocationTabs.Navigator
+      tabBarOptions={{
+        activeTintColor: brandYellow,
+        inactiveTintColor: white,
+      }}
+    >
+      <LocationTabs.Screen
+        name="Louisiana"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <LetterIcon size={size} color={color} letter={'L'} />
+          ),
+        }}
+      >
+        {() => <LocationListScreen state="LA" />}
+      </LocationTabs.Screen>
+      <LocationTabs.Screen
+        name="Texas"
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <LetterIcon size={size} color={color} letter={'T'} />
+          ),
+        }}
+      >
+        {() => <LocationListScreen state="TX" />}
+      </LocationTabs.Screen>
+    </LocationTabs.Navigator>
+  );
+};
+
+const LetterIcon: React.FC<{ letter: string; color: string; size: number }> = ({
+  letter,
+  color,
+  size,
+}) => <Text style={{ color, fontSize: size }}>{letter}</Text>;
 
 interface Props {
-  navigation: StackNavigationProp<any, 'ChangeLocation'>;
+  state: string;
 }
 
-const ChangeLocationScreen: React.FC<Props> = ({ navigation }) => {
+const LocationListScreen: React.FC<Props> = ({ state }) => {
+  const navigation = useNavigation();
   const { locations, activeLocation, actions } = useContext(AppContext);
 
   const handleLocationSelection = async (location: LocationDetailFragment) => {
-    await actions.setLocation(location);
-    navigation.goBack();
+    actions.setLocation(location);
+    navigation.navigate('Now');
   };
 
-  const data = locations.filter(
-    (location) => location.id !== activeLocation.id,
-  );
+  const data = locations.filter((location) => location.state === state);
 
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
-      <Text style={styles.header}>Current Location:</Text>
-      <Text style={styles.current}>{activeLocation.name}</Text>
-      <Text style={styles.header}>Select New Location:</Text>
+      <Text style={{}}>Select Location</Text>
       <FlatList
         style={styles.list}
         data={data}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <Button
-            title={item.name}
-            onPress={() => handleLocationSelection(item)}
-            color={blue[600]}
-          />
-        )}
         ItemSeparatorComponent={Separator}
+        ListHeaderComponent={HeaderFooter}
+        ListFooterComponent={HeaderFooter}
+        renderItem={({ item }) => {
+          const isActive = item.id === activeLocation.id;
+          return (
+            <TouchableOpacity onPress={() => handleLocationSelection(item)}>
+              <View style={styles.listItem}>
+                <Text
+                  style={[
+                    styles.listItemText,
+                    { fontWeight: isActive ? 'bold' : 'normal' },
+                  ]}
+                >
+                  {item.name}
+                </Text>
+                <View>
+                  <MaterialIcons
+                    name={isActive ? 'check-box' : 'check-box-outline-blank'}
+                    size={24}
+                    color={isActive ? gray[800] : gray[600]}
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        }}
       />
-      <Button
-        color={red[700]}
-        title="Cancel"
-        onPress={() => navigation.goBack()}
-      />
+      <View style={styles.cancelWrapper}>
+        <Button
+          color={black}
+          title="Cancel"
+          onPress={() => navigation.navigate('Now')}
+        />
+      </View>
     </SafeAreaView>
   );
 };
 
 const Separator = () => <View style={styles.separator} />;
+const HeaderFooter = () => <View style={styles.headerFooter} />;
 
 export default ChangeLocationScreen;
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     alignItems: 'center',
-    margin: 20,
-    marginTop: 0,
-  },
-  header: {
-    fontSize: 20,
-    marginTop: 30,
-    marginBottom: 5,
-  },
-  current: {
-    fontSize: 20,
-    color: 'grey',
-    fontStyle: 'italic',
+    flex: 1,
+    justifyContent: 'space-between',
   },
   list: {
     marginTop: 10,
     width: '100%',
   },
+  listItem: {
+    backgroundColor: white,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  listItemText: {
+    fontSize: 18,
+  },
   separator: {
-    marginVertical: 5,
+    height: 1,
+    backgroundColor: gray[300],
+  },
+  headerFooter: {
+    height: 2,
+    backgroundColor: gray[400],
+  },
+  cancelWrapper: {
+    paddingVertical: 5,
+    width: '100%',
+    backgroundColor: brandYellow,
   },
 });
