@@ -12,7 +12,7 @@ import {
   View,
 } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { black, brandYellow, gray, white } from '../colors';
+import { brandYellow, gray, red, white } from '../colors';
 import { AppContext } from '../context/AppContext';
 
 const LocationTabs = createBottomTabNavigator();
@@ -108,7 +108,7 @@ const LocationListScreen: React.FC<Props> = ({ state }) => {
       />
       <View style={styles.cancelWrapper}>
         <Button
-          color={black}
+          color={red[700]}
           title="Cancel"
           onPress={() => navigation.navigate('Now')}
         />
@@ -155,6 +155,6 @@ const styles = StyleSheet.create({
   cancelWrapper: {
     paddingVertical: 5,
     width: '100%',
-    backgroundColor: brandYellow,
+    backgroundColor: white,
   },
 });

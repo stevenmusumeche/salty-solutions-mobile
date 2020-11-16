@@ -36,7 +36,7 @@ const SalinityCard: React.FC<Props> = ({ sites, requestRefresh }) => {
     refresh,
   } = hooks.useSalinityData(
     activeLocation.id,
-    selectedSite.id,
+    selectedSite?.id,
     subHours(date, 48),
     date,
   );
