@@ -23,3 +23,9 @@ expo build:ios
 ```
 
 Choose "archive" and wait for the build to complete on Expo. You might have to login with the Apple developer account (steven@musumeche.com).Download the built file.
+
+## Over The Air Publishing
+
+```bash
+expo publish
+```
