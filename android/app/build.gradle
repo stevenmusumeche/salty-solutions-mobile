@@ -135,8 +135,8 @@ android {
         applicationId 'com.musumeche.salty.solutions'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 31
-        versionName "1.1.5"
+        versionCode 32
+        versionName "1.2.0"
     }
     splits {
         abi {

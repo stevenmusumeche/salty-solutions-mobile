@@ -42,7 +42,7 @@ jobs:
           encodedString: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
 
       - name: Build Android Bundle 
-        run: ./gradlew bundleRelease -Dorg.gradle.logging.level=info
+        run: ./gradlew --no-daemon bundleRelease 
         working-directory: android
         env:
           ANDROID_KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.filePath }}
