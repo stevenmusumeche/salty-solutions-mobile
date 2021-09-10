@@ -31,6 +31,8 @@ jobs:
 
       - name: "Install npm Dependencies"
         run: yarn install
+        env: 
+          GH_PERSONAL_ACCESS_TOKEN: ${{secrets.GH_PERSONAL_ACCESS_TOKEN}}
 
       - name: Decode Keystore
         run: echo ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }} | base64 -d ./android/release.keystore
