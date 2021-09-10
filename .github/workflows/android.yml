@@ -42,7 +42,7 @@ jobs:
           encodedString: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
 
       - name: Build Android Bundle 
-        run: ./gradlew --no-daemon bundleRelease 
+        run: ./gradlew --no-daemon assembleRelease
         working-directory: android
         env:
           ANDROID_KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.filePath }}
@@ -54,5 +54,5 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: android-aab
-          path: '**/*.aab'
+          name: android-apk
+          path: 'android/app/build/outputs/apk/release/app-release.apk'
