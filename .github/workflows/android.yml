@@ -35,11 +35,17 @@ jobs:
           GH_PERSONAL_ACCESS_TOKEN: ${{secrets.GH_PERSONAL_ACCESS_TOKEN}}
 
       - name: Decode Keystore
-        run: echo ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }} | base64 -d ./android/release.keystore
+        id: decode_keystore
+        uses: timheuer/base64-to-file@v1.1
+        with:
+          fileName: 'release.keystore'
+          encodedString: ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }}
 
       - name: Build Android Bundle 
         run: ./gradlew bundleRelease -Dorg.gradle.logging.level=info
         working-directory: android
+        env:
+          ANDROID_KEYSTORE_FILE: ${{ steps.decode_keystore.outputs.filePath }}
         
 
       - name: Upload Artifact

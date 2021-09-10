@@ -154,7 +154,7 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file('release.keystore') // this is generated in CI from base64 string stored as secret
+            storeFile file(System.getenv('ANDROID_KEYSTORE_FILE')) // this is generated in CI from base64 string stored as secret
             storePassword System.getenv('ANDROID_UPLOAD_STORE_PASSWORD')
             keyAlias System.getenv('ANDROID_UPLOAD_KEY_ALIAS')
             keyPassword System.getenv('ANDROID_UPLOAD_KEY_PASSWORD')
