@@ -1,0 +1,45 @@
+name: Build Android Bundle
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        name: Checkout repository
+
+      - name: Use Node 16
+        uses: actions/setup-node@v1
+        with:
+          node-version: 16
+
+      - name: Cache node modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: "Install npm Dependencies"
+        run: npm ci
+
+      - name: Decode Keystore
+        run: echo ${{ secrets.ANDROID_UPLOAD_KEYSTORE_BASE64 }} | base64 -d ./android/release.keystore
+
+      - name: Build Android Bundle 
+        run: ./gradlew bundleRelease -Dorg.gradle.logging.level=info
+        working-directory: android
+        
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: android-aab
+          path: '**/*.aab'
