@@ -51,7 +51,7 @@ jobs:
           p12-base64: ${{ secrets.IOS_P12_BASE64 }}
           certificate-password: ${{ secrets.IOS_P12_PASSWORD }}
           mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
-          code-signing-identity: iOS Distribution
+          code-signing-identity: App Store
           output-path: ios/output.ipa
           scheme: SaltySolutions
 
