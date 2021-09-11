@@ -48,7 +48,8 @@ jobs:
           project-path: ios/SaltySolutions.xcodeproj
           workspace-path: ios/SaltySolutions.xcworkspace
           team-id: ${{ secrets.IOS_TEAM_ID }}
-          p12-base64: ${{ secrets.IOS_P12_BASE64 }}
+          p12-cer-base64: ${{ secrets.IOS_P12_CER_BASE64 }}
+          p12-key-base64: ${{ secrets.IOS_P12_KEY_BASE64 }}
           certificate-password: ${{ secrets.IOS_P12_PASSWORD }}
           mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
           code-signing-identity: iOS Distribution
