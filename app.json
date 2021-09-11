@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "Salty Solutions",
+    "slug": "salty-solutions",
+    "privacy": "public",
+    "platforms": ["ios", "android"],
+    "version": "1.1.5",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "primaryColor": "#4a5568",
+    "splash": {
+      "image": "./assets/logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4a5568"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 20
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.musumeche.salty.solutions",
+      "buildNumber": "1.1.5",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "appStoreUrl": "https://apps.apple.com/us/app/salty-solutions/id1511737992"
+    },
+    "android": {
+      "package": "com.musumeche.salty.solutions",
+      "versionCode": 31,
+      "permissions": [],
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.musumeche.salty.solutions"
+    }
+  }
+}
