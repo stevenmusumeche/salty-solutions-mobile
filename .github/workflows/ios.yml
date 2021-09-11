@@ -32,12 +32,30 @@ jobs:
         env: 
           GH_PERSONAL_ACCESS_TOKEN: ${{secrets.GH_PERSONAL_ACCESS_TOKEN}}
 
-      - name: Building JS bundle
+      - name: Build JS bundle
         run: |
           yarn react-native bundle --platform ios --dev false --entry-file index.js --bundle-output ios/main.jsbundle --assets-dest ios
         env: 
           GH_PERSONAL_ACCESS_TOKEN: ${{secrets.GH_PERSONAL_ACCESS_TOKEN}}
-          
+
       - name: Install pod dependencies
         run: |
           cd ios && pod install
+
+      - name: Build iOS IPA
+        uses: yukiarrr/ios-build-action@v1.4.0
+        with:
+          project-path: ios/SaltySolutions.xcodeproj
+          workspace-path: ios/SaltySolutions.xcworkspace
+          team-id: ${{ secrets.IOS_TEAM_ID }}
+          p12-base64: ${{ secrets.IOS_P12_BASE64 }}
+          mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
+          code-signing-identity: iOS Distribution
+          output-path: ios/output.ipa
+          scheme: SaltySolutions
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: ios-IPA
+          path: ios/output.ipa
