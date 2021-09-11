@@ -51,7 +51,7 @@ jobs:
           p12-base64: ${{ secrets.IOS_P12_BASE64 }}
           certificate-password: ${{ secrets.IOS_P12_PASSWORD }}
           mobileprovision-base64: ${{ secrets.IOS_MOBILEPROVISION_BASE64 }}
-          code-signing-identity: "iPhone Distribution: Steven Musumeche (9LAGT5DL66)"
+          code-signing-identity: ${{ secrets.IOS_CODE_SIGNING_IDENTITY }}
           output-path: ios/output.ipa
           scheme: SaltySolutions
 
