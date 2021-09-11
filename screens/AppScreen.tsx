@@ -1,6 +1,6 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { AppLoading } from 'expo';
+import AppLoading from 'expo-app-loading';
 import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import ForecastScreen from './ForecastScreen';

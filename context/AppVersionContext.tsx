@@ -1,6 +1,6 @@
 import { useAppVersionQuery } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import compareVersions from 'compare-versions';
-import Constants from 'expo-constants';
+import VersionCheck from 'react-native-version-check';
 import React, {
   createContext,
   useContext,
@@ -31,7 +31,7 @@ export const AppVersionContextProvider: React.FC = ({ children }) => {
   const [versionInfo, setVersionInfo] = useState<VersionInfo>({
     belowMinimum: false,
     newVersionAvailable: false,
-    buildVersion: Constants.manifest.version || '',
+    buildVersion: VersionCheck.getCurrentVersion(),
     loaded: false,
     upgradeUrl: Platform.OS === 'ios' ? appStoreUrl : playStoreUrl,
   });
@@ -45,7 +45,10 @@ export const AppVersionContextProvider: React.FC = ({ children }) => {
       return;
     }
     if (error) {
-      setVersionInfo((cur) => ({ ...cur, loaded: true }));
+      setVersionInfo((cur) => ({
+        ...cur,
+        loaded: true,
+      }));
     }
     if (!data) {
       return;
@@ -61,12 +64,12 @@ export const AppVersionContextProvider: React.FC = ({ children }) => {
     }
 
     const belowMinimum = compareVersions.compare(
-      String(Constants.manifest.version),
+      VersionCheck.getCurrentVersion(),
       supportedVersion.minimumSupported,
       '<',
     );
     const newVersionAvailable = compareVersions.compare(
-      String(Constants.manifest.version),
+      VersionCheck.getCurrentVersion(),
       supportedVersion.current,
       '<',
     );
@@ -75,7 +78,7 @@ export const AppVersionContextProvider: React.FC = ({ children }) => {
       ...cur,
       belowMinimum,
       newVersionAvailable,
-      buildVersion: Constants.manifest.version || '',
+      buildVersion: VersionCheck.getCurrentVersion(),
       minimum: supportedVersion.minimumSupported,
       current: supportedVersion.current,
       loaded: true,

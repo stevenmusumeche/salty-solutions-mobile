@@ -2,16 +2,23 @@
 
 ## Developing locally
 
-`yarn run start`
+`yarn run ios` or `yarn run android`
 
 ## Building
 
-This app is built using Expo. Bump the versions in app.json and then build.
+The project is built using GitHub actions.
 
 ### Android
 
+Bump app version in `android/app/build.gradle`. Look for `android.defaultConfig.versionCode` and `android.defaultConfig.versionName`.
+
 ```bash
-expo build:android
+cd android
+# creates a release aab for play store
+./gradlew bundleRelease
+# creates a release apk
+./gradlew assembleRelease
+
 ```
 
 Choose "app-bundle" and wait for the build to complete on Expo. Download the built file.
