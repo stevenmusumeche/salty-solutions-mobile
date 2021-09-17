@@ -10,12 +10,17 @@ import React, {
   useState,
 } from 'react';
 import { AsyncStorage } from 'react-native';
+import Analytics from 'appcenter-analytics';
 
 interface AppContext {
   locations: LocationDetailFragment[];
   activeLocation: LocationDetailFragment;
   actions: {
     setLocation: (location: LocationDetailFragment) => void;
+    trackEvent: (
+      eventName: string,
+      properties?: { [name: string]: string },
+    ) => Promise<void>;
   };
 }
 
@@ -39,6 +44,7 @@ export const AppContextProvider: React.FC = ({ children }) => {
       activeLocation,
       actions: {
         setLocation,
+        trackEvent: Analytics.trackEvent,
       },
     }),
     [locations, activeLocation, setLocation],

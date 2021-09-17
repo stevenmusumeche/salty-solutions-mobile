@@ -171,7 +171,7 @@ const Header: React.FC<{
 
 const ForecastScreen = () => (
   <ForecastStack.Navigator>
-    <ForecastStack.Screen name="Forecast" component={Forecast} />
+    <ForecastStack.Screen name="ForecatStack" component={Forecast} />
   </ForecastStack.Navigator>
 );
 

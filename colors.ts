@@ -37,6 +37,8 @@ export const black = '#000';
 export const white = '#FFF';
 
 export const brandYellow = '#fec857';
+export const brandYellow50 = '#ffe4ab';
+export const brandYellow30 = '#ffefcd';
 
 export const teal = {
   600: '#319795',

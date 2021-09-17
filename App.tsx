@@ -1,9 +1,13 @@
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
+import {
+  DefaultTheme,
+  NavigationContainer,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 import { StatusBar } from 'react-native';
 import { createClient, Provider } from 'urql';
-import { gray, white } from './colors';
+import { brandYellow, gray, white } from './colors';
 import { AppContextProvider } from './context/AppContext';
 import { AppVersionContextProvider } from './context/AppVersionContext';
 import AppScreen from './screens/AppScreen';
@@ -26,6 +30,9 @@ const MyTheme = {
 };
 
 const App = () => {
+  //   const navigationRef = useNavigationContainerRef();
+  //   const routeNameRef = useRef();
+
   return (
     <Provider value={client}>
       <AppVersionContextProvider>
@@ -33,13 +40,18 @@ const App = () => {
           <NavigationContainer theme={MyTheme}>
             <StatusBar barStyle="light-content" />
             <RootStack.Navigator
-              mode="modal"
-              screenOptions={{ headerShown: false }}
+              screenOptions={{ headerShown: false, presentation: 'card' }}
             >
               <RootStack.Screen name="App" component={AppScreen} />
               <RootStack.Screen
                 name="ChangeLocation"
                 component={ChangeLocationScreen}
+                options={{
+                  title: 'Change Location',
+                  headerShown: true,
+                  headerTitleStyle: { color: white },
+                  headerTintColor: brandYellow,
+                }}
               />
             </RootStack.Navigator>
           </NavigationContainer>

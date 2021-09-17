@@ -299,9 +299,9 @@ const RootStack = createStackNavigator();
 const TideStackScreen = () => (
   <TideContextProvider>
     <RootStack.Navigator
-      mode="modal"
       screenOptions={{
         headerShown: false,
+        presentation: 'modal',
       }}
     >
       <RootStack.Screen name="TideScreen" component={TideScreen} />
