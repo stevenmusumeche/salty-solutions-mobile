@@ -4,7 +4,7 @@ import { hooks } from '@stevenmusumeche/salty-solutions-shared';
 import { subHours } from 'date-fns';
 import React, { useContext, useEffect, useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 import BigBlue from './BigBlue';
 import ConditionCard from './ConditionCard';
 import { ErrorIcon } from './FullScreenError';
@@ -67,12 +67,16 @@ const AirTempCard: React.FC<Props> = ({ requestRefresh }) => {
           {curDetail && (
             <Graph
               data={curDetail}
-              onPress={() =>
-                navigation.push('FullScreenGraph', {
+              onPress={() => {
+                trackEvent('View Card Full Screen Graph', {
+                  card: 'air temperature',
+                });
+
+                return navigation.push('FullScreenGraph', {
                   data: curDetail,
                   title: headerText,
-                })
-              }
+                });
+              }}
             />
           )}
         </>

@@ -17,10 +17,6 @@ interface AppContext {
   activeLocation: LocationDetailFragment;
   actions: {
     setLocation: (location: LocationDetailFragment) => void;
-    trackEvent: (
-      eventName: string,
-      properties?: { [name: string]: string },
-    ) => Promise<void>;
   };
 }
 
@@ -44,7 +40,6 @@ export const AppContextProvider: React.FC = ({ children }) => {
       activeLocation,
       actions: {
         setLocation,
-        trackEvent: Analytics.trackEvent,
       },
     }),
     [locations, activeLocation, setLocation],
@@ -80,3 +75,5 @@ export const AppContextProvider: React.FC = ({ children }) => {
     <AppContext.Provider value={providerValue}>{children}</AppContext.Provider>
   );
 };
+
+export const trackEvent = Analytics.trackEvent;

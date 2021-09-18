@@ -1,12 +1,12 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { LocationDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import React, { useContext } from 'react';
 import { Button, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import { brandYellow, brandYellow30, gray, red, white } from '../colors';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 
 const LocationTabs = createBottomTabNavigator();
 
@@ -58,14 +58,12 @@ const LocationListScreen: React.FC<Props> = ({ state }) => {
   const { locations, activeLocation, actions } = useContext(AppContext);
 
   const handleLocationSelection = async (location: LocationDetailFragment) => {
-    actions
-      .trackEvent('Location Selected', {
-        locationId: location.id,
-        name: location.name,
-      })
-      .catch((e) => console.error(e));
+    trackEvent('Location Selected', {
+      locationId: location.id,
+      name: location.name,
+    }).catch((e) => console.error(e));
     actions.setLocation(location);
-    navigation.navigate('Now');
+    navigation.dispatch(CommonActions.navigate({ name: 'Now' }));
   };
 
   const data = locations.filter((location) => location.state === state);
@@ -112,7 +110,9 @@ const LocationListScreen: React.FC<Props> = ({ state }) => {
         <Button
           color={red[700]}
           title="Cancel"
-          onPress={() => navigation.navigate('Now')}
+          onPress={() =>
+            navigation.dispatch(CommonActions.navigate({ name: 'Now' }))
+          }
         />
       </View>
     </SafeAreaView>
