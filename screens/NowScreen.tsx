@@ -24,7 +24,7 @@ import SalinityCard from '../components/SalinityCard';
 import UpgradeNotice from '../components/UpgradeNotice';
 import WaterTempCard from '../components/WaterTempCard';
 import WindCard from '../components/WindCard';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 import { useAppVersionContext } from '../context/AppVersionContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
@@ -65,9 +65,10 @@ const Now: React.FC = () => {
   const windSites = useWindSites(activeLocation);
 
   useEffect(() => {
-    if (Platform.OS === 'ios') {
+    if (!__DEV__ && Platform.OS === 'ios') {
       const timer = setTimeout(() => {
         try {
+          trackEvent('Review Requested', { os: Platform.OS });
           StoreReview.requestReview();
         } catch (e) {
           // ignore

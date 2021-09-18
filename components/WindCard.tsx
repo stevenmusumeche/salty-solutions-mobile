@@ -1,14 +1,13 @@
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { hooks } from '@stevenmusumeche/salty-solutions-shared';
-import { trackEvent } from 'appcenter-analytics';
 import { subHours } from 'date-fns';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Path } from 'react-native-svg';
 import { VictoryScatter } from 'victory-native';
 import { blue } from '../colors';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 import { DataSite } from '../screens/NowScreen';
 import BigBlue from './BigBlue';
 import ConditionCard from './ConditionCard';

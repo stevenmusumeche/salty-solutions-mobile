@@ -1,6 +1,6 @@
 import { RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import React from 'react';
+import React, { useLayoutEffect } from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { VictoryScatter } from 'victory-native';
 import { white } from '../colors';
@@ -15,7 +15,10 @@ interface Props {
 
 const FullScreenGraph: React.FC<Props> = ({ route, navigation }) => {
   const { width: windowWidth } = useWindowDimensions();
-  navigation.setOptions({ title: route.params.title });
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: route.params.title });
+  }, [navigation, route.params.title]);
 
   const width = windowWidth - 20;
   const height = width * 0.9;

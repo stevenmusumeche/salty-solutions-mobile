@@ -4,12 +4,11 @@ import {
   useNavigationContainerRef,
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { trackEvent } from 'appcenter-analytics';
 import React, { useRef } from 'react';
 import { StatusBar } from 'react-native';
 import { createClient, Provider } from 'urql';
 import { brandYellow, gray, white } from './colors';
-import { AppContextProvider } from './context/AppContext';
+import { AppContextProvider, trackEvent } from './context/AppContext';
 import { AppVersionContextProvider } from './context/AppVersionContext';
 import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';

@@ -9,7 +9,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import TideStationSelect from '../components/TideStationSelect';
 import UsgsSiteSelect from '../components/UsgsSiteSelect';
 import { TideContext } from '../context/TideContext';
-import { blue, gray, white, black } from '../colors';
+import { blue, gray, white, black, red } from '../colors';
+import { trackEvent } from '../context/AppContext';
 
 interface Props {
   navigation: StackNavigationProp<any>;
@@ -22,22 +23,46 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
     selectedTideStation,
     selectedSite,
     sites,
-    actions: { setSelectedTideStationId, setSelectedSite, setDate },
+    actions,
   } = useContext(TideContext);
 
+  const [selectedDate, setSelectedDate] = useState(date);
+  const [selectedStationId, setSelectedStationId] = useState(
+    selectedTideStation?.id ?? '',
+  );
+  const [userSelectedSite, setUserSelectedSite] = useState(selectedSite!);
+
+  const saveSettings = () => {
+    trackEvent('Save Tide Options');
+    actions.setSelectedTideStationId(selectedStationId);
+    actions.setSelectedSite(userSelectedSite);
+    actions.setDate(selectedDate);
+    navigation.goBack();
+  };
+
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <View style={styles.container}>
       <View style={styles.cardWrapper}>
-        <DateSelect date={date} setDate={setDate} />
-        <View style={styles.fullWidth}>
+        <View style={styles.closeButtonWrapper}>
+          <TouchableOpacity
+            onPress={() => {
+              trackEvent('Close Tide Options');
+              return navigation.goBack();
+            }}
+            style={styles.closeButton}
+          >
+            <MaterialIcons name="close" size={20} color={gray[600]} />
+          </TouchableOpacity>
+        </View>
+        <DateSelect date={selectedDate} setDate={setSelectedDate} />
+        <View style={(styles.fullWidth, { marginBottom: 10 })}>
           <Text style={styles.selectLabel}>Tide Station:</Text>
           <TideStationSelect
             tideStations={tideStations}
-            selectedId={selectedTideStation?.id || ''}
+            selectedId={selectedStationId}
             handleChange={(stationId) => {
               if (stationId) {
-                setSelectedTideStationId(stationId);
+                setSelectedStationId(stationId);
               }
             }}
           />
@@ -46,10 +71,13 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.selectLabel}>Observation Site:</Text>
           <UsgsSiteSelect
             sites={sites}
-            selectedId={selectedSite?.id || ''}
+            selectedId={userSelectedSite.id}
             handleChange={(itemValue) => {
               const match = sites.find((site) => site.id === itemValue);
-              setSelectedSite(match!);
+              if (!match) {
+                return;
+              }
+              setUserSelectedSite(match);
             }}
             style={{
               inputIOS: {
@@ -75,10 +103,10 @@ const TideOptionsScreen: React.FC<Props> = ({ navigation }) => {
         <Button
           color={blue[600]}
           title="Save Tide Settings"
-          onPress={() => navigation.goBack()}
+          onPress={saveSettings}
         />
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 
@@ -133,8 +161,8 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   cardWrapper: {
-    width: '100%',
     backgroundColor: white,
+    width: '100%',
     padding: 20,
     borderRadius: 8,
     shadowColor: black,
@@ -158,7 +186,7 @@ const styles = StyleSheet.create({
     color: 'black',
     paddingVertical: 6,
     paddingHorizontal: 10,
-    marginBottom: 10,
+    marginBottom: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -174,5 +202,16 @@ const styles = StyleSheet.create({
   },
   fullWidth: {
     width: '100%',
+  },
+  closeButtonWrapper: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    marginBottom: 20,
+  },
+  closeButton: {
+    backgroundColor: gray[200],
+    borderRadius: 11.5,
+    padding: 3,
   },
 });
