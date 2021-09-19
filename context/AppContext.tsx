@@ -79,11 +79,16 @@ export const AppContextProvider: React.FC = ({ children }) => {
 export const trackEvent = (
   eventName: string,
   properties: { [name: string]: string } = {},
-) => {
+): Promise<void> => {
   if (__DEV__) {
     console.debug('Tracking Event', eventName, properties);
     // don't actually track in dev
     // return;
   }
-  return Analytics.trackEvent(eventName, properties);
+  try {
+    return Analytics.trackEvent(eventName, properties);
+  } catch (e) {
+    console.error('Error tracking analytics event', e);
+    return Promise.resolve();
+  }
 };

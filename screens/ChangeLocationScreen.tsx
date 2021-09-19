@@ -62,8 +62,8 @@ const LocationListScreen: React.FC<Props> = ({ state }) => {
       locationId: location.id,
       name: location.name,
     }).catch((e) => console.error(e));
-    actions.setLocation(location);
     navigation.dispatch(CommonActions.navigate({ name: 'Now' }));
+    actions.setLocation(location);
   };
 
   const data = locations.filter((location) => location.state === state);

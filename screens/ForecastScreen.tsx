@@ -83,7 +83,9 @@ const Forecast: React.FC = () => {
           keyExtractor={(item) => item.name}
           horizontal={true}
           pagingEnabled={true}
-          initialNumToRender={2}
+          maxToRenderPerBatch={1}
+          initialNumToRender={1}
+          updateCellsBatchingPeriod={300}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           getItemLayout={(data, index) => ({
