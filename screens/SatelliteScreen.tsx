@@ -140,7 +140,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
             const newIndex = Math.floor(
               e.nativeEvent.contentOffset.x / (width - 60),
             );
-            setCurIndex(newIndex);
+            setCurIndex(newIndex >= 0 ? newIndex : 0);
           }}
           style={styles.swiperView}
         >
