@@ -136,13 +136,18 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onMomentumScrollEnd={(e) => {
-            const newIndex = Math.floor(
+            let newIndex = Math.floor(
               e.nativeEvent.contentOffset.x / (width - 60),
             );
+            if (newIndex < 0) {
+              newIndex = 0;
+            }
+            if (newIndex > maps.length - 1) {
+              newIndex = maps.length - 1;
+            }
+
             trackEvent('Satellite Image Swipe', {
               newIndex: String(newIndex),
-              x: String(e.nativeEvent.contentOffset.x),
-              width: String(width),
             });
             setCurIndex(newIndex);
           }}
