@@ -140,11 +140,6 @@ const MainTideChart: React.FC<Props> = ({
         {/* time x-axis */}
         <VictoryAxis
           style={{
-            grid: {
-              strokeWidth: 1,
-              stroke: black,
-              strokeDasharray: '1 10',
-            },
             tickLabels: { fontSize: 12, padding: 3 },
           }}
           tickFormat={(date) => format(new Date(date), 'ha').toLowerCase()}

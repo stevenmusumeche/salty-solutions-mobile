@@ -15,7 +15,7 @@ import {
 import ForecastCard, { styles as cardStyles } from '../components/ForecastCard';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { ISO_FORMAT } from './TideScreen';
@@ -83,7 +83,9 @@ const Forecast: React.FC = () => {
           keyExtractor={(item) => item.name}
           horizontal={true}
           pagingEnabled={true}
-          initialNumToRender={2}
+          maxToRenderPerBatch={1}
+          initialNumToRender={1}
+          updateCellsBatchingPeriod={300}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
           getItemLayout={(data, index) => ({
@@ -92,6 +94,7 @@ const Forecast: React.FC = () => {
             index,
           })}
           onMomentumScrollEnd={(e) => {
+            trackEvent('Forecast Swipe');
             setCurIndex(Math.round(e.nativeEvent.contentOffset.x / width));
           }}
           renderItem={({ item }) => {
@@ -171,7 +174,7 @@ const Header: React.FC<{
 
 const ForecastScreen = () => (
   <ForecastStack.Navigator>
-    <ForecastStack.Screen name="Forecast" component={Forecast} />
+    <ForecastStack.Screen name="ForecatStack" component={Forecast} />
   </ForecastStack.Navigator>
 );
 

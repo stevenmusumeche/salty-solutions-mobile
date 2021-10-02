@@ -10,16 +10,17 @@ export const useLocationSwitcher = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerRightContainerStyle: {
+        paddingRight: 10,
+      },
       headerRight: () => {
         return (
-          <View style={{ marginRight: 10 }}>
-            <Octicons
-              name="location"
-              size={24}
-              color={brandYellow}
-              onPress={() => navigation.push('ChangeLocation')}
-            />
-          </View>
+          <Octicons
+            name="location"
+            size={24}
+            color={brandYellow}
+            onPress={() => navigation.push('ChangeLocation')}
+          />
         );
       },
     });

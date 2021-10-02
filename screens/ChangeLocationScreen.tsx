@@ -1,28 +1,22 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useNavigation } from '@react-navigation/native';
+import { CommonActions, useNavigation } from '@react-navigation/native';
 import { LocationDetailFragment } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import React, { useContext } from 'react';
-import {
-  Button,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import { Button, SafeAreaView, StyleSheet, Text, View } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
-import { brandYellow, gray, red, white } from '../colors';
-import { AppContext } from '../context/AppContext';
+import { brandYellow, brandYellow30, gray, red, white } from '../colors';
+import { AppContext, trackEvent } from '../context/AppContext';
 
 const LocationTabs = createBottomTabNavigator();
 
 const ChangeLocationScreen = () => {
   return (
     <LocationTabs.Navigator
-      tabBarOptions={{
-        activeTintColor: brandYellow,
-        inactiveTintColor: white,
+      screenOptions={{
+        tabBarActiveTintColor: brandYellow,
+        tabBarInactiveTintColor: white,
+        headerShown: false,
       }}
     >
       <LocationTabs.Screen
@@ -64,28 +58,34 @@ const LocationListScreen: React.FC<Props> = ({ state }) => {
   const { locations, activeLocation, actions } = useContext(AppContext);
 
   const handleLocationSelection = async (location: LocationDetailFragment) => {
+    trackEvent('Location Selected', {
+      locationId: location.id,
+      name: location.name,
+    }).catch((e) => console.error(e));
+    navigation.dispatch(CommonActions.navigate({ name: 'Now' }));
     actions.setLocation(location);
-    navigation.navigate('Now');
   };
 
   const data = locations.filter((location) => location.state === state);
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
-      <Text style={{}}>Select Location</Text>
       <FlatList
         style={styles.list}
         data={data}
         keyExtractor={(item) => item.id}
         ItemSeparatorComponent={Separator}
-        ListHeaderComponent={HeaderFooter}
-        ListFooterComponent={HeaderFooter}
+        ListFooterComponent={Footer}
         renderItem={({ item }) => {
           const isActive = item.id === activeLocation.id;
           return (
             <TouchableOpacity onPress={() => handleLocationSelection(item)}>
-              <View style={styles.listItem}>
+              <View
+                style={[
+                  styles.listItem,
+                  { backgroundColor: isActive ? brandYellow30 : 'white' },
+                ]}
+              >
                 <Text
                   style={[
                     styles.listItemText,
@@ -110,7 +110,9 @@ const LocationListScreen: React.FC<Props> = ({ state }) => {
         <Button
           color={red[700]}
           title="Cancel"
-          onPress={() => navigation.navigate('Now')}
+          onPress={() =>
+            navigation.dispatch(CommonActions.navigate({ name: 'Now' }))
+          }
         />
       </View>
     </SafeAreaView>
@@ -118,7 +120,8 @@ const LocationListScreen: React.FC<Props> = ({ state }) => {
 };
 
 const Separator = () => <View style={styles.separator} />;
-const HeaderFooter = () => <View style={styles.headerFooter} />;
+
+const Footer = () => <View style={styles.footer} />;
 
 export default ChangeLocationScreen;
 
@@ -127,9 +130,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
     justifyContent: 'space-between',
+    backgroundColor: white,
   },
   list: {
-    marginTop: 10,
+    marginTop: 0,
     width: '100%',
   },
   listItem: {
@@ -148,8 +152,8 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: gray[300],
   },
-  headerFooter: {
-    height: 2,
+  footer: {
+    height: 1,
     backgroundColor: gray[400],
   },
   cancelWrapper: {

@@ -1,4 +1,4 @@
-import { Octicons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import {
   createStackNavigator,
@@ -157,34 +157,38 @@ const Tide: React.FC = () => {
         tickValues.push(addHours(startOfDay(date), i));
       }
 
-      stuffToRender = (
-        <>
-          <View style={styles.chartWrapper}>
-            <MainTideChart
-              sunData={sunData}
-              tideData={curDayTides}
-              waterHeightData={curDayWaterHeight}
-              solunarData={solunarData}
-            />
-            <MultiDayTideCharts
-              sunData={tideResult.data.location.sun}
-              tideData={tideResult.data.tidePreditionStation.tides}
-              waterHeightData={waterHeightBase}
-              numDays={3}
-              solunarData={tideResult.data.location.solunar}
-            />
-            <ChartLabel />
-          </View>
-          <View style={styles.hiLowWrapper}>
-            <HighLowTable
-              hiLowData={hiLowData}
-              sunData={sunData}
-              moonData={moonData}
-              solunarData={solunarData}
-            />
-          </View>
-        </>
-      );
+      if (!solunarData || !moonData) {
+        stuffToRender = <Loading />;
+      } else {
+        stuffToRender = (
+          <>
+            <View style={styles.chartWrapper}>
+              <MainTideChart
+                sunData={sunData}
+                tideData={curDayTides}
+                waterHeightData={curDayWaterHeight}
+                solunarData={solunarData}
+              />
+              <MultiDayTideCharts
+                sunData={tideResult.data.location.sun}
+                tideData={tideResult.data.tidePreditionStation.tides}
+                waterHeightData={waterHeightBase}
+                numDays={3}
+                solunarData={tideResult.data.location.solunar}
+              />
+              <ChartLabel />
+            </View>
+            <View style={styles.hiLowWrapper}>
+              <HighLowTable
+                hiLowData={hiLowData}
+                sunData={sunData}
+                moonData={moonData}
+                solunarData={solunarData}
+              />
+            </View>
+          </>
+        );
+      }
     }
   }
 
@@ -244,7 +248,7 @@ const Header = () => {
           </Text>
         </View>
         <View>
-          <Octicons name="settings" size={32} color={gray[700]} />
+          <Feather name="edit" size={24} color={gray[700]} />
         </View>
       </View>
     </TouchableOpacity>
@@ -299,9 +303,10 @@ const RootStack = createStackNavigator();
 const TideStackScreen = () => (
   <TideContextProvider>
     <RootStack.Navigator
-      mode="modal"
       screenOptions={{
         headerShown: false,
+        presentation: 'transparentModal',
+        cardOverlayEnabled: true,
       }}
     >
       <RootStack.Screen name="TideScreen" component={TideScreen} />

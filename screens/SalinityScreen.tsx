@@ -131,7 +131,7 @@ const ImageDetailScreen: React.FC<ImageScreenProps> = ({ route }) => {
 
 const SalinityScreen = () => (
   <ForecastStack.Navigator>
-    <ForecastStack.Screen name="Salinity" component={Salinity} />
+    <ForecastStack.Screen name="SalinityStack" component={Salinity} />
     <ForecastStack.Screen
       name="Zoomable Salinity Map"
       component={ImageDetailScreen}

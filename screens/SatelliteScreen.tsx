@@ -23,7 +23,7 @@ import {
 } from 'react-native';
 import { WebView } from 'react-native-webview';
 import LoaderBlock from '../components/LoaderBlock';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
@@ -100,15 +100,6 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
     <>
       {newVersionAvailable && <UpgradeNotice />}
       <View style={styles.container}>
-        <Text style={styles.introText}>
-          MODIS is an extensive program with two satellites (Aqua and Terra)
-          that pass over the United States and take a giant photo each day. Most
-          importantly for fishermen,{' '}
-          <Text style={styles.bold}>
-            you can use the imagery to find clean water.
-          </Text>
-        </Text>
-
         <View style={styles.tileHeader}>
           <View>
             <MaterialCommunityIcons
@@ -145,9 +136,19 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
           pagingEnabled
           showsHorizontalScrollIndicator={false}
           onMomentumScrollEnd={(e) => {
-            const newIndex = Math.floor(
+            let newIndex = Math.floor(
               e.nativeEvent.contentOffset.x / (width - 60),
             );
+            if (newIndex < 0) {
+              newIndex = 0;
+            }
+            if (newIndex > maps.length - 1) {
+              newIndex = maps.length - 1;
+            }
+
+            trackEvent('Satellite Image Swipe', {
+              newIndex: String(newIndex),
+            });
             setCurIndex(newIndex);
           }}
           style={styles.swiperView}
@@ -179,6 +180,14 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
         <Text>
           Swipe left and right to view different days, and{' '}
           {pressText.toLowerCase()} any image to open a zoomable view.
+        </Text>
+        <Text style={styles.introText}>
+          MODIS is an extensive program with two satellites (Aqua and Terra)
+          that pass over the United States and take a giant photo each day. Most
+          importantly for fishermen,{' '}
+          <Text style={styles.bold}>
+            you can use the imagery to find clean water.
+          </Text>
         </Text>
       </View>
     </>
@@ -229,7 +238,7 @@ const styles = StyleSheet.create({
     margin: 20,
   },
   introText: {
-    marginBottom: 20,
+    marginTop: 20,
   },
   tileHeader: {
     flexDirection: 'row',

@@ -31,6 +31,7 @@ import {
 import { renderBackgroundColor } from './MainTideChart';
 import { TideContext } from '../context/TideContext';
 import { blue, gray, white, black } from '../colors';
+import { trackEvent } from '../context/AppContext';
 
 interface Props {
   sunData: SunDetailFieldsFragment[];
@@ -127,11 +128,17 @@ const MultiDayTideCharts: React.FC<Props> = ({
       <View style={styles.clickableOverlay}>
         <TouchableOpacity
           style={styles.clickable}
-          onPress={() => actions.setDate(addDays(activeDate, -1))}
+          onPress={() => {
+            trackEvent('Change Tide Date', { direction: 'back' });
+            return actions.setDate(addDays(activeDate, -1));
+          }}
         />
         <TouchableOpacity
           style={styles.clickable}
-          onPress={() => actions.setDate(addDays(activeDate, 1))}
+          onPress={() => {
+            trackEvent('Change Tide Date', { direction: 'forward' });
+            return actions.setDate(addDays(activeDate, 1));
+          }}
         />
       </View>
       <VictoryChart

@@ -7,7 +7,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { Path } from 'react-native-svg';
 import { VictoryScatter } from 'victory-native';
 import { blue } from '../colors';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 import { DataSite } from '../screens/NowScreen';
 import BigBlue from './BigBlue';
 import ConditionCard from './ConditionCard';
@@ -93,11 +93,17 @@ const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
             <Graph
               data={curDetail}
               onPress={() => {
+                if (!selectedSite) {
+                  return;
+                }
+
+                trackEvent('View Card Full Screen Graph', { card: 'wind' });
+
                 navigation.push('FullScreenGraph', {
                   data: curDetail,
                   title: headerText,
                   includeArrows: true,
-                  siteName: selectedSite?.name ?? undefined,
+                  siteName: selectedSite.name,
                 });
               }}
             >
@@ -114,6 +120,16 @@ const WindCard: React.FC<Props> = ({ sites, requestRefresh }) => {
             sites={sites}
             handleChange={(itemValue) => {
               const match = sites.find((site) => site.id === itemValue);
+              if (!match) {
+                return;
+              }
+
+              trackEvent('Change Card Observation Site', {
+                card: 'wind',
+                siteId: match.id,
+                siteName: match.name,
+              });
+
               setSelectedSite(match);
             }}
             selectedId={selectedSite.id}

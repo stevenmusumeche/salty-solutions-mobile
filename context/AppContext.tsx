@@ -10,6 +10,7 @@ import React, {
   useState,
 } from 'react';
 import { AsyncStorage } from 'react-native';
+import Analytics from 'appcenter-analytics';
 
 interface AppContext {
   locations: LocationDetailFragment[];
@@ -73,4 +74,21 @@ export const AppContextProvider: React.FC = ({ children }) => {
   return (
     <AppContext.Provider value={providerValue}>{children}</AppContext.Provider>
   );
+};
+
+export const trackEvent = (
+  eventName: string,
+  properties: { [name: string]: string } = {},
+): Promise<void> => {
+  if (__DEV__) {
+    console.debug('Tracking Event', eventName, properties);
+    // don't actually track in dev
+    // return;
+  }
+  try {
+    return Analytics.trackEvent(eventName, properties);
+  } catch (e) {
+    console.error('Error tracking analytics event', e);
+    return Promise.resolve();
+  }
 };

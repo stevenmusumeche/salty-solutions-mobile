@@ -21,9 +21,10 @@ const AppScreen = () => {
 
   return (
     <AppTabs.Navigator
-      tabBarOptions={{
-        activeTintColor: brandYellow,
-        inactiveTintColor: white,
+      screenOptions={{
+        tabBarActiveTintColor: brandYellow,
+        tabBarInactiveTintColor: white,
+        headerShown: false,
       }}
     >
       <AppTabs.Screen

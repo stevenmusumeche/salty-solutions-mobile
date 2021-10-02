@@ -5,7 +5,7 @@ import { UsgsSiteDetailFragment } from '@stevenmusumeche/salty-solutions-shared/
 import { subHours } from 'date-fns';
 import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AppContext } from '../context/AppContext';
+import { AppContext, trackEvent } from '../context/AppContext';
 import BigBlue from './BigBlue';
 import ConditionCard from './ConditionCard';
 import { ErrorIcon } from './FullScreenError';
@@ -77,13 +77,19 @@ const SalinityCard: React.FC<Props> = ({ sites, requestRefresh }) => {
           {curDetail && (
             <Graph
               data={curDetail}
-              onPress={() =>
-                navigation.push('FullScreenGraph', {
+              onPress={() => {
+                if (!selectedSite) {
+                  return;
+                }
+
+                trackEvent('View Card Full Screen Graph', { card: 'salinity' });
+
+                return navigation.push('FullScreenGraph', {
                   data: curDetail,
                   title: headerText,
-                  siteName: selectedSite ? selectedSite.name : '',
-                })
-              }
+                  siteName: selectedSite.name,
+                });
+              }}
             />
           )}
         </>
@@ -96,6 +102,16 @@ const SalinityCard: React.FC<Props> = ({ sites, requestRefresh }) => {
             sites={sites}
             handleChange={(itemValue) => {
               const match = sites.find((site) => site.id === itemValue);
+              if (!match) {
+                return;
+              }
+
+              trackEvent('Change Card Observation Site', {
+                card: 'salinity',
+                siteId: match.id,
+                siteName: match.name,
+              });
+
               setSelectedSite(match!);
             }}
             selectedId={selectedSite.id}
