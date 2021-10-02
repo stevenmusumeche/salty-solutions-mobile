@@ -17,7 +17,7 @@ export const useHeaderTitle = (
     navigation.setOptions({
       headerTitle: withLocation ? title + ' for ' + activeLocation.name : title,
       headerTitleStyle: {
-        // width: width - 70,
+        maxWidth: width - 80,
         textAlign: Platform.OS === 'ios' ? 'center' : 'left',
         fontSize,
       },
