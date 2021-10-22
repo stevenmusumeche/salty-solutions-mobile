@@ -137,6 +137,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 35
         versionName "1.2.4"
+        manifestPlaceholders = [auth0Domain: "dev-nzoppbnb.us.auth0.com", auth0Scheme: "${applicationId}"]
     }
     splits {
         abi {

@@ -18,6 +18,7 @@ import ForecastSun from './ForecastSun';
 import ForecastText from './ForecastText';
 import ForecastTide from './ForecastTide';
 import ForecastTimeBuckets from './ForecastTimeBuckets';
+import Teaser from './Teaser';
 
 interface Props {
   datum: CombinedForecastV2DetailFragment;
@@ -79,6 +80,24 @@ const ForecastCard: React.FC<Props> = (props) => {
 
 export default React.memo(ForecastCard);
 
+export const EmptyForecastCard = () => {
+  const { width } = useWindowDimensions();
+
+  return (
+    <View style={styles.container}>
+      <View style={{ width, flex: 1 }}>
+        <Teaser
+          title="Want our extended forecast?"
+          description={
+            'When should you go fishing? Access our extended 9-day forecast to make the most of your upcoming day on the water.'
+          }
+          buttonSubtitle="Login for free to access the full 9-day forecast."
+        />
+      </View>
+    </View>
+  );
+};
+
 export const styles = StyleSheet.create({
   cardWrapper: {
     backgroundColor: white,
@@ -87,6 +106,7 @@ export const styles = StyleSheet.create({
   },
   container: {
     backgroundColor: white,
+    flex: 1,
   },
   children: {
     flex: 1,

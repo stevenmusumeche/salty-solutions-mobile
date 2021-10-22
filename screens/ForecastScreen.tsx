@@ -12,7 +12,10 @@ import {
   useWindowDimensions,
   Text,
 } from 'react-native';
-import ForecastCard, { styles as cardStyles } from '../components/ForecastCard';
+import ForecastCard, {
+  EmptyForecastCard,
+  styles as cardStyles,
+} from '../components/ForecastCard';
 import FullScreenError from '../components/FullScreenError';
 import LoaderBlock from '../components/LoaderBlock';
 import { AppContext, trackEvent } from '../context/AppContext';
@@ -23,14 +26,18 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { gray, black, white } from '../colors';
 import UpgradeNotice from '../components/UpgradeNotice';
 import { useAppVersionContext } from '../context/AppVersionContext';
+import { User, useUserContext } from '../context/UserContext';
 
-const NUM_DAYS = 9;
+const NUM_DAYS_LOGGED_IN = 9;
+const NUM_DAYS_LOGGED_OUT = 2;
 
 const ForecastStack = createStackNavigator();
 
 const Forecast: React.FC = () => {
   useLocationSwitcher();
   useHeaderTitle('Forecast');
+  const { user } = useUserContext();
+
   const { width } = useWindowDimensions();
 
   const [refreshing, setRefreshing] = React.useState(false);
@@ -39,17 +46,24 @@ const Forecast: React.FC = () => {
 
   useEffect(() => {
     setCurIndex(0);
-  }, [activeLocation.id, refreshing]);
+  }, [activeLocation.id, refreshing, user]);
 
   const [forecast, refresh] = useCombinedForecastV2Query({
     variables: {
       locationId: activeLocation.id,
       startDate: format(startOfDay(new Date()), ISO_FORMAT),
-      endDate: format(addDays(endOfDay(new Date()), NUM_DAYS), ISO_FORMAT),
+      endDate: format(
+        addDays(
+          endOfDay(new Date()),
+          user.isLoggedIn ? NUM_DAYS_LOGGED_IN : NUM_DAYS_LOGGED_OUT,
+        ),
+        ISO_FORMAT,
+      ),
     },
   });
   let data =
-    forecast.data?.location?.combinedForecastV2?.slice(0, NUM_DAYS) || [];
+    forecast.data?.location?.combinedForecastV2?.slice(0, NUM_DAYS_LOGGED_IN) ||
+    [];
 
   let sunData = forecast.data?.location?.sun || [];
   let tideData = forecast.data?.location?.tidePreditionStations[0]?.tides || [];
@@ -77,7 +91,7 @@ const Forecast: React.FC = () => {
   } else {
     stuffToRender = (
       <>
-        <Header curIndex={curIndex} data={data} />
+        <Header curIndex={curIndex} data={data} user={user} />
         <FlatList
           data={data}
           keyExtractor={(item) => item.name}
@@ -95,7 +109,8 @@ const Forecast: React.FC = () => {
           })}
           onMomentumScrollEnd={(e) => {
             trackEvent('Forecast Swipe');
-            setCurIndex(Math.round(e.nativeEvent.contentOffset.x / width));
+            const index = Math.round(e.nativeEvent.contentOffset.x / width);
+            setCurIndex(index);
           }}
           renderItem={({ item }) => {
             return (
@@ -112,6 +127,9 @@ const Forecast: React.FC = () => {
               />
             );
           }}
+          ListFooterComponent={() =>
+            user.isLoggedIn ? null : <EmptyForecastCard />
+          }
         />
       </>
     );
@@ -134,8 +152,20 @@ const ForecastLoaderCard = () => (
 const Header: React.FC<{
   curIndex: number;
   data: CombinedForecastV2DetailFragment[];
-}> = ({ curIndex, data }) => {
+  user: User;
+}> = ({ curIndex, data, user }) => {
   const { newVersionAvailable } = useAppVersionContext();
+  const curData = data[curIndex];
+
+  let showSwipeLeft;
+  const title = curData
+    ? `${curData.name} ${format(new Date(curData.date), 'M/d')}`
+    : '';
+  if (user.isLoggedIn) {
+    showSwipeLeft = curIndex < data.length - 1;
+  } else {
+    showSwipeLeft = curIndex < data.length;
+  }
 
   return (
     <>
@@ -149,20 +179,13 @@ const Header: React.FC<{
             />
           </View>
           <View>
-            <Text style={styles.headerText}>
-              {data[curIndex].name}{' '}
-              {format(new Date(data[curIndex].date), 'M/d')}
-            </Text>
+            <Text style={styles.headerText}>{title}</Text>
           </View>
           <View>
             <MaterialCommunityIcons
               name="gesture-swipe-left"
               size={20}
-              color={
-                curIndex < data.length - 1
-                  ? 'rgba(255,255,255,.6))'
-                  : 'transparent'
-              }
+              color={showSwipeLeft ? 'rgba(255,255,255,.6))' : 'transparent'}
             />
           </View>
         </View>

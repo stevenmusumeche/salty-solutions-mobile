@@ -30,6 +30,8 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { brandYellow, gray, white } from '../colors';
 import UpgradeNotice from '../components/UpgradeNotice';
 import { useAppVersionContext } from '../context/AppVersionContext';
+import { useUserContext } from '../context/UserContext';
+import Teaser from '../components/Teaser';
 
 type StackParams = {
   'Satellite Image Detail': {
@@ -51,13 +53,15 @@ type Props = {
 
 const Satellite: React.FC<Props> = ({ navigation }) => {
   useLocationSwitcher();
-  useHeaderTitle('Satellite Imagery');
+  useHeaderTitle('Satellite');
+  const { user } = useUserContext();
   const scrollRef = useRef<any>(null);
   const { width } = useWindowDimensions();
   const { activeLocation } = useContext(AppContext);
   const { newVersionAvailable } = useAppVersionContext();
   const [modisMap] = useModisMapQuery({
     variables: { locationId: activeLocation.id },
+    pause: !user.isLoggedIn,
   });
   const [curIndex, setCurIndex] = useState(0);
 
@@ -75,6 +79,16 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
       setCurIndex(modisMap.data.location.modisMaps.length - 1);
     }
   }, [modisMap.data]);
+
+  if (!user.isLoggedIn) {
+    return (
+      <Teaser
+        title="Find clean water with real-time satellite imagery"
+        description="MODIS is an extensive program using sensors on two satellites that each provide complete daily coverage of the earth."
+        buttonSubtitle="Login for free to access satellite imagery."
+      />
+    );
+  }
 
   if (modisMap.fetching || !modisMap.data || !modisMap.data.location) {
     return (
@@ -235,7 +249,7 @@ export default SatelliteScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    margin: 20,
+    padding: 20,
   },
   introText: {
     marginTop: 20,
