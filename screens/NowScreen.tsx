@@ -49,7 +49,7 @@ export type DataSite = UsgsSiteDetailFragment | TideStationDetailFragment;
 
 const Now: React.FC = () => {
   useLocationSwitcher();
-  useHeaderTitle('Current Conditions');
+  useHeaderTitle();
 
   const { activeLocation } = useContext(AppContext);
   const { newVersionAvailable } = useAppVersionContext();

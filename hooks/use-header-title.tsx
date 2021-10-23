@@ -5,7 +5,7 @@ import { AppContext } from '../context/AppContext';
 import { useWindowDimensions, Platform } from 'react-native';
 
 export const useHeaderTitle = (
-  title: string,
+  title?: string,
   withLocation = true,
   fontSize = 17,
 ) => {
@@ -13,9 +13,16 @@ export const useHeaderTitle = (
   const navigation = useNavigation<StackNavigationProp<any>>();
   const { activeLocation } = useContext(AppContext);
 
+  let headerTitle = '';
+  if (!title) {
+    headerTitle = activeLocation.name;
+  } else {
+    headerTitle = withLocation ? title + ' for ' + activeLocation.name : title;
+  }
+
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: withLocation ? title + ' for ' + activeLocation.name : title,
+      headerTitle,
       headerTitleStyle: {
         maxWidth: width - 80,
         textAlign: Platform.OS === 'ios' ? 'center' : 'left',
@@ -25,5 +32,13 @@ export const useHeaderTitle = (
         shadowColor: 'transparent',
       },
     });
-  }, [activeLocation, fontSize, navigation, title, width, withLocation]);
+  }, [
+    activeLocation,
+    fontSize,
+    navigation,
+    title,
+    width,
+    withLocation,
+    headerTitle,
+  ]);
 };

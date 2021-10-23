@@ -1,4 +1,6 @@
 PODS:
+  - A0Auth0 (2.10.0):
+    - React
   - appcenter-analytics (4.2.0):
     - AppCenter/Analytics (~> 4.0)
     - AppCenterReactNativeShared (~> 4.0)
@@ -46,6 +48,8 @@ PODS:
     - UMCore
   - ExpoModulesCore/Interfaces (0.2.0):
     - ExpoModulesCore/Core
+    - UMCore
+  - EXSecureStore (10.2.0):
     - UMCore
   - EXSplashScreen (0.11.4):
     - React-Core
@@ -361,6 +365,7 @@ PODS:
   - Yoga (1.14.0)
 
 DEPENDENCIES:
+  - A0Auth0 (from `../node_modules/react-native-auth0/ios`)
   - appcenter-analytics (from `../node_modules/appcenter-analytics/ios`)
   - appcenter-core (from `../node_modules/appcenter/ios`)
   - appcenter-crashes (from `../node_modules/appcenter-crashes/ios`)
@@ -373,6 +378,7 @@ DEPENDENCIES:
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
   - EXKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
+  - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
   - EXSplashScreen (from `../node_modules/expo-splash-screen/ios`)
   - EXStoreReview (from `../node_modules/expo-store-review/ios`)
   - EXStructuredHeaders (from `../node_modules/expo-structured-headers/ios`)
@@ -426,6 +432,8 @@ SPEC REPOS:
     - boost-for-react-native
 
 EXTERNAL SOURCES:
+  A0Auth0:
+    :path: "../node_modules/react-native-auth0/ios"
   appcenter-analytics:
     :path: "../node_modules/appcenter-analytics/ios"
   appcenter-core:
@@ -450,6 +458,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoModulesCore:
     :path: "../node_modules/expo-modules-core/ios"
+  EXSecureStore:
+    :path: "../node_modules/expo-secure-store/ios"
   EXSplashScreen:
     :path: "../node_modules/expo-splash-screen/ios"
   EXStoreReview:
@@ -538,6 +548,7 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
 SPEC CHECKSUMS:
+  A0Auth0: 40dcaa45ba34f67227095d8cbc091431e8c20177
   AppCenter: 87ef6eefd8ade4df59e88951288587429f3dd2a5
   appcenter-analytics: e34c776aa7145d0f3834c3bba2e003800d1572fe
   appcenter-core: 1d3ae87d4f9280db4522fe8c25d3f7c9ab8e415f
@@ -553,6 +564,7 @@ SPEC CHECKSUMS:
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
   ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
+  EXSecureStore: 1aa80d49a3a101418bbd2675e2a0d32dceea10c2
   EXSplashScreen: f149e7ae7c5b412c03af491a10cca5bc760a75ec
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
   EXStructuredHeaders: dc4b99d20ce14a5ec4d57a53743f0f95d7e82c65
