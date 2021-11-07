@@ -9,13 +9,15 @@ import SalinityScreen from './SalinityScreen';
 import SatelliteScreen from './SatelliteScreen';
 import TideScreen from './TideScreen';
 import { brandYellow, white } from '../colors';
+import { usePurchaseContext } from '../context/PurchaseContext';
 
 const AppTabs = createBottomTabNavigator();
 
 const AppScreen = () => {
   const { activeLocation } = useContext(AppContext);
+  const { productLoadStatus } = usePurchaseContext();
 
-  if (!activeLocation) {
+  if (!activeLocation || productLoadStatus === 'loading') {
     return <AppLoading />;
   }
 

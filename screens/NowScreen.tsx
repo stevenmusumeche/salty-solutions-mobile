@@ -15,6 +15,7 @@ import {
   StyleSheet,
   View,
   Platform,
+  Button,
 } from 'react-native';
 import { brandYellow, white } from '../colors';
 import AirTempCard from '../components/AirTempCard';
@@ -30,6 +31,7 @@ import { useHeaderTitle } from '../hooks/use-header-title';
 import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import * as StoreReview from 'expo-store-review';
 import { useEffect } from 'react';
+import { usePurchaseContext } from '../context/PurchaseContext';
 
 export type NowStackParams = {
   FullScreenGraph: {
@@ -48,6 +50,7 @@ const NowStack = createStackNavigator();
 export type DataSite = UsgsSiteDetailFragment | TideStationDetailFragment;
 
 const Now: React.FC = () => {
+  const { products, purchase } = usePurchaseContext();
   useLocationSwitcher();
   useHeaderTitle();
 
@@ -87,6 +90,7 @@ const Now: React.FC = () => {
             <RefreshControl refreshing={false} onRefresh={makeRefreshRequest} />
           }
         >
+          <Button onPress={() => purchase(products[0])} title="Buy" />
           <CardGrid>
             <WindCard requestRefresh={requestRefresh} sites={windSites} />
             <AirTempCard requestRefresh={requestRefresh} />

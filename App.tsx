@@ -10,6 +10,7 @@ import { createClient, Provider } from 'urql';
 import { brandYellow, gray, white } from './colors';
 import { AppContextProvider, trackEvent } from './context/AppContext';
 import { AppVersionContextProvider } from './context/AppVersionContext';
+import { PurchaseContextProvider } from './context/PurchaseContext';
 import { UserContextProvider } from './context/UserContext';
 import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';
@@ -40,58 +41,61 @@ const App = () => {
       <AppVersionContextProvider>
         <AppContextProvider>
           <UserContextProvider>
-            <NavigationContainer
-              theme={MyTheme}
-              ref={navigationRef}
-              onReady={() => {
-                const routeName = navigationRef.getCurrentRoute()?.name;
-                if (routeName) {
-                  routeNameRef.current = routeName;
-                }
-              }}
-              onStateChange={async () => {
-                const previousRouteName = routeNameRef.current;
-                const currentRouteName = navigationRef.getCurrentRoute()?.name;
+            <PurchaseContextProvider>
+              <NavigationContainer
+                theme={MyTheme}
+                ref={navigationRef}
+                onReady={() => {
+                  const routeName = navigationRef.getCurrentRoute()?.name;
+                  if (routeName) {
+                    routeNameRef.current = routeName;
+                  }
+                }}
+                onStateChange={async () => {
+                  const previousRouteName = routeNameRef.current;
+                  const currentRouteName = navigationRef.getCurrentRoute()
+                    ?.name;
 
-                if (
-                  currentRouteName &&
-                  previousRouteName !== currentRouteName
-                ) {
-                  trackEvent('Navigation', { route: currentRouteName });
-                }
+                  if (
+                    currentRouteName &&
+                    previousRouteName !== currentRouteName
+                  ) {
+                    trackEvent('Navigation', { route: currentRouteName });
+                  }
 
-                // Save the current route name for later comparison
-                routeNameRef.current = currentRouteName;
-              }}
-            >
-              <StatusBar barStyle="light-content" />
-              <RootStack.Navigator
-                screenOptions={{ headerShown: false, presentation: 'card' }}
+                  // Save the current route name for later comparison
+                  routeNameRef.current = currentRouteName;
+                }}
               >
-                <RootStack.Screen name="App" component={AppScreen} />
-                <RootStack.Screen
-                  name="ChangeLocation"
-                  component={ChangeLocationScreen}
-                  options={{
-                    title: 'Change Location',
-                    headerShown: true,
-                    headerTitleStyle: { color: white },
-                    headerTintColor: brandYellow,
-                  }}
-                />
-                <RootStack.Screen
-                  name="Settings"
-                  component={SettingsScreen}
-                  options={{
-                    title: 'Salty Solutions',
-                    headerShown: true,
-                    headerTitleStyle: { color: white },
-                    headerTintColor: brandYellow,
-                    headerBackTitle: 'Back',
-                  }}
-                />
-              </RootStack.Navigator>
-            </NavigationContainer>
+                <StatusBar barStyle="light-content" />
+                <RootStack.Navigator
+                  screenOptions={{ headerShown: false, presentation: 'card' }}
+                >
+                  <RootStack.Screen name="App" component={AppScreen} />
+                  <RootStack.Screen
+                    name="ChangeLocation"
+                    component={ChangeLocationScreen}
+                    options={{
+                      title: 'Change Location',
+                      headerShown: true,
+                      headerTitleStyle: { color: white },
+                      headerTintColor: brandYellow,
+                    }}
+                  />
+                  <RootStack.Screen
+                    name="Settings"
+                    component={SettingsScreen}
+                    options={{
+                      title: 'Salty Solutions',
+                      headerShown: true,
+                      headerTitleStyle: { color: white },
+                      headerTintColor: brandYellow,
+                      headerBackTitle: 'Back',
+                    }}
+                  />
+                </RootStack.Navigator>
+              </NavigationContainer>
+            </PurchaseContextProvider>
           </UserContextProvider>
         </AppContextProvider>
       </AppVersionContextProvider>
