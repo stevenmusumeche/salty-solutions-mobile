@@ -13,7 +13,7 @@ import {
   Maybe,
   useUserLoggedInMutation,
   Platform,
-  useViewerQuery,
+  useCreateUserMutation,
   UserFieldsFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { isAfter } from 'date-fns';
@@ -35,25 +35,30 @@ const auth0 = new Auth0({
 export const UserContext = createContext({} as UserContext);
 
 export const UserContextProvider: React.FC = ({ children }) => {
+  const platform = RNPlatform.OS === 'ios' ? Platform.Ios : Platform.Android;
   const savedCredentialsKey = 'auth0Creds';
   const [userCredentials, setUserCredentials] = useState<UserCredentials>();
   const [, loggedInMutation] = useUserLoggedInMutation();
+  const [createUserResult, executeCreateUser] = useCreateUserMutation();
 
-  const viewerQueryOptions = useMemo(
-    () => ({
-      pause: !userCredentials?.credentials.idToken,
-      context: {
+  // make sure the user exists
+  useEffect(() => {
+    const idToken = userCredentials?.credentials.idToken;
+    if (!idToken) {
+      return;
+    }
+
+    executeCreateUser(
+      {},
+      {
         fetchOptions: {
           headers: {
             authorization: 'Bearer ' + userCredentials?.credentials.idToken,
           },
         },
       },
-    }),
-    [userCredentials],
-  );
-
-  const [viewerResult] = useViewerQuery(viewerQueryOptions);
+    );
+  }, [executeCreateUser, userCredentials]);
 
   const handleNewCreds = useCallback(async (auth0Creds: Credentials) => {
     const credentials = {
@@ -73,8 +78,7 @@ export const UserContextProvider: React.FC = ({ children }) => {
         scope: 'openid profile email offline_access',
       });
       handleNewCreds(auth0Creds);
-      const platform =
-        RNPlatform.OS === 'ios' ? Platform.Ios : Platform.Android;
+
       await loggedInMutation(
         { platform },
         {
@@ -87,7 +91,7 @@ export const UserContextProvider: React.FC = ({ children }) => {
       // todo handle login error somehow
       console.log('Error logging in', e);
     }
-  }, [handleNewCreds, loggedInMutation]);
+  }, [handleNewCreds, loggedInMutation, platform]);
 
   const logout = useCallback(async () => {
     try {
@@ -173,13 +177,23 @@ export const UserContextProvider: React.FC = ({ children }) => {
     if (!userCredentials) {
       user = { isLoggedIn: false, loading: false, hasPremium: false };
     } else {
-      if (viewerResult.fetching && !viewerResult.data?.viewer) {
+      if (
+        createUserResult.fetching &&
+        !createUserResult.data?.createUser.user
+      ) {
         user = { isLoggedIn: true, loading: true, hasPremium: false };
+      } else if (!createUserResult.data?.createUser.user) {
+        user = {
+          isLoggedIn: true,
+          loading: true,
+          hasPremium: false,
+          error: 'Unable to create user',
+        };
       } else {
         user = {
           isLoggedIn: true,
           loading: false,
-          ...viewerResult.data?.viewer,
+          ...createUserResult.data.createUser.user,
           hasPremium: false, // todo: calculate this
         };
       }
@@ -192,7 +206,7 @@ export const UserContextProvider: React.FC = ({ children }) => {
         logout,
       },
     };
-  }, [login, logout, userCredentials, viewerResult]);
+  }, [createUserResult, login, logout, userCredentials]);
 
   return (
     <UserContext.Provider value={providerValue}>
@@ -243,6 +257,11 @@ export type User =
   | ({
       isLoggedIn: true;
       loading: true;
+    } & BaseUser)
+  | ({
+      isLoggedIn: true;
+      loading: true;
+      error: string;
     } & BaseUser)
   | ({
       isLoggedIn: true;
