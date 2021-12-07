@@ -6,9 +6,16 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { Platform as RNPlatform } from 'react-native';
 import Auth0, { Credentials } from 'react-native-auth0';
 import jwt_decode from 'jwt-decode';
-import { Maybe } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
+import {
+  Maybe,
+  useUserLoggedInMutation,
+  Platform,
+  useCreateUserMutation,
+  UserFieldsFragment,
+} from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { isAfter } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
 
@@ -28,8 +35,30 @@ const auth0 = new Auth0({
 export const UserContext = createContext({} as UserContext);
 
 export const UserContextProvider: React.FC = ({ children }) => {
+  const platform = RNPlatform.OS === 'ios' ? Platform.Ios : Platform.Android;
   const savedCredentialsKey = 'auth0Creds';
   const [userCredentials, setUserCredentials] = useState<UserCredentials>();
+  const [, loggedInMutation] = useUserLoggedInMutation();
+  const [createUserResult, executeCreateUser] = useCreateUserMutation();
+
+  // make sure the user exists
+  useEffect(() => {
+    const idToken = userCredentials?.credentials.idToken;
+    if (!idToken) {
+      return;
+    }
+
+    executeCreateUser(
+      {},
+      {
+        fetchOptions: {
+          headers: {
+            authorization: 'Bearer ' + userCredentials?.credentials.idToken,
+          },
+        },
+      },
+    );
+  }, [executeCreateUser, userCredentials]);
 
   const handleNewCreds = useCallback(async (auth0Creds: Credentials) => {
     const credentials = {
@@ -49,11 +78,20 @@ export const UserContextProvider: React.FC = ({ children }) => {
         scope: 'openid profile email offline_access',
       });
       handleNewCreds(auth0Creds);
+
+      await loggedInMutation(
+        { platform },
+        {
+          fetchOptions: {
+            headers: { authorization: 'Bearer ' + auth0Creds.idToken },
+          },
+        },
+      );
     } catch (e) {
       // todo handle login error somehow
       console.log('Error logging in', e);
     }
-  }, [handleNewCreds]);
+  }, [handleNewCreds, loggedInMutation, platform]);
 
   const logout = useCallback(async () => {
     try {
@@ -134,26 +172,41 @@ export const UserContextProvider: React.FC = ({ children }) => {
     };
   }, [handleNewCreds, logout, userCredentials]);
 
-  const providerValue: UserContext = useMemo(
-    () => ({
-      user: userCredentials
-        ? {
-            isLoggedIn: true,
-            id: userCredentials.token.sub,
-            name: userCredentials.token.name,
-            email: userCredentials.token.email,
-            picture: userCredentials.token.picture,
-          }
-        : {
-            isLoggedIn: false,
-          },
+  const providerValue: UserContext = useMemo(() => {
+    let user: User;
+    if (!userCredentials) {
+      user = { isLoggedIn: false, loading: false, hasPremium: false };
+    } else {
+      if (
+        createUserResult.fetching &&
+        !createUserResult.data?.createUser.user
+      ) {
+        user = { isLoggedIn: true, loading: true, hasPremium: false };
+      } else if (!createUserResult.data?.createUser.user) {
+        user = {
+          isLoggedIn: true,
+          loading: true,
+          hasPremium: false,
+          error: 'Unable to create user',
+        };
+      } else {
+        user = {
+          isLoggedIn: true,
+          loading: false,
+          ...createUserResult.data.createUser.user,
+          hasPremium: false, // todo: calculate this
+        };
+      }
+    }
+
+    return {
+      user,
       actions: {
         login,
         logout,
       },
-    }),
-    [login, logout, userCredentials],
-  );
+    };
+  }, [createUserResult, login, logout, userCredentials]);
 
   return (
     <UserContext.Provider value={providerValue}>
@@ -198,14 +251,23 @@ interface UserCredentials {
   token: Token;
 }
 
+type BaseUser = { isLoggedIn: boolean; loading: boolean; hasPremium: boolean };
+
 export type User =
-  | {
+  | ({
       isLoggedIn: true;
-      id: string;
-      email: string;
-      name: string;
-      picture: string;
-    }
-  | { isLoggedIn: false };
+      loading: true;
+    } & BaseUser)
+  | ({
+      isLoggedIn: true;
+      loading: true;
+      error: string;
+    } & BaseUser)
+  | ({
+      isLoggedIn: true;
+      loading: false;
+    } & UserFieldsFragment &
+      BaseUser)
+  | ({ isLoggedIn: false; loading: false } & BaseUser);
 
 export const useUserContext = () => useContext(UserContext);

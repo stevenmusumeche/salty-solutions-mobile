@@ -1,24 +1,24 @@
 PODS:
   - A0Auth0 (2.10.0):
     - React
-  - appcenter-analytics (4.2.0):
+  - appcenter-analytics (4.3.0):
     - AppCenter/Analytics (~> 4.0)
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
-  - appcenter-core (4.2.0):
+  - appcenter-core (4.3.0):
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
-  - appcenter-crashes (4.2.0):
+  - appcenter-crashes (4.3.0):
     - AppCenter/Crashes (~> 4.0)
     - AppCenterReactNativeShared (~> 4.0)
     - React-Core
-  - AppCenter/Analytics (4.2.0):
+  - AppCenter/Analytics (4.3.0):
     - AppCenter/Core
-  - AppCenter/Core (4.2.0)
-  - AppCenter/Crashes (4.2.0):
+  - AppCenter/Core (4.3.0)
+  - AppCenter/Crashes (4.3.0):
     - AppCenter/Core
-  - AppCenterReactNativeShared (4.2.0):
-    - AppCenter/Core (= 4.2.0)
+  - AppCenterReactNativeShared (4.3.0):
+    - AppCenter/Core (= 4.3.0)
   - boost-for-react-native (1.63.0)
   - DoubleConversion (1.1.6)
   - EXApplication (3.2.0):
@@ -37,6 +37,8 @@ PODS:
   - EXImageLoader (2.2.0):
     - ExpoModulesCore
     - React-Core
+    - UMCore
+  - EXInAppPurchases (11.0.1):
     - UMCore
   - EXKeepAwake (9.2.0):
     - UMCore
@@ -376,6 +378,7 @@ DEPENDENCIES:
   - EXFileSystem (from `../node_modules/expo-file-system/ios`)
   - EXFont (from `../node_modules/expo-font/ios`)
   - EXImageLoader (from `../node_modules/expo-image-loader/ios`)
+  - EXInAppPurchases (from `../node_modules/expo-in-app-purchases/ios`)
   - EXKeepAwake (from `../node_modules/expo-keep-awake/ios`)
   - ExpoModulesCore (from `../node_modules/expo-modules-core/ios`)
   - EXSecureStore (from `../node_modules/expo-secure-store/ios`)
@@ -454,6 +457,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/expo-font/ios"
   EXImageLoader:
     :path: "../node_modules/expo-image-loader/ios"
+  EXInAppPurchases:
+    :path: "../node_modules/expo-in-app-purchases/ios"
   EXKeepAwake:
     :path: "../node_modules/expo-keep-awake/ios"
   ExpoModulesCore:
@@ -549,26 +554,27 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   A0Auth0: 40dcaa45ba34f67227095d8cbc091431e8c20177
-  AppCenter: 87ef6eefd8ade4df59e88951288587429f3dd2a5
-  appcenter-analytics: e34c776aa7145d0f3834c3bba2e003800d1572fe
-  appcenter-core: 1d3ae87d4f9280db4522fe8c25d3f7c9ab8e415f
-  appcenter-crashes: dcfc443bd9fe7094e4fe49b15fabe68389a80c70
-  AppCenterReactNativeShared: ef370308277adf71ec1586798b196e4cc35335ea
+  AppCenter: 883369ab78427b0561c688158d689dfe1f993ea9
+  appcenter-analytics: 2a8a55d2feba193c3c8a51b9902ef4757386414e
+  appcenter-core: 0293b8aeee457a25b44323a311de49c29d9defa7
+  appcenter-crashes: ad135405e148a9ed1c8bd169a9d2ea7bbaecd34c
+  AppCenterReactNativeShared: a821c7287a296486889ef6339317b701febb0695
   boost-for-react-native: 39c7adb57c4e60d6c5479dd8623128eb5b3f0f2c
   DoubleConversion: cde416483dac037923206447da6e1454df403714
   EXApplication: 9ff2a206009d6e55bca6c20b3f33d07986b51ef3
   EXConstants: 4cb52b6d8f636c767104a44bf7db3873e9c01a6f
   EXErrorRecovery: 404d827bc7d42f306c062d58a60b06afc4d082b3
-  EXFileSystem: 51bbd6efea7299a5c8bb31caab28907e43f1135f
+  EXFileSystem: 0a04aba8da751b9ac954065911bcf166503f8267
   EXFont: 9846ba1bb6f5f5aed44e20eea3ac70693323832d
   EXImageLoader: d3531a3fe530b22925c19977cb53bb43e3821fe6
+  EXInAppPurchases: 7ea774bc066a8a1621d0da4363f0b29a7d64f056
   EXKeepAwake: f4105ef469be7b283f66ce2d7234bb71ac80cd26
   ExpoModulesCore: 2734852616127a6c1fc23012197890a6f3763dc7
   EXSecureStore: 1aa80d49a3a101418bbd2675e2a0d32dceea10c2
-  EXSplashScreen: f149e7ae7c5b412c03af491a10cca5bc760a75ec
+  EXSplashScreen: 847e0d8026731c1090bf269ede3e15ac87d88958
   EXStoreReview: 40674cc897a6d7fd249969b86d1833f67b99170a
-  EXStructuredHeaders: dc4b99d20ce14a5ec4d57a53743f0f95d7e82c65
-  EXUpdates: 3e2f9d651f412866fa217d9576d5b43b0b16b351
+  EXStructuredHeaders: e52b880264d15b8ad07d36670226c29476af6334
+  EXUpdates: 013d26649cb6ab4f8d8d80c35d3d4be150b47e7c
   EXUpdatesInterface: b68e78b912a03fff7901a5f46ec200c45e3506a5
   FBLazyVector: 3bb422f41b18121b71783a905c10e58606f7dc3e
   FBReactNativeSpec: f2c97f2529dd79c083355182cc158c9f98f4bd6e
@@ -604,11 +610,11 @@ SPEC CHECKSUMS:
   RNScreens: 21b73c94c9117e1110a79ee0ee80c93ccefed8ce
   RNSVG: 551acb6562324b1d52a4e0758f7ca0ec234e278f
   UMAppLoader: 21af63390e55c82e037fb9752d93114a80ecf16e
-  UMCore: 573e838e2a2d5dfcb23506fd7d7db6dcc07c2fb3
-  UMReactNativeAdapter: 05ad03be898fbe7635585e599daa0e50951dd437
+  UMCore: ce3a4faa010239063b8343895b29a6d97b01069d
+  UMReactNativeAdapter: d2baae589629b1b330dcd0376114bd91e7b46970
   UMTaskManagerInterface: 2be431101b73604e64fbfffcf759336f9d8fccbb
   Yoga: 4bd86afe9883422a7c4028c00e34790f560923d6
 
 PODFILE CHECKSUM: 2db628e098117175a1a617f0e87f4e0d7ec6455d
 
-COCOAPODS: 1.9.1
+COCOAPODS: 1.11.2
