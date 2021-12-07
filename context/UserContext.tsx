@@ -43,21 +43,29 @@ export const UserContextProvider: React.FC = ({ children }) => {
 
   // make sure the user exists
   useEffect(() => {
-    const idToken = userCredentials?.credentials.idToken;
-    if (!idToken) {
-      return;
-    }
+    async function run() {
+      const idToken = userCredentials?.credentials.idToken;
+      if (!idToken) {
+        return;
+      }
 
-    executeCreateUser(
-      {},
-      {
-        fetchOptions: {
-          headers: {
-            authorization: 'Bearer ' + userCredentials?.credentials.idToken,
+      const userInfo = await auth0.auth.userInfo({
+        token: userCredentials?.credentials.accessToken,
+      });
+
+      executeCreateUser(
+        { email: userInfo.email },
+        {
+          fetchOptions: {
+            headers: {
+              authorization: 'Bearer ' + userCredentials?.credentials.idToken,
+            },
           },
         },
-      },
-    );
+      );
+    }
+
+    run();
   }, [executeCreateUser, userCredentials]);
 
   const handleNewCreds = useCallback(async (auth0Creds: Credentials) => {
@@ -77,6 +85,7 @@ export const UserContextProvider: React.FC = ({ children }) => {
       const auth0Creds = await auth0.webAuth.authorize({
         scope: 'openid profile email offline_access',
       });
+
       handleNewCreds(auth0Creds);
 
       await loggedInMutation(
