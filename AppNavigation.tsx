@@ -5,9 +5,11 @@ import {
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useRef } from 'react';
-import { StatusBar } from 'react-native';
+import { StatusBar, Text, View } from 'react-native';
 import { brandYellow, gray, white } from './colors';
+import FullScreenLoading from './components/FullScreenLoading';
 import { trackEvent } from './context/AppContext';
+import { usePurchaseContext } from './context/PurchaseContext';
 import { useUserContext } from './context/UserContext';
 import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';
@@ -28,8 +30,69 @@ const MyTheme = {
 
 const AppNavigation: React.FC = () => {
   const navigationRef = useNavigationContainerRef();
+
   const routeNameRef = useRef<string>();
+  const { productLoadStatus } = usePurchaseContext();
   const { user } = useUserContext();
+
+  let content;
+  if (productLoadStatus === 'loading' || user.loading) {
+    content = (
+      <RootStack.Screen
+        name="GlobalLoading"
+        component={FullScreenLoading}
+        options={{ animationEnabled: false }}
+      />
+    );
+  } else if ('error' in user) {
+    content = (
+      <RootStack.Screen
+        name="GlobalError"
+        component={FullScreenLoading}
+        initialParams={{ error: user.error }}
+        options={{ animationEnabled: false }}
+      />
+    );
+  } else if (!user.isLoggedIn) {
+    content = (
+      <RootStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ animationEnabled: false }}
+      />
+    );
+  } else {
+    content = (
+      <>
+        <RootStack.Screen
+          name="App"
+          component={AppScreen}
+          options={{ animationEnabled: false }}
+        />
+        <RootStack.Screen
+          name="ChangeLocation"
+          component={ChangeLocationScreen}
+          options={{
+            title: 'Change Location',
+            headerShown: true,
+            headerTitleStyle: { color: white },
+            headerTintColor: brandYellow,
+          }}
+        />
+        <RootStack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            title: 'Salty Solutions',
+            headerShown: true,
+            headerTitleStyle: { color: white },
+            headerTintColor: brandYellow,
+            headerBackTitle: 'Back',
+          }}
+        />
+      </>
+    );
+  }
 
   return (
     <NavigationContainer
@@ -57,34 +120,7 @@ const AppNavigation: React.FC = () => {
       <RootStack.Navigator
         screenOptions={{ headerShown: false, presentation: 'card' }}
       >
-        {!user.isLoggedIn ? (
-          <RootStack.Screen name="Login" component={LoginScreen} />
-        ) : (
-          <>
-            <RootStack.Screen name="App" component={AppScreen} />
-            <RootStack.Screen
-              name="ChangeLocation"
-              component={ChangeLocationScreen}
-              options={{
-                title: 'Change Location',
-                headerShown: true,
-                headerTitleStyle: { color: white },
-                headerTintColor: brandYellow,
-              }}
-            />
-            <RootStack.Screen
-              name="Settings"
-              component={SettingsScreen}
-              options={{
-                title: 'Salty Solutions',
-                headerShown: true,
-                headerTitleStyle: { color: white },
-                headerTintColor: brandYellow,
-                headerBackTitle: 'Back',
-              }}
-            />
-          </>
-        )}
+        {content}
       </RootStack.Navigator>
     </NavigationContainer>
   );

@@ -181,11 +181,11 @@ export const UserContextProvider: React.FC = ({ children }) => {
         createUserResult.fetching &&
         !createUserResult.data?.createUser.user
       ) {
-        user = { isLoggedIn: true, loading: true, hasPremium: false };
+        user = { isLoggedIn: false, loading: true, hasPremium: false };
       } else if (!createUserResult.data?.createUser.user) {
         user = {
-          isLoggedIn: true,
-          loading: true,
+          isLoggedIn: false,
+          loading: false,
           hasPremium: false,
           error: 'Unable to create user',
         };
@@ -255,12 +255,12 @@ type BaseUser = { isLoggedIn: boolean; loading: boolean; hasPremium: boolean };
 
 export type User =
   | ({
-      isLoggedIn: true;
+      isLoggedIn: false;
       loading: true;
     } & BaseUser)
   | ({
-      isLoggedIn: true;
-      loading: true;
+      isLoggedIn: false;
+      loading: false;
       error: string;
     } & BaseUser)
   | ({
