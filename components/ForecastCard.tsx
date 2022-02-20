@@ -91,7 +91,7 @@ export const EmptyForecastCard = () => {
           description={
             'When should you go fishing? Access our extended 9-day forecast to make the most of your upcoming day on the water.'
           }
-          buttonSubtitle="Login for free to access the full 9-day forecast."
+          buttonSubtitle="Join now to access the full 9-day forecast."
         />
       </View>
     </View>

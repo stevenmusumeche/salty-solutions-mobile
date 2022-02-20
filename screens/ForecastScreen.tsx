@@ -28,8 +28,8 @@ import UpgradeNotice from '../components/UpgradeNotice';
 import { useAppVersionContext } from '../context/AppVersionContext';
 import { User, useUserContext } from '../context/UserContext';
 
-const NUM_DAYS_LOGGED_IN = 9;
-const NUM_DAYS_LOGGED_OUT = 2;
+const NUM_DAYS_PREMIUM = 9;
+const NUM_DAYS_FREE = 1;
 
 const ForecastStack = createStackNavigator();
 
@@ -37,6 +37,7 @@ const Forecast: React.FC = () => {
   useLocationSwitcher();
   useHeaderTitle('Forecast');
   const { user } = useUserContext();
+  const numDays = user.entitledToPremium ? NUM_DAYS_PREMIUM : NUM_DAYS_FREE;
 
   const { width } = useWindowDimensions();
 
@@ -52,18 +53,11 @@ const Forecast: React.FC = () => {
     variables: {
       locationId: activeLocation.id,
       startDate: format(startOfDay(new Date()), ISO_FORMAT),
-      endDate: format(
-        addDays(
-          endOfDay(new Date()),
-          user.isLoggedIn ? NUM_DAYS_LOGGED_IN : NUM_DAYS_LOGGED_OUT,
-        ),
-        ISO_FORMAT,
-      ),
+      endDate: format(addDays(endOfDay(new Date()), numDays), ISO_FORMAT),
     },
   });
   let data =
-    forecast.data?.location?.combinedForecastV2?.slice(0, NUM_DAYS_LOGGED_IN) ||
-    [];
+    forecast.data?.location?.combinedForecastV2?.slice(0, numDays) || [];
 
   let sunData = forecast.data?.location?.sun || [];
   let tideData = forecast.data?.location?.tidePreditionStations[0]?.tides || [];
@@ -102,6 +96,7 @@ const Forecast: React.FC = () => {
           updateCellsBatchingPeriod={300}
           showsHorizontalScrollIndicator={false}
           showsVerticalScrollIndicator={false}
+          removeClippedSubviews={true}
           getItemLayout={(data, index) => ({
             length: width,
             offset: width * index,
@@ -128,7 +123,7 @@ const Forecast: React.FC = () => {
             );
           }}
           ListFooterComponent={() =>
-            user.isLoggedIn ? null : <EmptyForecastCard />
+            user.entitledToPremium ? null : <EmptyForecastCard />
           }
         />
       </>

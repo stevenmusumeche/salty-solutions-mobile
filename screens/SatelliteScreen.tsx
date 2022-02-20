@@ -59,9 +59,10 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
   const { width } = useWindowDimensions();
   const { activeLocation } = useContext(AppContext);
   const { newVersionAvailable } = useAppVersionContext();
+
   const [modisMap] = useModisMapQuery({
     variables: { locationId: activeLocation.id },
-    pause: !user.isLoggedIn,
+    pause: !user.entitledToPremium,
   });
   const [curIndex, setCurIndex] = useState(0);
 
@@ -80,7 +81,7 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
     }
   }, [modisMap.data]);
 
-  if (!user.isLoggedIn) {
+  if (!user.entitledToPremium) {
     return (
       <Teaser
         title="Find clean water with real-time satellite imagery"

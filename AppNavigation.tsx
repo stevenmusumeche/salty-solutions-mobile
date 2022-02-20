@@ -5,7 +5,7 @@ import {
 } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import React, { useRef } from 'react';
-import { StatusBar, Text, View } from 'react-native';
+import { StatusBar } from 'react-native';
 import { brandYellow, gray, white } from './colors';
 import FullScreenLoading from './components/FullScreenLoading';
 import { trackEvent } from './context/AppContext';
@@ -15,6 +15,7 @@ import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';
 import LoginScreen from './screens/LoginScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import { useFeatureFlagContext } from '@stevenmusumeche/salty-solutions-shared';
 
 const RootStack = createStackNavigator();
 
@@ -32,11 +33,17 @@ const AppNavigation: React.FC = () => {
   const navigationRef = useNavigationContainerRef();
 
   const routeNameRef = useRef<string>();
-  const { productLoadStatus } = usePurchaseContext();
+  const { productLoadStatus, purchasing } = usePurchaseContext();
   const { user } = useUserContext();
+  const { state: flagState } = useFeatureFlagContext();
 
   let content;
-  if (productLoadStatus === 'loading' || user.loading) {
+  if (
+    productLoadStatus === 'loading' ||
+    user.loading ||
+    flagState.status === 'loading' ||
+    purchasing // todo: make this a loading screen specific to purchasing
+  ) {
     content = (
       <RootStack.Screen
         name="GlobalLoading"

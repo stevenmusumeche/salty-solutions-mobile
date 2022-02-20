@@ -10,6 +10,8 @@ import { StyleSheet, Text, View } from 'react-native';
 import Pill from './Pill';
 import { blue, orange, teal } from '../colors';
 import Stars from './Stars';
+import { useUserContext } from '../context/UserContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 interface Props {
   hiLowData: any[];
@@ -24,6 +26,7 @@ const HighLowTable: React.FC<Props> = ({
   moonData,
   solunarData,
 }) => {
+  const { user } = useUserContext();
   const formatDate = (x: string) => (
     <Text style={styles.date}>{format(new Date(x), 'h:mma')}</Text>
   );
@@ -37,22 +40,39 @@ const HighLowTable: React.FC<Props> = ({
     </View>
   );
 
+  // todo: marketing
+  const premiumTeaser = () => (
+    <View>
+      <TouchableOpacity onPress={() => {}}>
+        <Text>Premium Required</Text>
+      </TouchableOpacity>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <Pill color={teal[600]} label={'Solunar Score'}>
-        <Stars score={solunarData.score} />
+        {user.entitledToPremium ? (
+          <Stars score={solunarData.score} />
+        ) : (
+          premiumTeaser()
+        )}
       </Pill>
 
       <Pill color={teal[600]} label={'Major Feeding'}>
-        {solunarData.majorPeriods.map((period) => {
-          return formatPeriod(period);
-        })}
+        {user.entitledToPremium
+          ? solunarData.majorPeriods.map((period) => {
+              return formatPeriod(period);
+            })
+          : premiumTeaser()}
       </Pill>
 
       <Pill color={teal[600]} label={'Minor Feeding'}>
-        {solunarData.minorPeriods.map((period) => {
-          return formatPeriod(period);
-        })}
+        {user.entitledToPremium
+          ? solunarData.minorPeriods.map((period) => {
+              return formatPeriod(period);
+            })
+          : premiumTeaser()}
       </Pill>
 
       {sunData?.nauticalDawn && (
