@@ -202,22 +202,28 @@ const Tide: React.FC = () => {
   return <Wrapper {...wrapperProps}>{stuffToRender}</Wrapper>;
 };
 
-const ChartLabel = () => (
-  <View style={styles.chartLabelWrapper}>
-    <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color={blue[600]} />
-      <Text style={styles.chartLabel}>PREDICTED</Text>
+const ChartLabel = () => {
+  const { user } = useUserContext();
+
+  return (
+    <View style={styles.chartLabelWrapper}>
+      <View style={styles.chartLabelInnerWrapper}>
+        <ChartLabelSwatch color={blue[600]} />
+        <Text style={styles.chartLabel}>PREDICTED</Text>
+      </View>
+      <View style={styles.chartLabelInnerWrapper}>
+        <ChartLabelSwatch color={black} />
+        <Text style={styles.chartLabel}>OBSERVED</Text>
+      </View>
+      {user.entitledToPremium && (
+        <View style={[styles.chartLabelInnerWrapper, { marginRight: 0 }]}>
+          <ChartLabelSwatch color={blue.solunar} />
+          <Text style={styles.chartLabel}>FEEDING PERIOD</Text>
+        </View>
+      )}
     </View>
-    <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color={black} />
-      <Text style={styles.chartLabel}>OBSERVED</Text>
-    </View>
-    <View style={[styles.chartLabelInnerWrapper, { marginRight: 0 }]}>
-      <ChartLabelSwatch color={blue.solunar} />
-      <Text style={styles.chartLabel}>FEEDING PERIOD</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 const ChartLabelSwatch: React.FC<{ color: string }> = ({ color }) => (
   <View

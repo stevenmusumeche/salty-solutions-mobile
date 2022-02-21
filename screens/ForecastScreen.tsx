@@ -29,7 +29,7 @@ import { useAppVersionContext } from '../context/AppVersionContext';
 import { User, useUserContext } from '../context/UserContext';
 
 const NUM_DAYS_PREMIUM = 9;
-const NUM_DAYS_FREE = 1;
+const NUM_DAYS_FREE = 2;
 
 const ForecastStack = createStackNavigator();
 

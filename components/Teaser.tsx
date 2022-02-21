@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, Button, View } from 'react-native';
+import { Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { gray, white } from '../colors';
 import { usePurchaseContext } from '../context/PurchaseContext';
 
@@ -9,7 +9,12 @@ interface Props {
   buttonSubtitle: string;
 }
 
-const Teaser: React.FC<Props> = ({ title, description, buttonSubtitle }) => {
+const Teaser: React.FC<Props> = ({
+  title,
+  description,
+  buttonSubtitle,
+  children,
+}) => {
   const { products, purchase } = usePurchaseContext();
 
   const premium = products.find((product) =>
@@ -22,15 +27,16 @@ const Teaser: React.FC<Props> = ({ title, description, buttonSubtitle }) => {
   let buttonText = 'Buy ' + premium.description;
 
   return (
-    <View style={[styles.container, { backgroundColor: white }]}>
+    <ScrollView style={[styles.container, { backgroundColor: white }]}>
       <Text style={styles.title}>{title}</Text>
       <Text style={{ marginBottom: 15 }}>{description}</Text>
+      {children}
       <Button onPress={() => purchase(products[0])} title={buttonText} />
 
       <Text style={{ color: gray[700], textAlign: 'center' }}>
         {buttonSubtitle} Only {premium.price} per month. No contract required.
       </Text>
-    </View>
+    </ScrollView>
   );
 };
 

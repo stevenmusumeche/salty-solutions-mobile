@@ -24,8 +24,6 @@ import { RouteProp } from '@react-navigation/native';
 import { brandYellow, black, gray, white } from '../colors';
 import UpgradeNotice from '../components/UpgradeNotice';
 import { useAppVersionContext } from '../context/AppVersionContext';
-import { useUserContext } from '../context/UserContext';
-import Teaser from '../components/Teaser';
 
 type StackParams = {
   'Zoomable Salinity Map': {
@@ -45,7 +43,6 @@ type Props = {
 const Salinity: React.FC<Props> = ({ navigation }) => {
   useLocationSwitcher();
   useHeaderTitle('Salinity Map');
-  const { user } = useUserContext();
 
   const { width } = useWindowDimensions();
 
@@ -54,7 +51,6 @@ const Salinity: React.FC<Props> = ({ navigation }) => {
   const { newVersionAvailable } = useAppVersionContext();
   const [salinityMap, refresh] = useSalinityMapQuery({
     variables: { locationId: activeLocation.id },
-    pause: !user.entitledToPremium,
   });
 
   const onRefresh = useCallback(() => {
@@ -67,16 +63,6 @@ const Salinity: React.FC<Props> = ({ navigation }) => {
       setRefreshing(false);
     }
   }, [refreshing, salinityMap.fetching]);
-
-  if (!user.entitledToPremium) {
-    return (
-      <Teaser
-        title="Find water with ideal salinity"
-        description="Improve your fishing trips by focusing on areas with ideal salinity. When targeting speckled trout or redfish, part of the equation is the presence of salty water."
-        buttonSubtitle="Login for free to access salinity maps."
-      />
-    );
-  }
 
   if (salinityMap.error) {
     return (

@@ -16,6 +16,7 @@ import ChangeLocationScreen from './screens/ChangeLocationScreen';
 import LoginScreen from './screens/LoginScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { useFeatureFlagContext } from '@stevenmusumeche/salty-solutions-shared';
+import SolunarMarketingScreen from './screens/SolunarMarketingScreen';
 
 const RootStack = createStackNavigator();
 
@@ -42,7 +43,7 @@ const AppNavigation: React.FC = () => {
     productLoadStatus === 'loading' ||
     user.loading ||
     flagState.status === 'loading' ||
-    purchasing // todo: make this a loading screen specific to purchasing
+    purchasing
   ) {
     content = (
       <RootStack.Screen
@@ -89,6 +90,17 @@ const AppNavigation: React.FC = () => {
         <RootStack.Screen
           name="Settings"
           component={SettingsScreen}
+          options={{
+            title: 'Salty Solutions',
+            headerShown: true,
+            headerTitleStyle: { color: white },
+            headerTintColor: brandYellow,
+            headerBackTitle: 'Back',
+          }}
+        />
+        <RootStack.Screen
+          name="SolunarMarketing"
+          component={SolunarMarketingScreen}
           options={{
             title: 'Salty Solutions',
             headerShown: true,

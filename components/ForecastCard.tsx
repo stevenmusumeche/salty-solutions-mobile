@@ -11,6 +11,7 @@ import {
   StyleSheet,
   useWindowDimensions,
   View,
+  Image,
 } from 'react-native';
 import { white } from '../colors';
 import ForecastChart from './ForecastChart';
@@ -84,7 +85,7 @@ export const EmptyForecastCard = () => {
   const { width } = useWindowDimensions();
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={{ width, flex: 1 }}>
         <Teaser
           title="Want our extended forecast?"
@@ -92,9 +93,20 @@ export const EmptyForecastCard = () => {
             'When should you go fishing? Access our extended 9-day forecast to make the most of your upcoming day on the water.'
           }
           buttonSubtitle="Join now to access the full 9-day forecast."
-        />
+        >
+          <Image
+            source={require('../assets/forecast.jpg')}
+            style={{
+              width: width - 40,
+              height: (width - 40) / 1.4,
+              marginTop: 10,
+              marginBottom: 20,
+            }}
+            resizeMode="stretch"
+          />
+        </Teaser>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

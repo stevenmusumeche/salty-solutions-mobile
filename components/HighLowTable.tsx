@@ -12,6 +12,8 @@ import { blue, orange, teal } from '../colors';
 import Stars from './Stars';
 import { useUserContext } from '../context/UserContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 interface Props {
   hiLowData: any[];
@@ -27,6 +29,8 @@ const HighLowTable: React.FC<Props> = ({
   solunarData,
 }) => {
   const { user } = useUserContext();
+  const navigation = useNavigation<StackNavigationProp<any>>();
+
   const formatDate = (x: string) => (
     <Text style={styles.date}>{format(new Date(x), 'h:mma')}</Text>
   );
@@ -43,7 +47,7 @@ const HighLowTable: React.FC<Props> = ({
   // todo: marketing
   const premiumTeaser = () => (
     <View>
-      <TouchableOpacity onPress={() => {}}>
+      <TouchableOpacity onPress={() => navigation.push('SolunarMarketing')}>
         <Text>Premium Required</Text>
       </TouchableOpacity>
     </View>
