@@ -93,9 +93,6 @@ const Now: React.FC = () => {
             <RefreshControl refreshing={false} onRefresh={makeRefreshRequest} />
           }
         >
-          <Button onPress={() => purchase(products[0])} title="Buy" />
-          <Text>{user.serverEntitledToPremium ? 'True' : 'False'}</Text>
-          <Text>{user.entitledToPremium ? 'True' : 'False'}</Text>
           <CardGrid>
             <WindCard requestRefresh={requestRefresh} sites={windSites} />
             <AirTempCard requestRefresh={requestRefresh} />
