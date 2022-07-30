@@ -1,12 +1,11 @@
 import React from 'react';
-import { Text, StyleSheet, Button, View } from 'react-native';
+import { Text, StyleSheet, Button, ScrollView } from 'react-native';
 import { gray, white } from '../colors';
-import { useUserContext } from '../context/UserContext';
+import { usePurchaseContext } from '../context/PurchaseContext';
 
 interface Props {
   title: string;
   description: string;
-  buttonText?: string;
   buttonSubtitle: string;
 }
 
@@ -14,19 +13,30 @@ const Teaser: React.FC<Props> = ({
   title,
   description,
   buttonSubtitle,
-  buttonText = 'Login Now',
+  children,
 }) => {
-  const { actions } = useUserContext();
+  const { products, purchase } = usePurchaseContext();
+
+  const premium = products.find((product) =>
+    product.productId.startsWith('premium.monthly'),
+  );
+  if (!premium) {
+    return null;
+  }
+
+  let buttonText = 'Buy ' + premium.description;
 
   return (
-    <View style={[styles.container, { backgroundColor: white }]}>
+    <ScrollView style={[styles.container, { backgroundColor: white }]}>
       <Text style={styles.title}>{title}</Text>
       <Text style={{ marginBottom: 15 }}>{description}</Text>
-      <Button onPress={actions.login} title={buttonText} />
-      <Text style={{ color: gray[700], textAlign: 'center' }}>
-        {buttonSubtitle}
+      {children}
+      <Button onPress={() => purchase(products[0])} title={buttonText} />
+
+      <Text style={{ color: gray[700], textAlign: 'center', marginTop: 5 }}>
+        {buttonSubtitle} Only {premium.price} per month. No contract required.
       </Text>
-    </View>
+    </ScrollView>
   );
 };
 

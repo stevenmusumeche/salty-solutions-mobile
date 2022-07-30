@@ -24,7 +24,7 @@ interface Props {
   sunData: SunDetailFieldsFragment;
   tideData: TideDetailFieldsFragment[];
   waterHeightData: WaterHeightFieldsFragment[];
-  solunarData: SolunarDetailFieldsFragment;
+  solunarData?: SolunarDetailFieldsFragment;
 }
 
 const MainTideChart: React.FC<Props> = ({

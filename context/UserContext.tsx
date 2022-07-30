@@ -13,17 +13,19 @@ import {
   Maybe,
   useUserLoggedInMutation,
   Platform,
-  useCreateUserMutation,
+  useUpsertUserMutation,
   UserFieldsFragment,
 } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import { isAfter } from 'date-fns';
 import * as SecureStore from 'expo-secure-store';
+import { useFeatureFlagContext } from '@stevenmusumeche/salty-solutions-shared';
 
 interface UserContext {
   user: User;
   actions: {
     login: () => void;
     logout: () => void;
+    purchaseComplete: (userFields: UserFieldsFragment) => void;
   };
 }
 
@@ -38,27 +40,53 @@ export const UserContextProvider: React.FC = ({ children }) => {
   const platform = RNPlatform.OS === 'ios' ? Platform.Ios : Platform.Android;
   const savedCredentialsKey = 'auth0Creds';
   const [userCredentials, setUserCredentials] = useState<UserCredentials>();
+  const [user, setUser] = useState<User>({
+    isLoggedIn: false,
+    loading: false,
+    entitledToPremium: false,
+  });
   const [, loggedInMutation] = useUserLoggedInMutation();
-  const [createUserResult, executeCreateUser] = useCreateUserMutation();
+  const [upsertUserResult, executeUpsertUser] = useUpsertUserMutation();
+  const { getFlag, state: flagState } = useFeatureFlagContext();
+  const premiumEnforcementEnabled =
+    flagState.status === 'loaded'
+      ? getFlag('premium-enforcement-enabled').value
+      : false; // default to not enforcing while loading
 
-  // make sure the user exists
+  // create/update user in the database
   useEffect(() => {
     const idToken = userCredentials?.credentials.idToken;
     if (!idToken) {
       return;
     }
 
-    executeCreateUser(
-      {},
+    executeUpsertUser(
       {
-        fetchOptions: {
-          headers: {
-            authorization: 'Bearer ' + userCredentials?.credentials.idToken,
-          },
+        input: {
+          name: userCredentials.token.name,
+          email: userCredentials.token.email,
+          picture: userCredentials.token.picture,
         },
       },
+      { fetchOptions: { headers: { authorization: `Bearer ${idToken}` } } },
     );
-  }, [executeCreateUser, userCredentials]);
+  }, [executeUpsertUser, userCredentials]);
+
+  const makeLoadedUser = useCallback(
+    (user: UserFieldsFragment): LoadedUser => {
+      return {
+        isLoggedIn: true,
+        loading: false,
+        ...user,
+        serverEntitledToPremium: user.entitledToPremium,
+        entitledToPremium: premiumEnforcementEnabled
+          ? user.entitledToPremium
+          : true,
+        idToken: userCredentials?.credentials.idToken ?? '',
+      };
+    },
+    [premiumEnforcementEnabled, userCredentials],
+  );
 
   const handleNewCreds = useCallback(async (auth0Creds: Credentials) => {
     const credentials = {
@@ -103,6 +131,13 @@ export const UserContextProvider: React.FC = ({ children }) => {
       console.log('error logging out', e);
     }
   }, []);
+
+  const purchaseComplete = useCallback(
+    (userFields: UserFieldsFragment) => {
+      setUser(makeLoadedUser(userFields));
+    },
+    [makeLoadedUser],
+  );
 
   // restore credentials from SecureStore when the app starts up
   useEffect(() => {
@@ -172,41 +207,53 @@ export const UserContextProvider: React.FC = ({ children }) => {
     };
   }, [handleNewCreds, logout, userCredentials]);
 
-  const providerValue: UserContext = useMemo(() => {
-    let user: User;
+  // update user as creds change
+  useEffect(() => {
     if (!userCredentials) {
-      user = { isLoggedIn: false, loading: false, hasPremium: false };
+      setUser({
+        isLoggedIn: false,
+        loading: false,
+        entitledToPremium: premiumEnforcementEnabled ? false : true,
+      });
     } else {
       if (
-        createUserResult.fetching &&
-        !createUserResult.data?.createUser.user
+        upsertUserResult.fetching &&
+        !upsertUserResult.data?.upsertUser.user
       ) {
-        user = { isLoggedIn: true, loading: true, hasPremium: false };
-      } else if (!createUserResult.data?.createUser.user) {
-        user = {
-          isLoggedIn: true,
+        setUser({
+          isLoggedIn: false,
           loading: true,
-          hasPremium: false,
-          error: 'Unable to create user',
-        };
-      } else {
-        user = {
-          isLoggedIn: true,
+          entitledToPremium: premiumEnforcementEnabled ? false : true,
+        });
+      } else if (!upsertUserResult.data?.upsertUser.user) {
+        setUser({
+          isLoggedIn: false,
           loading: false,
-          ...createUserResult.data.createUser.user,
-          hasPremium: false, // todo: calculate this
-        };
+          entitledToPremium: premiumEnforcementEnabled ? false : true,
+          error: 'Unable to create user',
+        });
+      } else {
+        setUser(makeLoadedUser(upsertUserResult.data.upsertUser.user));
       }
     }
+  }, [
+    makeLoadedUser,
+    premiumEnforcementEnabled,
+    upsertUserResult.data,
+    upsertUserResult.fetching,
+    userCredentials,
+  ]);
 
+  const providerValue: UserContext = useMemo(() => {
     return {
       user,
       actions: {
         login,
         logout,
+        purchaseComplete,
       },
     };
-  }, [createUserResult, login, logout, userCredentials]);
+  }, [user, login, logout, purchaseComplete]);
 
   return (
     <UserContext.Provider value={providerValue}>
@@ -251,23 +298,31 @@ interface UserCredentials {
   token: Token;
 }
 
-type BaseUser = { isLoggedIn: boolean; loading: boolean; hasPremium: boolean };
+type BaseUser = {
+  isLoggedIn: boolean;
+  loading: boolean;
+  entitledToPremium: boolean;
+  serverEntitledToPremium?: boolean;
+};
 
+type LoadedUser = {
+  isLoggedIn: true;
+  loading: false;
+  idToken: string;
+  serverEntitledToPremium: boolean; // the value from the server, ignoring feature flag
+} & UserFieldsFragment &
+  BaseUser;
 export type User =
   | ({
-      isLoggedIn: true;
+      isLoggedIn: false;
       loading: true;
     } & BaseUser)
   | ({
-      isLoggedIn: true;
-      loading: true;
+      isLoggedIn: false;
+      loading: false;
       error: string;
     } & BaseUser)
-  | ({
-      isLoggedIn: true;
-      loading: false;
-    } & UserFieldsFragment &
-      BaseUser)
+  | LoadedUser
   | ({ isLoggedIn: false; loading: false } & BaseUser);
 
 export const useUserContext = () => useContext(UserContext);

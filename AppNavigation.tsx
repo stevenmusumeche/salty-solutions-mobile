@@ -7,12 +7,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React, { useRef } from 'react';
 import { StatusBar } from 'react-native';
 import { brandYellow, gray, white } from './colors';
+import FullScreenLoading from './components/FullScreenLoading';
 import { trackEvent } from './context/AppContext';
+import { usePurchaseContext } from './context/PurchaseContext';
 import { useUserContext } from './context/UserContext';
 import AppScreen from './screens/AppScreen';
 import ChangeLocationScreen from './screens/ChangeLocationScreen';
 import LoginScreen from './screens/LoginScreen';
 import SettingsScreen from './screens/SettingsScreen';
+import { useFeatureFlagContext } from '@stevenmusumeche/salty-solutions-shared';
+import SolunarMarketingScreen from './screens/SolunarMarketingScreen';
 
 const RootStack = createStackNavigator();
 
@@ -28,8 +32,86 @@ const MyTheme = {
 
 const AppNavigation: React.FC = () => {
   const navigationRef = useNavigationContainerRef();
+
   const routeNameRef = useRef<string>();
+  const { productLoadStatus, purchasing } = usePurchaseContext();
   const { user } = useUserContext();
+  const { state: flagState } = useFeatureFlagContext();
+
+  let content;
+  if (
+    productLoadStatus === 'loading' ||
+    user.loading ||
+    flagState.status === 'loading' ||
+    purchasing
+  ) {
+    content = (
+      <RootStack.Screen
+        name="GlobalLoading"
+        component={FullScreenLoading}
+        options={{ animationEnabled: false }}
+      />
+    );
+  } else if ('error' in user) {
+    content = (
+      <RootStack.Screen
+        name="GlobalError"
+        component={FullScreenLoading}
+        initialParams={{ error: user.error }}
+        options={{ animationEnabled: false }}
+      />
+    );
+  } else if (!user.isLoggedIn) {
+    content = (
+      <RootStack.Screen
+        name="Login"
+        component={LoginScreen}
+        options={{ animationEnabled: false }}
+      />
+    );
+  } else {
+    content = (
+      <>
+        <RootStack.Screen
+          name="App"
+          component={AppScreen}
+          options={{ animationEnabled: false }}
+        />
+        <RootStack.Screen
+          name="ChangeLocation"
+          component={ChangeLocationScreen}
+          options={{
+            title: 'Change Location',
+            headerShown: true,
+            headerTitleStyle: { color: white },
+            headerTintColor: brandYellow,
+          }}
+        />
+        <RootStack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{
+            title: 'Salty Solutions',
+            headerShown: true,
+            headerTitleStyle: { color: white },
+            headerTintColor: brandYellow,
+            headerBackTitle: 'Back',
+          }}
+        />
+        <RootStack.Screen
+          name="SolunarMarketing"
+          component={SolunarMarketingScreen}
+          options={{
+            title: 'Salty Solutions',
+            headerShown: true,
+            headerTitleStyle: { color: white },
+            headerTintColor: brandYellow,
+            headerBackTitle: 'Back',
+          }}
+        />
+      </>
+    );
+  }
 
   return (
     <NavigationContainer
@@ -57,34 +139,7 @@ const AppNavigation: React.FC = () => {
       <RootStack.Navigator
         screenOptions={{ headerShown: false, presentation: 'card' }}
       >
-        {!user.isLoggedIn ? (
-          <RootStack.Screen name="Login" component={LoginScreen} />
-        ) : (
-          <>
-            <RootStack.Screen name="App" component={AppScreen} />
-            <RootStack.Screen
-              name="ChangeLocation"
-              component={ChangeLocationScreen}
-              options={{
-                title: 'Change Location',
-                headerShown: true,
-                headerTitleStyle: { color: white },
-                headerTintColor: brandYellow,
-              }}
-            />
-            <RootStack.Screen
-              name="Settings"
-              component={SettingsScreen}
-              options={{
-                title: 'Salty Solutions',
-                headerShown: true,
-                headerTitleStyle: { color: white },
-                headerTintColor: brandYellow,
-                headerBackTitle: 'Back',
-              }}
-            />
-          </>
-        )}
+        {content}
       </RootStack.Navigator>
     </NavigationContainer>
   );

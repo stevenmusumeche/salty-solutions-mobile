@@ -59,9 +59,10 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
   const { width } = useWindowDimensions();
   const { activeLocation } = useContext(AppContext);
   const { newVersionAvailable } = useAppVersionContext();
+
   const [modisMap] = useModisMapQuery({
     variables: { locationId: activeLocation.id },
-    pause: !user.isLoggedIn,
+    pause: !user.entitledToPremium,
   });
   const [curIndex, setCurIndex] = useState(0);
 
@@ -80,13 +81,24 @@ const Satellite: React.FC<Props> = ({ navigation }) => {
     }
   }, [modisMap.data]);
 
-  if (!user.isLoggedIn) {
+  if (!user.entitledToPremium) {
     return (
       <Teaser
         title="Find clean water with real-time satellite imagery"
-        description="MODIS is an extensive program using sensors on two satellites that each provide complete daily coverage of the earth."
-        buttonSubtitle="Login for free to access satellite imagery."
-      />
+        description="Salty Solutions Premium gives you access to the last 7 days of high-res imagery from both MODIS satellites - so you can find clean water."
+        buttonSubtitle="Purchase Salty Solutions Premium for to access satellite imagery."
+      >
+        <Image
+          source={require('../assets/satellite1.jpg')}
+          style={{
+            width: width - 40,
+            height: (width - 40) / 1.4,
+            marginTop: 10,
+            marginBottom: 20,
+          }}
+          resizeMode="stretch"
+        />
+      </Teaser>
     );
   }
 

@@ -1,6 +1,5 @@
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import AppLoading from 'expo-app-loading';
 import React, { useContext } from 'react';
 import { AppContext } from '../context/AppContext';
 import ForecastScreen from './ForecastScreen';
@@ -9,18 +8,15 @@ import SalinityScreen from './SalinityScreen';
 import SatelliteScreen from './SatelliteScreen';
 import TideScreen from './TideScreen';
 import { brandYellow, white } from '../colors';
-import { usePurchaseContext } from '../context/PurchaseContext';
-import { useUserContext } from '../context/UserContext';
+import FullScreenLoading from '../components/FullScreenLoading';
 
 const AppTabs = createBottomTabNavigator();
 
 const AppScreen = () => {
   const { activeLocation } = useContext(AppContext);
-  const { productLoadStatus } = usePurchaseContext();
-  const { user } = useUserContext();
 
-  if (!activeLocation || productLoadStatus === 'loading' || user.loading) {
-    return <AppLoading />;
+  if (!activeLocation) {
+    return <FullScreenLoading />;
   }
 
   return (

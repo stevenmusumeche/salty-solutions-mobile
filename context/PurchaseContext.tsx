@@ -1,3 +1,4 @@
+import { useCompletePurchaseMutation } from '@stevenmusumeche/salty-solutions-shared/dist/graphql';
 import {
   connectAsync,
   getProductsAsync,
@@ -13,20 +14,24 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { Platform } from 'react-native';
+import { getPlatform } from '../components/utils';
+import { useUserContext } from './UserContext';
 
 export interface TPurchaseContext {
   products: IAPItemDetails[];
   productLoadStatus: ProductLoadStatus;
   purchase: (product: IAPItemDetails) => Promise<void>;
+  purchasing: boolean;
 }
 
 const items =
   Platform.select({
     ios: ['premium.monthly.v1'],
-    android: [],
+    android: ['premium.monthly.v1'],
   }) ?? [];
 
 type ProductLoadStatus = 'loading' | 'loaded' | 'error';
@@ -34,10 +39,16 @@ type ProductLoadStatus = 'loading' | 'loaded' | 'error';
 export const PurchaseContext = createContext({} as TPurchaseContext);
 
 export const PurchaseContextProvider: React.FC = ({ children }) => {
+  const { user, actions } = useUserContext();
+
+  const purchasingProduct = useRef<IAPItemDetails>();
   const [products, setProducts] = useState<IAPItemDetails[]>([]);
   const [productLoadStatus, setProductLoadStatus] = useState<ProductLoadStatus>(
     'loading',
   );
+  const [purchasing, setPurchasing] = useState(false);
+
+  const [, executeCompletePurchase] = useCompletePurchaseMutation();
 
   useEffect(() => {
     // fetch products
@@ -49,67 +60,115 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
           if (results) {
             setProducts(results);
             setProductLoadStatus('loaded');
+            return results;
           } else {
+            console.error(responseCode);
             setProductLoadStatus('error');
           }
+        } else {
+          throw new Error(
+            'Invalid response code from getProductsAsync ' + responseCode,
+          );
         }
       } catch (e) {
+        console.error(e);
         setProductLoadStatus('error');
       }
     }
 
+    // todo: add analytics events
     async function listenForPurchases() {
-      // Set purchase listener
-      setPurchaseListener(({ responseCode, results, errorCode }) => {
-        // Purchase was successful
+      setPurchaseListener(async ({ responseCode, results, errorCode }) => {
         if (responseCode === IAPResponseCode.OK) {
-          (results ?? []).forEach((purchase) => {
-            if (!purchase.acknowledged) {
-              console.log(`Successfully purchased ${purchase.productId}`);
-              // todo: Process transaction here and unlock content...
-              // todo: Make sure that you verify each purchase to prevent faulty transactions and protect against fraud BEFORE calling finishTransactionAsync
-              // https://developer.apple.com/documentation/appstorereceipts/verifyreceipt
+          const purchase = results?.find(
+            (result) => result.acknowledged === false,
+          );
+          if (!purchase || !purchasingProduct.current || !('idToken' in user)) {
+            // todo
+            setPurchasing(false);
+            throw new Error('invariant');
+          }
 
-              finishTransactionAsync(purchase, true).catch((e) =>
-                console.error(e),
+          if (!purchase.acknowledged) {
+            try {
+              const result = await executeCompletePurchase(
+                {
+                  input: {
+                    platform: getPlatform(Platform.OS),
+                    receipt:
+                      purchase.transactionReceipt ??
+                      purchase.purchaseToken ??
+                      '',
+                    priceCents:
+                      purchasingProduct.current.priceAmountMicros / 10000,
+                  },
+                },
+                {
+                  fetchOptions: {
+                    headers: {
+                      authorization: 'Bearer ' + user.idToken,
+                    },
+                  },
+                },
               );
+
+              purchasingProduct.current = undefined;
+              if (
+                !result.data ||
+                result.data.completePurchase.isComplete === false ||
+                !result.data.completePurchase.user
+              ) {
+                setPurchasing(false);
+                throw new Error('Error recording purchase');
+              }
+              actions.purchaseComplete(result.data.completePurchase.user);
+
+              // todo: show some UI
+
+              finishTransactionAsync(purchase, true)
+                .then((resp) => {
+                  console.log('Finished transaction', resp);
+                  setPurchasing(false);
+                })
+                .catch((e) => console.error('Error finishing transaction', e));
+            } catch (e) {
+              console.error(e);
             }
-          });
+          } else {
+            setPurchasing(false);
+          }
         } else if (responseCode === IAPResponseCode.USER_CANCELED) {
           console.log('User canceled the transaction');
+          setPurchasing(false);
         } else if (responseCode === IAPResponseCode.DEFERRED) {
           console.log(
             'User does not have permissions to buy but requested parental approval (iOS only)',
           );
+          setPurchasing(false);
         } else {
           console.warn(
             `Something went wrong with the purchase. Received errorCode ${errorCode}`,
           );
+          setPurchasing(false);
         }
       });
     }
 
-    // todo: You should not call this method on launch because restoring purchases on iOS prompts for the user’s App Store credentials, which could interrupt the flow of your app.
-    // async function fetchUserPurchases() {
-    //   await connectAsync();
-    //   const result = await getPurchaseHistoryAsync();
-
-    //   console.log(result);
-    // }
-
     fetchProducts();
     listenForPurchases();
-    // fetchUserPurchases();
-  }, []);
+  }, [actions, executeCompletePurchase, user]);
 
   const purchase = useCallback(async (product: IAPItemDetails) => {
-    console.log('try to purchase', product);
+    console.log('try to purchase');
+    // todo: show spinner
+    setPurchasing(true);
+    purchasingProduct.current = product;
     return purchaseItemAsync(product.productId);
   }, []);
 
   const providerValue: TPurchaseContext = useMemo(
-    () => ({ products, productLoadStatus, purchase }),
-    [products, productLoadStatus, purchase],
+    () => ({ products, productLoadStatus, purchase, purchasing }),
+    [products, productLoadStatus, purchase, purchasing],
   );
 
   return (

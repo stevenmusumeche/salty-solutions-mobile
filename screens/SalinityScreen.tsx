@@ -24,19 +24,17 @@ import { RouteProp } from '@react-navigation/native';
 import { brandYellow, black, gray, white } from '../colors';
 import UpgradeNotice from '../components/UpgradeNotice';
 import { useAppVersionContext } from '../context/AppVersionContext';
-import { useUserContext } from '../context/UserContext';
-import Teaser from '../components/Teaser';
 
 type StackParams = {
   'Zoomable Salinity Map': {
     image: string;
   };
-  Salinity: undefined;
+  SalinityStack: undefined;
 };
 
-const ForecastStack = createStackNavigator<StackParams>();
+const SalinityStack = createStackNavigator<StackParams>();
 
-type SalinityNavigationProp = StackNavigationProp<StackParams, 'Salinity'>;
+type SalinityNavigationProp = StackNavigationProp<StackParams, 'SalinityStack'>;
 
 type Props = {
   navigation: SalinityNavigationProp;
@@ -45,7 +43,6 @@ type Props = {
 const Salinity: React.FC<Props> = ({ navigation }) => {
   useLocationSwitcher();
   useHeaderTitle('Salinity Map');
-  const { user } = useUserContext();
 
   const { width } = useWindowDimensions();
 
@@ -54,7 +51,6 @@ const Salinity: React.FC<Props> = ({ navigation }) => {
   const { newVersionAvailable } = useAppVersionContext();
   const [salinityMap, refresh] = useSalinityMapQuery({
     variables: { locationId: activeLocation.id },
-    pause: !activeLocation || !user.isLoggedIn,
   });
 
   const onRefresh = useCallback(() => {
@@ -67,16 +63,6 @@ const Salinity: React.FC<Props> = ({ navigation }) => {
       setRefreshing(false);
     }
   }, [refreshing, salinityMap.fetching]);
-
-  if (!user.isLoggedIn) {
-    return (
-      <Teaser
-        title="Find water with ideal salinity"
-        description="Improve your fishing trips by focusing on areas with ideal salinity. When targeting speckled trout or redfish, part of the equation is the presence of salty water."
-        buttonSubtitle="Login for free to access salinity maps."
-      />
-    );
-  }
 
   if (salinityMap.error) {
     return (
@@ -144,9 +130,9 @@ const ImageDetailScreen: React.FC<ImageScreenProps> = ({ route }) => {
 };
 
 const SalinityScreen = () => (
-  <ForecastStack.Navigator>
-    <ForecastStack.Screen name="SalinityStack" component={Salinity} />
-    <ForecastStack.Screen
+  <SalinityStack.Navigator>
+    <SalinityStack.Screen name="SalinityStack" component={Salinity} />
+    <SalinityStack.Screen
       name="Zoomable Salinity Map"
       component={ImageDetailScreen}
       options={() => {
@@ -156,7 +142,7 @@ const SalinityScreen = () => (
         };
       }}
     />
-  </ForecastStack.Navigator>
+  </SalinityStack.Navigator>
 );
 
 export default SalinityScreen;

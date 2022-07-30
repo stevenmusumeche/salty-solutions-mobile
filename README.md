@@ -4,6 +4,10 @@
 
 `yarn run ios` or `yarn run android`
 
+### Testing In-app purchases
+
+These have to be tested on a real device. For iOS, this means running the app via XCode and choosing a USB-connected device as the destination.
+
 ## Building
 
 The project is built using GitHub actions.

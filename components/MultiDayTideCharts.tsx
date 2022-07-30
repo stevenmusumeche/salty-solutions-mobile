@@ -32,6 +32,7 @@ import { renderBackgroundColor } from './MainTideChart';
 import { TideContext } from '../context/TideContext';
 import { blue, gray, white, black } from '../colors';
 import { trackEvent } from '../context/AppContext';
+import { useUserContext } from '../context/UserContext';
 
 interface Props {
   sunData: SunDetailFieldsFragment[];
@@ -53,6 +54,7 @@ const MultiDayTideCharts: React.FC<Props> = ({
   numDays,
   solunarData: rawSolunarData,
 }) => {
+  const { user } = useUserContext();
   const { date: activeDate, actions } = useContext(TideContext);
   const dayPadding = Math.floor(numDays / 2);
   const rangeStartDate = subDays(activeDate, dayPadding);
@@ -114,7 +116,9 @@ const MultiDayTideCharts: React.FC<Props> = ({
     );
 
     daylights.push(daylight);
-    solunars.push(tidesWithinSolunarPeriod);
+    if (user.entitledToPremium) {
+      solunars.push(tidesWithinSolunarPeriod);
+    }
     midnights.push(endOfDay(curDate));
 
     timeTickValues.push(startOfDay(curDate));

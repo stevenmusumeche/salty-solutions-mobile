@@ -37,12 +37,14 @@ import { useLocationSwitcher } from '../hooks/use-location-switcher';
 import TideOptionsScreen from './TideOptionsScreen';
 import UpgradeNotice from '../components/UpgradeNotice';
 import { useAppVersionContext } from '../context/AppVersionContext';
+import { useUserContext } from '../context/UserContext';
 
 const TideStack = createStackNavigator();
 
 export const ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSSxxx";
 
 const Tide: React.FC = () => {
+  const { user } = useUserContext();
   const { date, selectedTideStation, selectedSite } = useContext(TideContext);
   const { activeLocation } = useContext(AppContext);
   const [refreshing, setRefreshing] = React.useState(false);
@@ -167,7 +169,7 @@ const Tide: React.FC = () => {
                 sunData={sunData}
                 tideData={curDayTides}
                 waterHeightData={curDayWaterHeight}
-                solunarData={solunarData}
+                solunarData={user.entitledToPremium ? solunarData : undefined}
               />
               <MultiDayTideCharts
                 sunData={tideResult.data.location.sun}
@@ -200,22 +202,28 @@ const Tide: React.FC = () => {
   return <Wrapper {...wrapperProps}>{stuffToRender}</Wrapper>;
 };
 
-const ChartLabel = () => (
-  <View style={styles.chartLabelWrapper}>
-    <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color={blue[600]} />
-      <Text style={styles.chartLabel}>PREDICTED</Text>
+const ChartLabel = () => {
+  const { user } = useUserContext();
+
+  return (
+    <View style={styles.chartLabelWrapper}>
+      <View style={styles.chartLabelInnerWrapper}>
+        <ChartLabelSwatch color={blue[600]} />
+        <Text style={styles.chartLabel}>PREDICTED</Text>
+      </View>
+      <View style={styles.chartLabelInnerWrapper}>
+        <ChartLabelSwatch color={black} />
+        <Text style={styles.chartLabel}>OBSERVED</Text>
+      </View>
+      {user.entitledToPremium && (
+        <View style={[styles.chartLabelInnerWrapper, { marginRight: 0 }]}>
+          <ChartLabelSwatch color={blue.solunar} />
+          <Text style={styles.chartLabel}>FEEDING PERIOD</Text>
+        </View>
+      )}
     </View>
-    <View style={styles.chartLabelInnerWrapper}>
-      <ChartLabelSwatch color={black} />
-      <Text style={styles.chartLabel}>OBSERVED</Text>
-    </View>
-    <View style={[styles.chartLabelInnerWrapper, { marginRight: 0 }]}>
-      <ChartLabelSwatch color={blue.solunar} />
-      <Text style={styles.chartLabel}>FEEDING PERIOD</Text>
-    </View>
-  </View>
-);
+  );
+};
 
 const ChartLabelSwatch: React.FC<{ color: string }> = ({ color }) => (
   <View
@@ -244,7 +252,7 @@ const Header = () => {
           </Text>
           <Text numberOfLines={1}>
             <Text style={styles.headerLabel}>Observed: </Text>
-            <Text>{selectedUsgsSite?.name} and some more text</Text>
+            <Text>{selectedUsgsSite?.name}</Text>
           </Text>
         </View>
         <View>

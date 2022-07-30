@@ -30,6 +30,12 @@ const LoginScreen = () => {
           <TouchableOpacity style={styles.button} onPress={actions.login}>
             <Text style={styles.buttonText}>Login To Continue</Text>
           </TouchableOpacity>
+          <View style={styles.copyWrapper}>
+            <Text style={styles.copyText}>
+              Salty Solution uses Auth0 to manage your login information. We
+              will never share or abuse your personal information. Ever.
+            </Text>
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -66,5 +72,12 @@ const styles = StyleSheet.create({
     color: white,
     textAlign: 'center',
     fontSize: 18,
+  },
+  copyWrapper: {
+    marginTop: 30,
+    paddingHorizontal: 45,
+  },
+  copyText: {
+    color: gray[200],
   },
 });
