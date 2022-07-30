@@ -252,7 +252,7 @@ const Header = () => {
           </Text>
           <Text numberOfLines={1}>
             <Text style={styles.headerLabel}>Observed: </Text>
-            <Text>{selectedUsgsSite?.name} and some more text</Text>
+            <Text>{selectedUsgsSite?.name}</Text>
           </Text>
         </View>
         <View>

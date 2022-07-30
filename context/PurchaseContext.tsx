@@ -31,7 +31,7 @@ export interface TPurchaseContext {
 const items =
   Platform.select({
     ios: ['premium.monthly.v1'],
-    android: [],
+    android: ['premium.monthly.v1'],
   }) ?? [];
 
 type ProductLoadStatus = 'loading' | 'loaded' | 'error';
@@ -62,18 +62,27 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
             setProductLoadStatus('loaded');
             return results;
           } else {
+            console.error(responseCode);
             setProductLoadStatus('error');
           }
+        } else {
+          throw new Error(
+            'Invalid response code from getProductsAsync ' + responseCode,
+          );
         }
       } catch (e) {
+        console.error(e);
         setProductLoadStatus('error');
       }
     }
 
+    // todo: add analytics events
     async function listenForPurchases() {
       setPurchaseListener(async ({ responseCode, results, errorCode }) => {
         if (responseCode === IAPResponseCode.OK) {
-          const purchase = (results ?? [])[0];
+          const purchase = results?.find(
+            (result) => result.acknowledged === false,
+          );
           if (!purchase || !purchasingProduct.current || !('idToken' in user)) {
             // todo
             setPurchasing(false);
@@ -82,22 +91,23 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
 
           if (!purchase.acknowledged) {
             try {
-              console.log(
-                `Successfully purchased ${purchase.productId} from App Store`,
-              );
-
               const result = await executeCompletePurchase(
                 {
                   input: {
                     platform: getPlatform(Platform.OS),
-                    receipt: purchase.transactionReceipt ?? '',
+                    receipt:
+                      purchase.transactionReceipt ??
+                      purchase.purchaseToken ??
+                      '',
                     priceCents:
                       purchasingProduct.current.priceAmountMicros / 10000,
                   },
                 },
                 {
                   fetchOptions: {
-                    headers: { authorization: 'Bearer ' + user.idToken },
+                    headers: {
+                      authorization: 'Bearer ' + user.idToken,
+                    },
                   },
                 },
               );

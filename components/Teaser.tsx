@@ -33,7 +33,7 @@ const Teaser: React.FC<Props> = ({
       {children}
       <Button onPress={() => purchase(products[0])} title={buttonText} />
 
-      <Text style={{ color: gray[700], textAlign: 'center' }}>
+      <Text style={{ color: gray[700], textAlign: 'center', marginTop: 5 }}>
         {buttonSubtitle} Only {premium.price} per month. No contract required.
       </Text>
     </ScrollView>
