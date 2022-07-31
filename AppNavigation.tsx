@@ -34,7 +34,7 @@ const AppNavigation: React.FC = () => {
   const navigationRef = useNavigationContainerRef();
 
   const routeNameRef = useRef<string>();
-  const { productLoadStatus, purchasing } = usePurchaseContext();
+  const { productLoadStatus } = usePurchaseContext();
   const { user } = useUserContext();
   const { state: flagState } = useFeatureFlagContext();
 
@@ -42,8 +42,7 @@ const AppNavigation: React.FC = () => {
   if (
     productLoadStatus === 'loading' ||
     user.loading ||
-    flagState.status === 'loading' ||
-    purchasing
+    flagState.status === 'loading'
   ) {
     content = (
       <RootStack.Screen

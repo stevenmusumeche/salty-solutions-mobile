@@ -20,6 +20,7 @@ import React, {
 import { Platform } from 'react-native';
 import { getPlatform } from '../components/utils';
 import { useUserContext } from './UserContext';
+import { trackEvent } from './AppContext';
 
 export interface TPurchaseContext {
   products: IAPItemDetails[];
@@ -51,7 +52,8 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
   const [, executeCompletePurchase] = useCompletePurchaseMutation();
 
   useEffect(() => {
-    // fetch products
+    fetchProducts();
+
     async function fetchProducts() {
       try {
         await connectAsync();
@@ -62,21 +64,36 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
             setProductLoadStatus('loaded');
             return results;
           } else {
+            trackEvent('Product Load Error', {
+              error: 'Error loading products',
+              responseCode: responseCode.toString(),
+            });
             console.error(responseCode);
             setProductLoadStatus('error');
           }
         } else {
+          trackEvent('Product Load Error', {
+            error: 'Invalid response code from getProductsAsync',
+            responseCode: responseCode.toString(),
+          });
           throw new Error(
             'Invalid response code from getProductsAsync ' + responseCode,
           );
         }
       } catch (e) {
+        trackEvent('Product Load Error', {
+          error: 'Error loading products',
+          message: e instanceof Error ? e.message : '',
+        });
         console.error(e);
         setProductLoadStatus('error');
       }
     }
+  }, []);
 
-    // todo: add analytics events
+  useEffect(() => {
+    listenForPurchases();
+
     async function listenForPurchases() {
       setPurchaseListener(async ({ responseCode, results, errorCode }) => {
         if (responseCode === IAPResponseCode.OK) {
@@ -84,8 +101,10 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
             (result) => result.acknowledged === false,
           );
           if (!purchase || !purchasingProduct.current || !('idToken' in user)) {
-            // todo
             setPurchasing(false);
+            trackEvent('Purchase Error', {
+              error: 'Error finding purchase',
+            });
             throw new Error('invariant');
           }
 
@@ -119,11 +138,12 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
                 !result.data.completePurchase.user
               ) {
                 setPurchasing(false);
+                trackEvent('Purchase Error', {
+                  error: 'Error recording purchase',
+                });
                 throw new Error('Error recording purchase');
               }
               actions.purchaseComplete(result.data.completePurchase.user);
-
-              // todo: show some UI
 
               finishTransactionAsync(purchase, true)
                 .then((resp) => {
@@ -131,7 +151,12 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
                   setPurchasing(false);
                 })
                 .catch((e) => console.error('Error finishing transaction', e));
+
+              trackEvent('Purchase Completed');
             } catch (e) {
+              trackEvent('Purchase Error', {
+                error: e instanceof Error ? e.message : '',
+              });
               console.error(e);
             }
           } else {
@@ -146,6 +171,9 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
           );
           setPurchasing(false);
         } else {
+          trackEvent('Purchase Error', {
+            errorCode: errorCode?.toString() ?? '',
+          });
           console.warn(
             `Something went wrong with the purchase. Received errorCode ${errorCode}`,
           );
@@ -153,21 +181,21 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
         }
       });
     }
-
-    fetchProducts();
-    listenForPurchases();
   }, [actions, executeCompletePurchase, user]);
 
   const purchase = useCallback(async (product: IAPItemDetails) => {
-    console.log('try to purchase');
-    // todo: show spinner
     setPurchasing(true);
     purchasingProduct.current = product;
     return purchaseItemAsync(product.productId);
   }, []);
 
   const providerValue: TPurchaseContext = useMemo(
-    () => ({ products, productLoadStatus, purchase, purchasing }),
+    () => ({
+      products,
+      productLoadStatus,
+      purchase,
+      purchasing,
+    }),
     [products, productLoadStatus, purchase, purchasing],
   );
 

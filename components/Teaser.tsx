@@ -1,5 +1,12 @@
 import React from 'react';
-import { Text, StyleSheet, Button, ScrollView } from 'react-native';
+import {
+  Text,
+  StyleSheet,
+  Button,
+  ScrollView,
+  View,
+  ActivityIndicator,
+} from 'react-native';
 import { gray, white } from '../colors';
 import { usePurchaseContext } from '../context/PurchaseContext';
 
@@ -15,7 +22,7 @@ const Teaser: React.FC<Props> = ({
   buttonSubtitle,
   children,
 }) => {
-  const { products, purchase } = usePurchaseContext();
+  const { products, purchase, purchasing } = usePurchaseContext();
 
   const premium = products.find((product) =>
     product.productId.startsWith('premium.monthly'),
@@ -25,6 +32,23 @@ const Teaser: React.FC<Props> = ({
   }
 
   let buttonText = 'Buy ' + premium.description;
+
+  if (purchasing) {
+    return (
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: white,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        ]}
+      >
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={[styles.container, { backgroundColor: white }]}>
