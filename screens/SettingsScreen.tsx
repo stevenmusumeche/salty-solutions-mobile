@@ -1,4 +1,5 @@
 import React from 'react';
+import VersionCheck from 'react-native-version-check';
 import {
   Text,
   View,
@@ -81,6 +82,10 @@ const SettingsScreen: React.FC<Props> = ({}) => {
           I hope you find it useful - please contact me with any suggestions or
           comments.
         </Paragraph>
+        <Text style={{ color: gray[400], textAlign: 'center' }}>
+          App: {VersionCheck.getCurrentVersion()}, Build:{' '}
+          {VersionCheck.getCurrentBuildNumber()}
+        </Text>
       </View>
       <View
         style={{

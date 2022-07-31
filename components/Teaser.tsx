@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { gray, white } from '../colors';
 import { usePurchaseContext } from '../context/PurchaseContext';
+import { useUserContext } from '../context/UserContext';
 
 interface Props {
   title: string;
@@ -23,6 +24,7 @@ const Teaser: React.FC<Props> = ({
   children,
 }) => {
   const { products, purchase, purchasing } = usePurchaseContext();
+  const { user } = useUserContext();
 
   const premium = products.find((product) =>
     product.productId.startsWith('premium.monthly'),
@@ -46,6 +48,23 @@ const Teaser: React.FC<Props> = ({
         ]}
       >
         <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (user.entitledToPremium) {
+    return (
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: white,
+            alignItems: 'center',
+            justifyContent: 'center',
+          },
+        ]}
+      >
+        <Text>Purchase complete!</Text>
       </View>
     );
   }
