@@ -84,7 +84,7 @@ const SettingsScreen: React.FC<Props> = ({}) => {
         </Paragraph>
         <Text style={{ color: gray[400], textAlign: 'center' }}>
           App: {VersionCheck.getCurrentVersion()}, Build:{' '}
-          {VersionCheck.getCurrentBuildNumber()}
+          {VersionCheck.getCurrentBuildNumber()}, Code: 2.0.0
         </Text>
       </View>
       <View
