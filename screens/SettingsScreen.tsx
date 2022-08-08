@@ -8,6 +8,7 @@ import {
   Linking,
   Image,
   useWindowDimensions,
+  Platform,
 } from 'react-native';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
 import { white, gray, red } from '../colors';
@@ -97,7 +98,9 @@ const SettingsScreen: React.FC<Props> = ({}) => {
         <TouchableOpacity
           onPress={() =>
             Linking.openURL(
-              'mailto:steven@musumeche.com?subject=SendMail&body=Salty+Solutions+Mobile+App',
+              `mailto:steven@musumeche.com?subject=Salty Solutions ${
+                Platform.OS === 'ios' ? 'iOS' : 'Android'
+              } App`,
             ).catch()
           }
         >
