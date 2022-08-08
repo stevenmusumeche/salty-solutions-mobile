@@ -104,6 +104,7 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
             setPurchasing(false);
             trackEvent('Purchase Error', {
               error: 'Error finding purchase',
+              user: JSON.stringify(user),
             });
             throw new Error('invariant');
           }
