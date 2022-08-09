@@ -17,6 +17,7 @@ import LoginScreen from './screens/LoginScreen';
 import SettingsScreen from './screens/SettingsScreen';
 import { useFeatureFlagContext } from '@stevenmusumeche/salty-solutions-shared';
 import SolunarMarketingScreen from './screens/SolunarMarketingScreen';
+import { ContactScreen } from './screens/ContactScreen';
 
 const RootStack = createStackNavigator();
 
@@ -62,11 +63,14 @@ const AppNavigation: React.FC = () => {
     );
   } else if (!user.isLoggedIn) {
     content = (
-      <RootStack.Screen
-        name="Login"
-        component={LoginScreen}
-        options={{ animationEnabled: false }}
-      />
+      <>
+        <RootStack.Screen
+          name="Login"
+          component={LoginScreen}
+          options={{ animationEnabled: false }}
+        />
+        {ContactScreenContainer}
+      </>
     );
   } else {
     content = (
@@ -108,6 +112,7 @@ const AppNavigation: React.FC = () => {
             headerBackTitle: 'Back',
           }}
         />
+        {ContactScreenContainer}
       </>
     );
   }
@@ -145,3 +150,17 @@ const AppNavigation: React.FC = () => {
 };
 
 export default AppNavigation;
+
+const ContactScreenContainer = (
+  <RootStack.Screen
+    name="Contact"
+    component={ContactScreen}
+    options={{
+      title: 'Contact Salty Solutions',
+      headerShown: true,
+      headerTitleStyle: { color: white },
+      headerTintColor: brandYellow,
+      headerBackTitle: 'Back',
+    }}
+  />
+);
