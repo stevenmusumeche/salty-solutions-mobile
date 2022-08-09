@@ -1,26 +1,32 @@
 import React from 'react';
 import {
-  ScrollView,
+  Button,
   Text,
   View,
   StyleSheet,
   Image,
   useWindowDimensions,
   TouchableOpacity,
+  SafeAreaView,
 } from 'react-native';
-import { gray, white } from '../colors';
+import { gray, white, yellow } from '../colors';
 import { useUserContext } from '../context/UserContext';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 
 const LoginScreen = () => {
   const { width } = useWindowDimensions();
   const { actions } = useUserContext();
+  const navigation = useNavigation<StackNavigationProp<any>>();
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.containerContent}
-    >
-      <View>
+    <SafeAreaView style={styles.container}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+        }}
+      >
         <Image
           source={require('../assets/logo.png')}
           style={{ width, height: width / 5.21 }}
@@ -38,7 +44,14 @@ const LoginScreen = () => {
           </View>
         </View>
       </View>
-    </ScrollView>
+      <View>
+        <Button
+          color={gray[500]}
+          onPress={() => navigation.push('Contact')}
+          title="Need Help?"
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -49,14 +62,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: gray['700'],
     flexGrow: 1,
-  },
-  containerContent: {
     alignItems: 'center',
     justifyContent: 'center',
     color: white,
-    flex: 1,
     marginHorizontal: 'auto',
   },
+
   buttonWrapper: {
     marginTop: 30,
     alignItems: 'center',

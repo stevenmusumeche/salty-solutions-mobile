@@ -15,12 +15,16 @@ import { white, gray, red } from '../colors';
 import { useUserContext } from '../context/UserContext';
 import { FontAwesome } from '@expo/vector-icons';
 import { MaterialIcons } from '@expo/vector-icons';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from '@react-navigation/native';
 
 interface Props {}
 
 const SettingsScreen: React.FC<Props> = ({}) => {
   const { actions, user } = useUserContext();
   const { width } = useWindowDimensions();
+  const navigation = useNavigation<StackNavigationProp<any>>();
+
   return (
     <ScrollView style={styles.container}>
       <View style={{ padding: 20 }}>
@@ -43,6 +47,21 @@ const SettingsScreen: React.FC<Props> = ({}) => {
             />
           </View>
         )}
+      </View>
+      <View
+        style={{
+          padding: 20,
+          backgroundColor: gray[100],
+          borderColor: gray[200],
+          borderTopWidth: 1,
+        }}
+      >
+        <Text style={styles.header}>Contact Me</Text>
+        <Paragraph>
+          If you need help or would like to get in touch, please click the
+          button below. You can also email me at steven@musumeche.com.
+        </Paragraph>
+        <Button onPress={() => navigation.push('Contact')} title="Contact Me" />
       </View>
       <View
         style={{
@@ -76,8 +95,8 @@ const SettingsScreen: React.FC<Props> = ({}) => {
         <Paragraph>
           I'm a software engineer by trade, so I thought, "hey, I can make
           something decent enough for personal use." After showing it to a few
-          fellow fisherman, I decided to release it publically for anyone to use
-          for free.
+          fellow fisherman, I decided to release it publically for everyone to
+          use.
         </Paragraph>
         <Paragraph>
           I hope you find it useful - please contact me with any suggestions or
@@ -85,7 +104,7 @@ const SettingsScreen: React.FC<Props> = ({}) => {
         </Paragraph>
         <Text style={{ color: gray[400], textAlign: 'center' }}>
           App: {VersionCheck.getCurrentVersion()}, Build:{' '}
-          {VersionCheck.getCurrentBuildNumber()}, Code: 2.0.1
+          {VersionCheck.getCurrentBuildNumber()}, Code: 2.0.2
         </Text>
       </View>
       <View
