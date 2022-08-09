@@ -135,8 +135,8 @@ android {
         applicationId 'com.musumeche.salty.solutions'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 43
-        versionName "2.0.2"
+        versionCode 44
+        versionName "2.0.3"
         manifestPlaceholders = [auth0Domain: "dev-nzoppbnb.us.auth0.com", auth0Scheme: "${applicationId}"]
     }
     splits {
