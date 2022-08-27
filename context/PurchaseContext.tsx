@@ -141,6 +141,7 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
                 setPurchasing(false);
                 trackEvent('Purchase Error', {
                   error: 'Error recording purchase',
+                  message: result.error?.message || '',
                 });
                 throw new Error('Error recording purchase');
               }
@@ -151,7 +152,13 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
                   console.log('Finished transaction', resp);
                   setPurchasing(false);
                 })
-                .catch((e) => console.error('Error finishing transaction', e));
+                .catch((e) => {
+                  trackEvent('Purchase Error', {
+                    error: 'Error finishing transaction',
+                    message: e instanceof Error ? e.message : e,
+                  });
+                  return console.error('Error finishing transaction', e);
+                });
 
               trackEvent('Purchase Completed');
             } catch (e) {
