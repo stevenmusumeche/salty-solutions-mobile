@@ -147,7 +147,7 @@ export const PurchaseContextProvider: React.FC = ({ children }) => {
               }
               actions.purchaseComplete(result.data.completePurchase.user);
 
-              finishTransactionAsync(purchase, true)
+              finishTransactionAsync(purchase, false)
                 .then((resp) => {
                   console.log('Finished transaction', resp);
                   setPurchasing(false);

@@ -136,7 +136,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 44
-        versionName "2.0.4"
+        versionName "2.0.5"
         manifestPlaceholders = [auth0Domain: "dev-nzoppbnb.us.auth0.com", auth0Scheme: "${applicationId}"]
     }
     splits {
