@@ -66,7 +66,6 @@ const SettingsScreen: React.FC<Props> = ({}) => {
       <View
         style={{
           padding: 20,
-          backgroundColor: gray[100],
           borderColor: gray[200],
           borderTopWidth: 1,
           borderBottomWidth: 1,
@@ -102,6 +101,14 @@ const SettingsScreen: React.FC<Props> = ({}) => {
           I hope you find it useful - please contact me with any suggestions or
           comments.
         </Paragraph>
+        <TouchableOpacity
+          onPress={() => Linking.openURL('https://salty.solutions/privacy')}
+        >
+          <Button
+            onPress={() => Linking.openURL('https://salty.solutions/privacy')}
+            title="Privacy Policy"
+          ></Button>
+        </TouchableOpacity>
         <Text style={{ color: gray[400], textAlign: 'center' }}>
           App: {VersionCheck.getCurrentVersion()}, Build:{' '}
           {VersionCheck.getCurrentBuildNumber()}, Code: 2.0.5
